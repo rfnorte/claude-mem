@@ -877,6 +877,12 @@
       "skillPath": "design-research/skills/survey-design/SKILL.md",
       "computedHash": "396055897bc78cb679d072e3cdea30016f63beac04fbacb4a4e7e67ca14bc48d"
     },
+    "systematic-debugging": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "skillPath": "skills/systematic-debugging/SKILL.md",
+      "computedHash": "a2750dfbaed1690da73b120254892c4f926b4576cb82eb16fc877783941fe39b"
+    },
     "team-workflow": {
       "source": "Owl-Listener/designer-skills",
       "sourceType": "github",
