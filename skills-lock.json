@@ -7,6 +7,12 @@
       "skillPath": "prototyping-testing/skills/a-b-test-design/SKILL.md",
       "computedHash": "889d54d75332430310e69e08276a8a4ebb04735097eb30a5286c403ef7eb612e"
     },
+    "ab-testing": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/ab-testing/SKILL.md",
+      "computedHash": "c42af0107540e71dfe9605eca51b5100d96730d0bddf51085fc0c9429e40083c"
+    },
     "accessibility-audit": {
       "source": "Owl-Listener/designer-skills",
       "sourceType": "github",
@@ -18,6 +24,18 @@
       "sourceType": "github",
       "skillPath": "prototyping-testing/skills/accessibility-test-plan/SKILL.md",
       "computedHash": "5689076e49d5bd5d29e079a98345d07ff1443b38da034497d4346982cdeebada"
+    },
+    "ad-creative": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/ad-creative/SKILL.md",
+      "computedHash": "af571e0b3629999a241951e61de1893bc5c830106452f147d403dfadba146d57"
+    },
+    "ads": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/ads/SKILL.md",
+      "computedHash": "99adc6531f674bc327dbe8dd488318f860344c075ed97814aac6e8c21a2ec130"
     },
     "aesthetic-usability": {
       "source": "Owl-Listener/designer-skills",
@@ -31,11 +49,35 @@
       "skillPath": "design-research/skills/affinity-diagram/SKILL.md",
       "computedHash": "98a75e3b77da408576af9f20a578a3aeba4fcfb9b4453c1b5696b88f399e88ab"
     },
+    "ai-seo": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/ai-seo/SKILL.md",
+      "computedHash": "cf8f80451b6ae36c2c654da1db20744067083c081a3c7ddb5a2ebf1fce89078c"
+    },
+    "analytics": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/analytics/SKILL.md",
+      "computedHash": "f7f83a1c1c4ad904deba3164076b0407df00832463e93d998b36efe781f26867"
+    },
     "animation-principles": {
       "source": "Owl-Listener/designer-skills",
       "sourceType": "github",
       "skillPath": "interaction-design/skills/animation-principles/SKILL.md",
       "computedHash": "56a82df54ca073b43ad69581793f1b2f34138242b97494c1a8c9fabd8cc2aed1"
+    },
+    "aso": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/aso/SKILL.md",
+      "computedHash": "45b98500bdeea02472f468e0390010e15cd162b5a4a9769d4cb33fbbc459ad33"
+    },
+    "attribution": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/attribution/SKILL.md",
+      "computedHash": "6bc4819e64d8d71f824be4ded75bb4991ea52d7483fb416b69bd6a0c6614f549"
     },
     "brainstorming": {
       "source": "obra/superpowers",
@@ -61,11 +103,29 @@
       "skillPath": "designer-toolkit/skills/case-study/SKILL.md",
       "computedHash": "ed27b9e97e9a5f6d725b5361053ca6e62e21c25ff0651ccec3c47ca299382231"
     },
+    "churn-prevention": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/churn-prevention/SKILL.md",
+      "computedHash": "527c4740617d9eeea66e14c3f7b7ecede41d6b0520c252f413fdfd0b763a6c64"
+    },
     "click-test-plan": {
       "source": "Owl-Listener/designer-skills",
       "sourceType": "github",
       "skillPath": "prototyping-testing/skills/click-test-plan/SKILL.md",
       "computedHash": "e8f72c2aa22f3295233f8b6ca3e618a2edb7145bdd6326addfd9edac42d1917f"
+    },
+    "co-marketing": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/co-marketing/SKILL.md",
+      "computedHash": "675836e59bd48ab226a165e65873fe0f2ca7dfa8223ec040bb81e40bf9e1b4b8"
+    },
+    "cold-email": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/cold-email/SKILL.md",
+      "computedHash": "be0b73511a6244b8b8aa9126225844cfe9e492f4c1ee6bffc57344ce5ee2a6e8"
     },
     "color-system": {
       "source": "Owl-Listener/designer-skills",
@@ -73,11 +133,29 @@
       "skillPath": "ui-design/skills/color-system/SKILL.md",
       "computedHash": "00668079fe31fd68331a8d51122cab722b7e3722d4464a2c8885a7fccdd0d2d0"
     },
+    "community-marketing": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/community-marketing/SKILL.md",
+      "computedHash": "07ae29742d77a243b988267ae4bfdab90b3ca8219ab15db0feeed94c054ba1c2"
+    },
     "competitive-analysis": {
       "source": "Owl-Listener/designer-skills",
       "sourceType": "github",
       "skillPath": "ux-strategy/skills/competitive-analysis/SKILL.md",
       "computedHash": "ebb52b9554e986faa613384a992d4a3229953fc6f0978105c303904810a6069d"
+    },
+    "competitor-profiling": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/competitor-profiling/SKILL.md",
+      "computedHash": "52f223dc22ffd7fcb142e4bc04f5c13671db4cbb73975b8ce4f30ae93e885786"
+    },
+    "competitors": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/competitors/SKILL.md",
+      "computedHash": "6380b59f188f71552e4ea878f41518c387490d583c457f95c4d0f4161ccb7c71"
     },
     "component-spec": {
       "source": "Owl-Listener/designer-skills",
@@ -86,16 +164,28 @@
       "computedHash": "9102b527cd65b30f2e2f4683cda72025e29be6a00729d5e257468d3413d826c3"
     },
     "content-strategy": {
-      "source": "Owl-Listener/designer-skills",
+      "source": "coreyhaines31/marketingskills",
       "sourceType": "github",
-      "skillPath": "ux-strategy/skills/content-strategy/SKILL.md",
-      "computedHash": "e7176e4b08160b8edb3d357c2a96148bd21bf0ab9d0cbabb349415f890534508"
+      "skillPath": "skills/content-strategy/SKILL.md",
+      "computedHash": "76c86dae5b6ee6aaf79bd1a7b6cd4ee15a3162f4a289462601bfa8e8b945873b"
     },
     "conversational-ux": {
       "source": "Owl-Listener/designer-skills",
       "sourceType": "github",
       "skillPath": "interaction-design/skills/conversational-ux/SKILL.md",
       "computedHash": "99957dea6a9324721182dfab64f134f3179911501e8c1c0bcebbf46bdf92eebc"
+    },
+    "copy-editing": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/copy-editing/SKILL.md",
+      "computedHash": "ba4e44a8470b3ae2add3e0ffa74c85d8b0357db4ca2cf8cfa7b4abc9d94fc602"
+    },
+    "copywriting": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/copywriting/SKILL.md",
+      "computedHash": "779f05c8be67da475e6a7af78de3e0400b0038e371ce898dd6ff9d3331aab7db"
     },
     "critique-affordance": {
       "source": "Owl-Listener/designer-skills",
@@ -138,6 +228,18 @@
       "sourceType": "github",
       "skillPath": "visual-critique/skills/critique-visual-hierarchy/SKILL.md",
       "computedHash": "eec84a68c232c63c7a519c376b00758f44352c35bd0c5c8d8668df379418c670"
+    },
+    "cro": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/cro/SKILL.md",
+      "computedHash": "07f7a27c57e48f4b67230712f8efbc5bcc01611b35321b3c2c2e5279c9304bcd"
+    },
+    "customer-research": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/customer-research/SKILL.md",
+      "computedHash": "637f87fab0771b73cffc13e339584f106f1f439992812cd2e025cf3caab3855b"
     },
     "dark-mode-design": {
       "source": "Owl-Listener/designer-skills",
@@ -241,6 +343,12 @@
       "skillPath": "design-research/skills/diary-study-plan/SKILL.md",
       "computedHash": "67d82e42185bb075ddba6459e5a7e861975e2024bdd141785c325718e80114c7"
     },
+    "directory-submissions": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/directory-submissions/SKILL.md",
+      "computedHash": "b737c3b9b9387bbeefd4fb5a003c1debaf273563f170665f6b9341c6818d121b"
+    },
     "documentation-template": {
       "source": "Owl-Listener/designer-skills",
       "sourceType": "github",
@@ -253,6 +361,12 @@
       "skillPath": "interaction-design/skills/doherty-threshold/SKILL.md",
       "computedHash": "d6078849033aeaf60d0675991a655b14b1d2d23449e16c694066fbd216b049c2"
     },
+    "emails": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/emails/SKILL.md",
+      "computedHash": "261d986c2a1f1f5f823f8c889e16db723edb8a9d0fa5ede8412f981594715c49"
+    },
     "empathy-map": {
       "source": "Owl-Listener/designer-skills",
       "sourceType": "github",
@@ -264,6 +378,12 @@
       "sourceType": "github",
       "skillPath": "interaction-design/skills/error-handling-ux/SKILL.md",
       "computedHash": "152e18dd60ddddddd73f82b3429b7e2949e5c1033315df0a806abd953f00536f"
+    },
+    "events": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/events/SKILL.md",
+      "computedHash": "f92f21a38255f8e472ef10286036543b53f08501750f01b66236c31a6a357c70"
     },
     "experience-map": {
       "source": "Owl-Listener/designer-skills",
@@ -294,6 +414,12 @@
       "sourceType": "github",
       "skillPath": "interaction-design/skills/form-design/SKILL.md",
       "computedHash": "5502def7c0c6647fdcf824b0dedfdf1e70caed50b57c262af322595b1be357eb"
+    },
+    "free-tools": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/free-tools/SKILL.md",
+      "computedHash": "ab40a39f8b10a0ee423f47005a49defcae4e9b82b4c6e5be1d6c67d7f963973e"
     },
     "frontend-design": {
       "source": "anthropics/skills",
@@ -337,6 +463,18 @@
       "skillPath": "ui-design/skills/illustration-style/SKILL.md",
       "computedHash": "085cef377895daf3fbdcba21c00089329dd631dd5469d24c667fc48c963fc108"
     },
+    "image": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/image/SKILL.md",
+      "computedHash": "e4b5511566d08a79f6f5fd26319eaaac0e18e1e238848c5a3fb2e9839e306ebe"
+    },
+    "influencer-marketing": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/influencer-marketing/SKILL.md",
+      "computedHash": "bb3376e9c671d3e8cd6ea26cdefcd5d860e8b65bfc71ed2aeda0282860571bea"
+    },
     "information-architecture": {
       "source": "Owl-Listener/designer-skills",
       "sourceType": "github",
@@ -372,6 +510,12 @@
       "sourceType": "github",
       "skillPath": "design-research/skills/journey-map/SKILL.md",
       "computedHash": "4701f556acb927a542abccf55d76632d37f7c2878a9f1952db23812a69875b36"
+    },
+    "launch": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/launch/SKILL.md",
+      "computedHash": "9e7a103ab5f5ca7f8018b6a183b015a1cc38f7b701a18e6a9be4e70398cad1c6"
     },
     "law-of-closure": {
       "source": "Owl-Listener/designer-skills",
@@ -415,6 +559,12 @@
       "skillPath": "ui-design/skills/layout-grid/SKILL.md",
       "computedHash": "2b164fa9f3f31e3b0bd019620edf4b32cad8182216006f1ae824d1b12f2635be"
     },
+    "lead-magnets": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/lead-magnets/SKILL.md",
+      "computedHash": "268c83c38cc49d3e437042f5d4e3c31b822deb6012b9d5d7a1370ae500058018"
+    },
     "loading-states": {
       "source": "Owl-Listener/designer-skills",
       "sourceType": "github",
@@ -426,6 +576,36 @@
       "sourceType": "github",
       "skillPath": "design-systems/skills/localization-design/SKILL.md",
       "computedHash": "559caa9ecb1207b04e4bb72f1ac61d6b2f584d031df789af444c48e4b59a26a0"
+    },
+    "marketing-council": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/marketing-council/SKILL.md",
+      "computedHash": "ac7cb3d3b358b5168adb80eea696d00b45183e9d70a8a81309b917ebc911951c"
+    },
+    "marketing-ideas": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/marketing-ideas/SKILL.md",
+      "computedHash": "63a1f27ff2c8ca77bf9ad8d2df4252d214d597b437c7ba2d23619248225000ad"
+    },
+    "marketing-loops": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/marketing-loops/SKILL.md",
+      "computedHash": "35027841740127f6a2ad5085811ea4bb95a889c27ba43204d4714793e45bcb61"
+    },
+    "marketing-plan": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/marketing-plan/SKILL.md",
+      "computedHash": "be076e56f42ae98202d3d62a6fe5d229fcc54dc5dbad2cb2fe42253b56364a7c"
+    },
+    "marketing-psychology": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/marketing-psychology/SKILL.md",
+      "computedHash": "50d735eb0f5c36f379ed2200f21aeacc9b9ad85667b5d33ec6111857352a1340"
     },
     "mcp-builder": {
       "source": "anthropics/skills",
@@ -475,6 +655,18 @@
       "skillPath": "ux-strategy/skills/north-star-vision/SKILL.md",
       "computedHash": "53cbd90eb36e1228eacdf5c6b53fa2691db8211f69fdbb834ac845a0f58c55ff"
     },
+    "offers": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/offers/SKILL.md",
+      "computedHash": "9f8781bc04889a6f2f23a7167384976bfaf2709da31a2b92d17cc3cbfca84cd4"
+    },
+    "onboarding": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/onboarding/SKILL.md",
+      "computedHash": "e1afc992d94288dad5ead64cea7276dea14a58e539889bf0cc26f7503685fd11"
+    },
     "onboarding-design": {
       "source": "Owl-Listener/designer-skills",
       "sourceType": "github",
@@ -493,6 +685,12 @@
       "skillPath": "design-systems/skills/pattern-library/SKILL.md",
       "computedHash": "227b39496fad3b87bace1441be5dabc81a43a20c0d2086d1178f80bf36d80bb6"
     },
+    "paywalls": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/paywalls/SKILL.md",
+      "computedHash": "1f0b8d15770d2e7737b818408dc5877b2eadc4cab072cdfb3529349ab059815f"
+    },
     "peak-end-rule": {
       "source": "Owl-Listener/designer-skills",
       "sourceType": "github",
@@ -505,11 +703,41 @@
       "skillPath": "ui-design/skills/platform-conventions/SKILL.md",
       "computedHash": "09490b43da0f204bb84bc1ca0f2f0f2f4763f87a58374c3a33da78f66062e161"
     },
+    "popups": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/popups/SKILL.md",
+      "computedHash": "95c5cb45dcbb05362168255d97ee68d53a5916d8de779bd08f5f70c9b0cabd36"
+    },
     "presentation-deck": {
       "source": "Owl-Listener/designer-skills",
       "sourceType": "github",
       "skillPath": "designer-toolkit/skills/presentation-deck/SKILL.md",
       "computedHash": "0a6865628ec02c3a19df9a72dd225cc2b1a9748f119a116c9f04ca6d33b87ce5"
+    },
+    "pricing": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/pricing/SKILL.md",
+      "computedHash": "b3df24bd014388660fd2c19eef78b5063c7ca8cf67b471fe8d9f4fa6275f0715"
+    },
+    "product-marketing": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/product-marketing/SKILL.md",
+      "computedHash": "b8a9cd747705923a7a29cda12e478594e3a5062d8f7c7bfbf19d7fc0b24cee76"
+    },
+    "programmatic-seo": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/programmatic-seo/SKILL.md",
+      "computedHash": "0bbdcbacfbe46fd78d774041ee49afd313505bb435b775dc246f4b8e6981d797"
+    },
+    "prospecting": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/prospecting/SKILL.md",
+      "computedHash": "f7b35b4f30367988b2e71ec30a47c39b3c50a1aac3dfeb5c22e02ad8e86576a9"
     },
     "prototype-strategy": {
       "source": "Owl-Listener/designer-skills",
@@ -517,11 +745,23 @@
       "skillPath": "prototyping-testing/skills/prototype-strategy/SKILL.md",
       "computedHash": "dbd62fd2c0e0832128ef7b993360b7254d72866745a90328f58363a3ab57302e"
     },
+    "public-relations": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/public-relations/SKILL.md",
+      "computedHash": "0c7c5c26c158ea752ab7112503931ba0bc0b4a747058b3027c6785dcb3a464fe"
+    },
     "readable-measure": {
       "source": "Owl-Listener/designer-skills",
       "sourceType": "github",
       "skillPath": "ui-design/skills/readable-measure/SKILL.md",
       "computedHash": "e9accb0dfffecc61ff8c66894239505b4f2835315078b57a67919af277166ccf"
+    },
+    "referrals": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/referrals/SKILL.md",
+      "computedHash": "78c724569672e3590fed904ef969575478201dbe424d3bd854e35906a98838ef"
     },
     "research-repository": {
       "source": "Owl-Listener/designer-skills",
@@ -535,11 +775,35 @@
       "skillPath": "ui-design/skills/responsive-design/SKILL.md",
       "computedHash": "ce1a2fefafbac36eeb6f60b4cd1079c5ba7b9976800bb751b25dcb255eab5364"
     },
+    "revops": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/revops/SKILL.md",
+      "computedHash": "3ed71e1704d4c27f846ac7a207e66030c91fe6fa7f8ce83bcf7f30fda3badb6d"
+    },
+    "sales-enablement": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/sales-enablement/SKILL.md",
+      "computedHash": "554e501e3c5926eced49cae2fd3460a61252d8979891e212aad6e39ff999c703"
+    },
+    "schema": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/schema/SKILL.md",
+      "computedHash": "2f4807070c77b5c52af3a7e56d2ca5ee12ae2fd8b749d76ab68d3de40f323e78"
+    },
     "search-ux": {
       "source": "Owl-Listener/designer-skills",
       "sourceType": "github",
       "skillPath": "interaction-design/skills/search-ux/SKILL.md",
       "computedHash": "0f598f45cf0ba33e24622c148a49c3a0785e4eefd4dec3b18b5e50ecd26b0bc5"
+    },
+    "seo-audit": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/seo-audit/SKILL.md",
+      "computedHash": "01f9f8a3feb3ea69c6c212d61189c610f96ef2cc363adc27fd314d78254bf6ae"
     },
     "serial-position-effect": {
       "source": "Owl-Listener/designer-skills",
@@ -553,11 +817,35 @@
       "skillPath": "ux-strategy/skills/service-blueprint/SKILL.md",
       "computedHash": "d7e9d487ae1322c6fc712d33df9b24c3bebefe73521c06efa008996ebcdb0ed4"
     },
+    "signup": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/signup/SKILL.md",
+      "computedHash": "9efbe9bc357581a924baa33a696b6d58a7126b7a4e4c472cebf18ed3d52cd2fd"
+    },
+    "site-architecture": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/site-architecture/SKILL.md",
+      "computedHash": "48a38c5e2b000d134c3db282364b1014bad362fa91d4618ad8c2eb7cee991208"
+    },
     "skill-creator": {
       "source": "anthropics/skills",
       "sourceType": "github",
       "skillPath": "skills/skill-creator/SKILL.md",
       "computedHash": "5ea13a6d9f0d4bb694405d79acd00cadec0d21bb138c4dd10fcf3c500cb835c2"
+    },
+    "sms": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/sms/SKILL.md",
+      "computedHash": "289111572055b6dd00a34e2111b6d895081b13cb3bf8c8fa3b05717d0e2e2b52"
+    },
+    "social": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/social/SKILL.md",
+      "computedHash": "906a0529e4ee506c3e2ae81d6dab72d98d2933ec3dac0f332d6b8a2e67acf6a0"
     },
     "spacing-system": {
       "source": "Owl-Listener/designer-skills",
@@ -648,6 +936,12 @@
       "sourceType": "github",
       "skillPath": "design-ops/skills/version-control-strategy/SKILL.md",
       "computedHash": "7560d53eb71a23a715ef430936f42690c68eabf12e8c1476b0a31e8f8105b2b0"
+    },
+    "video": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/video/SKILL.md",
+      "computedHash": "53f7082208785054a33bba07d188a4d1c8054c22b269146f3d3edccbeca7db81"
     },
     "visual-hierarchy": {
       "source": "Owl-Listener/designer-skills",
