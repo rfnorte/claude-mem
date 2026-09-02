@@ -289,6 +289,12 @@
       "skillPath": "interaction-design/skills/form-design/SKILL.md",
       "computedHash": "5502def7c0c6647fdcf824b0dedfdf1e70caed50b57c262af322595b1be357eb"
     },
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-design/SKILL.md",
+      "computedHash": "4eabc66183767153e404b39d1b839b1c37f2d82d86f0a0d7e880a579d8d62336"
+    },
     "gesture-patterns": {
       "source": "Owl-Listener/designer-skills",
       "sourceType": "github",
