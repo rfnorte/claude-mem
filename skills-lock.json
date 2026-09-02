@@ -955,6 +955,12 @@
       "skillPath": "ui-design/skills/von-restorff-effect/SKILL.md",
       "computedHash": "a36e65d0b678f259e37f835dd3704736578c4760520c57142295c7bdd7dce1a7"
     },
+    "web-design-guidelines": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/web-design-guidelines/SKILL.md",
+      "computedHash": "a6a44d5498f7e8f68289902f3dedfc6f38ae0cee1e96527c80724cf27f727c2a"
+    },
     "wireframe-spec": {
       "source": "Owl-Listener/designer-skills",
       "sourceType": "github",
