@@ -427,6 +427,12 @@
       "skillPath": "design-systems/skills/localization-design/SKILL.md",
       "computedHash": "559caa9ecb1207b04e4bb72f1ac61d6b2f584d031df789af444c48e4b59a26a0"
     },
+    "mcp-builder": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/mcp-builder/SKILL.md",
+      "computedHash": "826e46adf81e1372282e205c34e1a2ee876e72148007726e4a2512599d2fef7b"
+    },
     "metrics-definition": {
       "source": "Owl-Listener/designer-skills",
       "sourceType": "github",
