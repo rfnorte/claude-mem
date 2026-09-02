@@ -37,6 +37,12 @@
       "skillPath": "interaction-design/skills/animation-principles/SKILL.md",
       "computedHash": "56a82df54ca073b43ad69581793f1b2f34138242b97494c1a8c9fabd8cc2aed1"
     },
+    "brainstorming": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "skillPath": "skills/brainstorming/SKILL.md",
+      "computedHash": "b58d55b64742ecd37923985ec7bdfbe678ffbcb9895562abd28c0a32dcacd7fb"
+    },
     "business-design": {
       "source": "Owl-Listener/designer-skills",
       "sourceType": "github",
