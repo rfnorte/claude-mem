@@ -223,12 +223,6 @@
       "skillPath": "design-systems/skills/design-system-governance/SKILL.md",
       "computedHash": "6c5512fce65aeb1b457405ffd08b7508b08961cd112f78e95a141e45fd174931"
     },
-    "design-taste-frontend": {
-      "source": "Leonxlnx/taste-skill",
-      "sourceType": "github",
-      "skillPath": "skills/taste-skill/SKILL.md",
-      "computedHash": "6d838b246d0e35d0b53f4f23f98ba7a1dd561937e64f7d0c7553b0928e376c3e"
-    },
     "design-token": {
       "source": "Owl-Listener/designer-skills",
       "sourceType": "github",
