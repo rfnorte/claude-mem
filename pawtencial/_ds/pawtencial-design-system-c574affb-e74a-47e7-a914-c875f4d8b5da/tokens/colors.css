@@ -1,0 +1,32 @@
+:root{
+  /* brand */
+  --pt-green:#4A6741;
+  --pt-green-dark:#3A5233;
+  --pt-green-tint:#E5EBE0;
+  --pt-sand:#E8DCC4;
+  --pt-sand-dark:#D4C5A8;
+  --pt-terracotta:#D97757;
+  --pt-terracotta-dark:#B85A3E;
+  --pt-charcoal:#2C2C2C;
+  --pt-bone:#FAF7F2;
+  --pt-white:#FFFFFF;
+
+  /* semantic */
+  --pt-success:var(--pt-green);
+  --pt-success-bg:var(--pt-green-tint);
+  --pt-warning:var(--pt-terracotta);
+  --pt-warning-bg:var(--pt-sand);
+  --pt-warning-text:#8a4a2f;
+  --pt-danger:#B0492B;
+  --pt-danger-bg:#F5E3DC;
+  --pt-info:#3D6B8A;
+  --pt-info-bg:#DCE8ED;
+
+  /* text & surface aliases */
+  --pt-text:var(--pt-charcoal);
+  --pt-text-60:rgba(44,44,44,0.62);
+  --pt-text-40:rgba(44,44,44,0.4);
+  --pt-border:rgba(44,44,44,0.09);
+  --pt-surface:var(--pt-white);
+  --pt-bg:var(--pt-bone);
+}

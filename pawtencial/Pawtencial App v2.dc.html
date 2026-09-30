@@ -1,0 +1,2494 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="_ds/pawtencial-design-system-c574affb-e74a-47e7-a914-c875f4d8b5da/tokens/colors.css">
+<link rel="stylesheet" href="_ds/pawtencial-design-system-c574affb-e74a-47e7-a914-c875f4d8b5da/tokens/typography.css">
+<link rel="stylesheet" href="_ds/pawtencial-design-system-c574affb-e74a-47e7-a914-c875f4d8b5da/tokens/spacing.css">
+<link rel="stylesheet" href="_ds/pawtencial-design-system-c574affb-e74a-47e7-a914-c875f4d8b5da/tokens/radius.css">
+<link rel="stylesheet" href="_ds/pawtencial-design-system-c574affb-e74a-47e7-a914-c875f4d8b5da/tokens/shadows.css">
+<link rel="stylesheet" href="_ds/pawtencial-design-system-c574affb-e74a-47e7-a914-c875f4d8b5da/styles.css">
+<script src="_ds/pawtencial-design-system-c574affb-e74a-47e7-a914-c875f4d8b5da/_ds_bundle.js"></script>
+<style>
+body{margin:0;background:#EFEAE1}
+a{color:var(--pt-green)}a:hover{color:var(--pt-green-dark)}
+@keyframes pt-toast{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pt-sheet{from{transform:translateY(100%)}to{transform:translateY(0)}}
+input,button{font-family:var(--font-body)}
+::-webkit-scrollbar{width:0}
+</style>
+</helmet>
+
+<div style="min-height:100vh;box-sizing:border-box;padding:48px;display:flex;gap:40px;align-items:flex-start;font-family:var(--font-body);color:var(--pt-text)">
+
+<div style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:baseline;gap:10px">
+<span style="font-family:var(--font-display);font-weight:600;font-size:19px;color:var(--pt-green)">Pawtencial</span>
+<span style="font-size:11.5px;color:rgba(44,44,44,0.45)">Protótipo · dono e treinador · Lisboa</span>
+</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+
+<sc-if value="{{ isWelcome }}" hint-placeholder-val="{{ true }}">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--pt-bg);overflow:hidden">
+<div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:80px 32px 0;text-align:center">
+<div style="width:180px;height:180px;border-radius:var(--r-full);background:var(--pt-green-tint);display:flex;align-items:center;justify-content:center;margin-bottom:40px">
+<img src="assets/paw-mark-simple.svg" style="width:82px;height:82px" alt="">
+</div>
+<h1 style="font-family:var(--font-display);font-weight:600;font-size:29px;line-height:1.2;margin:0 0 14px;color:var(--pt-green-dark);text-wrap:pretty">{{ slideTitle }}</h1>
+<p style="font-size:15px;line-height:1.6;margin:0;color:var(--pt-text-60);max-width:290px;text-wrap:pretty">{{ slideBody }}</p>
+</div>
+<div style="padding:0 24px 44px;display:flex;flex-direction:column;gap:20px;align-items:center">
+<div style="display:flex;gap:7px">
+<sc-for list="{{ slideDots }}" as="d" hint-placeholder-count="3">
+<div style="width:{{ d.w }};height:7px;border-radius:var(--r-full);background:{{ d.bg }};transition:all .2s"></div>
+</sc-for>
+</div>
+<div style="width:100%;display:flex;flex-direction:column;gap:8px">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Button" size="lg" onClick="{{ nextSlide }}" hint-size="100%,50px">{{ slideCta }}</x-import>
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Button" variant="ghost" onClick="{{ goLogin }}" style="{{ ghostFull }}" hint-size="100%,32px">Já tenho conta</x-import>
+</div>
+</div>
+</div>
+</sc-if>
+
+<!-- ===== AUTENTICAÇÃO: tipo de conta → registo → confirmação de email ===== -->
+<sc-if value="{{ isRole }}">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--pt-bg);overflow:hidden">
+<div style="padding:58px 20px 0"><div onClick="{{ back }}" style="width:38px;height:38px;border-radius:var(--r-full);background:var(--pt-white);box-shadow:var(--sh-sm);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A6741" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+</div></div>
+<div style="flex:1;overflow:auto;padding:28px 24px 24px">
+<h1 style="font-family:var(--font-display);font-weight:600;font-size:26px;margin:0 0 8px;color:var(--pt-green-dark);text-wrap:pretty">Como vais usar a Pawtencial?</h1>
+<p style="font-size:14px;line-height:1.6;margin:0 0 26px;color:var(--pt-text-60);text-wrap:pretty">Cada tipo de conta tem um registo e um menu próprios.</p>
+<div style="display:flex;flex-direction:column;gap:12px">
+<sc-for list="{{ roles }}" as="r" hint-placeholder-count="2">
+<div onClick="{{ r.pick }}" style="display:flex;gap:14px;align-items:flex-start;padding:18px;background:var(--pt-white);border-radius:var(--r-lg);box-shadow:var(--sh-sm);border:1.5px solid {{ r.border }};cursor:pointer">
+<div style="width:44px;height:44px;border-radius:var(--r-full);background:var(--pt-green-tint);display:flex;align-items:center;justify-content:center;flex-shrink:0">{{ r.icon }}</div>
+<div style="flex:1">
+<div style="font-family:var(--font-display);font-weight:600;font-size:17px;color:var(--pt-green-dark);margin-bottom:4px">{{ r.title }}</div>
+<div style="font-size:12.5px;line-height:1.55;color:var(--pt-text-60)">{{ r.desc }}</div>
+</div>
+<div style="width:20px;height:20px;border-radius:var(--r-full);border:1.5px solid {{ r.dotBorder }};background:{{ r.dotBg }};flex-shrink:0"></div>
+</div>
+</sc-for>
+</div>
+</div>
+<div style="padding:12px 24px 40px;display:flex;flex-direction:column;gap:14px">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Button" size="lg" disabled="{{ noRole }}" onClick="{{ goSignupForm }}" hint-size="100%,50px">Continuar</x-import>
+<div style="text-align:center;font-size:13px;color:var(--pt-text-60)">Já tens conta? <span onClick="{{ goLogin }}" style="font-weight:700;color:var(--pt-green);cursor:pointer">Entrar</span></div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isSignup }}">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--pt-bg);overflow:hidden">
+<div style="padding:58px 20px 0;display:flex;align-items:center;gap:14px"><div onClick="{{ back }}" style="width:38px;height:38px;border-radius:var(--r-full);background:var(--pt-white);box-shadow:var(--sh-sm);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A6741" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+</div>
+<div style="flex:1;height:6px;border-radius:var(--r-full);background:var(--pt-border);overflow:hidden"><div style="width:{{ signupProgress }};height:100%;background:var(--pt-green);transition:width .25s"></div></div>
+</div>
+<div style="flex:1;overflow:auto;padding:24px 24px 24px">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+<span style="padding:5px 11px;border-radius:var(--r-full);background:var(--pt-sand);font-size:11.5px;font-weight:700;color:var(--pt-green-dark)">{{ roleLabel }}</span>
+<span onClick="{{ goRole }}" style="font-size:12px;font-weight:500;color:var(--pt-green);cursor:pointer">Mudar</span>
+</div>
+<h1 style="font-family:var(--font-display);font-weight:600;font-size:26px;margin:0 0 8px;color:var(--pt-green-dark);text-wrap:pretty">Criar conta</h1>
+<p style="font-size:14px;line-height:1.6;margin:0 0 26px;color:var(--pt-text-60);text-wrap:pretty">{{ signupIntro }}</p>
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Input" label="Nome e apelido" placeholder="Ana Reis" value="{{ f.name }}" onChange="{{ set.name }}" state="{{ v.name.state }}" helper="{{ v.name.helper }}" hint-size="100%,74px"></x-import>
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Input" label="Email" placeholder="tu@exemplo.pt" value="{{ f.email }}" onChange="{{ set.email }}" state="{{ v.email.state }}" helper="{{ v.email.helper }}" hint-size="100%,74px"></x-import>
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Input" label="Telefone" placeholder="912 345 678" value="{{ f.phone }}" onChange="{{ set.phone }}" state="{{ v.phone.state }}" helper="{{ v.phone.helper }}" hint-size="100%,74px"></x-import>
+<sc-if value="{{ isTrainerRole }}">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Input" label="NIF" placeholder="9 dígitos" value="{{ f.nif }}" onChange="{{ set.nif }}" state="{{ v.nif.state }}" helper="{{ v.nif.helper }}" hint-size="100%,74px"></x-import>
+</sc-if>
+<div style="margin-bottom:16px">
+<label style="font-size:12px;font-weight:700;color:var(--pt-green-dark);margin-bottom:6px;display:block">Palavra-passe</label>
+<div style="display:flex;align-items:center;gap:10px;background:var(--pt-white);border:1.5px solid {{ v.password.border }};border-radius:var(--r-md);padding:0 14px">
+<input type="{{ pwType }}" value="{{ f.password }}" onChange="{{ set.password }}" placeholder="Mínimo 8 caracteres" style="flex:1;min-width:0;border:none;outline:none;font-size:14px;padding:13px 0;background:transparent;color:var(--pt-text)">
+<span onClick="{{ togglePw }}" style="font-size:12px;font-weight:700;color:var(--pt-green);cursor:pointer">{{ pwToggle }}</span>
+</div>
+<div style="display:flex;flex-direction:column;gap:5px;margin-top:9px">
+<sc-for list="{{ pwRules }}" as="pr" hint-placeholder-count="3">
+<div style="display:flex;align-items:center;gap:8px;font-size:11.5px;color:{{ pr.color }}">
+<div style="width:14px;height:14px;border-radius:var(--r-full);background:{{ pr.bg }};color:var(--pt-bone);font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ pr.glyph }}</div>{{ pr.label }}
+</div>
+</sc-for>
+</div>
+</div>
+<div onClick="{{ toggleTerms }}" style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;margin-top:4px">
+<div style="width:22px;height:22px;border-radius:7px;border:1.5px solid {{ terms.border }};background:{{ terms.bg }};flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--pt-bone);font-size:12px;font-weight:700">{{ terms.glyph }}</div>
+<div style="font-size:12.5px;line-height:1.55;color:var(--pt-text-60)">{{ terms.text }}</div>
+</div>
+<sc-if value="{{ terms.error }}"><div style="font-size:11.5px;color:var(--pt-danger);margin:6px 0 0 34px">{{ terms.error }}</div></sc-if>
+<sc-if value="{{ isOwnerRole }}">
+<div style="display:flex;align-items:center;gap:12px;margin:24px 0 16px">
+<div style="flex:1;height:1px;background:var(--pt-border)"></div>
+<span style="font-size:11.5px;color:var(--pt-text-40)">ou</span>
+<div style="flex:1;height:1px;background:var(--pt-border)"></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<div onClick="{{ socialSignup }}" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:14px;background:var(--pt-white);border:1.5px solid var(--pt-border);border-radius:var(--r-md);font-size:14px;font-weight:500;cursor:pointer"><div style="width:18px;height:18px;border-radius:var(--r-full);background:var(--pt-sand)"></div>Continuar com Google</div>
+<div onClick="{{ socialSignup }}" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:14px;background:var(--pt-white);border:1.5px solid var(--pt-border);border-radius:var(--r-md);font-size:14px;font-weight:500;cursor:pointer"><div style="width:18px;height:18px;border-radius:var(--r-full);background:var(--pt-sand)"></div>Continuar com Apple</div>
+</div>
+</sc-if>
+</div>
+<div style="padding:12px 24px 40px;display:flex;flex-direction:column;gap:10px">
+<sc-if value="{{ signupSummary }}"><div style="font-size:12px;color:var(--pt-danger);text-align:center">{{ signupSummary }}</div></sc-if>
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Button" size="lg" onClick="{{ submitSignup }}" hint-size="100%,50px">Criar conta</x-import>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isVerify }}">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--pt-bg);overflow:hidden">
+<div style="padding:58px 20px 0;display:flex;align-items:center;gap:14px"><div onClick="{{ back }}" style="width:38px;height:38px;border-radius:var(--r-full);background:var(--pt-white);box-shadow:var(--sh-sm);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A6741" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+</div>
+<div style="flex:1;height:6px;border-radius:var(--r-full);background:var(--pt-border);overflow:hidden"><div style="width:{{ signupProgress }};height:100%;background:var(--pt-green);transition:width .25s"></div></div>
+</div>
+<div style="flex:1;overflow:auto;padding:28px 24px 24px">
+<div style="width:64px;height:64px;border-radius:var(--r-full);background:var(--pt-green-tint);display:flex;align-items:center;justify-content:center;margin-bottom:24px">
+<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3A5233" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 7l9 6 9-6"></path></svg>
+</div>
+<h1 style="font-family:var(--font-display);font-weight:600;font-size:26px;margin:0 0 8px;color:var(--pt-green-dark);text-wrap:pretty">Confirma o teu email</h1>
+<p style="font-size:14px;line-height:1.6;margin:0 0 26px;color:var(--pt-text-60);text-wrap:pretty">Enviámos um código de 6 dígitos para <strong style="color:var(--pt-text)">{{ f.email }}</strong>. Expira em 10 minutos.</p>
+<input value="{{ code }}" onChange="{{ setCode }}" placeholder="······" style="width:100%;box-sizing:border-box;text-align:center;font-size:28px;letter-spacing:14px;font-weight:700;padding:16px;border-radius:var(--r-md);border:1.5px solid {{ codeBorder }};background:var(--pt-white);outline:none;color:var(--pt-green-dark)">
+<sc-if value="{{ codeError }}"><div style="font-size:11.5px;color:var(--pt-danger);margin-top:6px">{{ codeError }}</div></sc-if>
+<div style="font-size:12.5px;line-height:1.6;color:var(--pt-text-60);margin-top:18px">Não chegou? <span onClick="{{ resend }}" style="font-weight:700;color:var(--pt-green);cursor:pointer">Reenviar código</span> · <span onClick="{{ goSignupForm }}" style="font-weight:700;color:var(--pt-green);cursor:pointer">Corrigir email</span></div>
+</div>
+<div style="padding:12px 24px 40px">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Button" size="lg" disabled="{{ codeIncomplete }}" onClick="{{ confirmCode }}" hint-size="100%,50px">Confirmar</x-import>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isLogin }}">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--pt-bg);overflow:hidden">
+<div style="padding:58px 20px 0"><div onClick="{{ back }}" style="width:38px;height:38px;border-radius:var(--r-full);background:var(--pt-white);box-shadow:var(--sh-sm);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A6741" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+</div></div>
+<div style="flex:1;overflow:auto;padding:28px 24px 24px">
+<h1 style="font-family:var(--font-display);font-weight:600;font-size:26px;margin:0 0 8px;color:var(--pt-green-dark);text-wrap:pretty">Entrar</h1>
+<p style="font-size:14px;line-height:1.6;margin:0 0 26px;color:var(--pt-text-60);text-wrap:pretty">Usa o email com que criaste a conta. Abrimos o teu menu, de dono ou de treinador.</p>
+<sc-if value="{{ loginError }}"><div style="margin-bottom:18px"><x-import component-from-global-scope="PawtencialDesignSystem_c574af.Banner" tone="danger" hint-size="100%,48px">{{ loginError }}</x-import></div></sc-if>
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Input" label="Email" placeholder="tu@exemplo.pt" value="{{ login.email }}" onChange="{{ setLoginEmail }}" state="{{ loginState }}" hint-size="100%,74px"></x-import>
+<div style="margin-bottom:16px">
+<label style="font-size:12px;font-weight:700;color:var(--pt-green-dark);margin-bottom:6px;display:block">Palavra-passe</label>
+<div style="display:flex;align-items:center;gap:10px;background:var(--pt-white);border:1.5px solid {{ loginPwBorder }};border-radius:var(--r-md);padding:0 14px">
+<input type="{{ pwType }}" value="{{ login.password }}" onChange="{{ setLoginPw }}" placeholder="Mínimo 8 caracteres" style="flex:1;min-width:0;border:none;outline:none;font-size:14px;padding:13px 0;background:transparent;color:var(--pt-text)">
+<span onClick="{{ togglePw }}" style="font-size:12px;font-weight:700;color:var(--pt-green);cursor:pointer">{{ pwToggle }}</span>
+</div>
+</div>
+<div style="display:flex;justify-content:flex-end;margin-top:-6px"><span onClick="{{ forgot }}" style="font-size:12.5px;font-weight:500;color:var(--pt-green);cursor:pointer">Esqueci-me da palavra-passe</span></div>
+</div>
+<div style="padding:12px 24px 40px;display:flex;flex-direction:column;gap:14px">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Button" size="lg" onClick="{{ doLogin }}" hint-size="100%,50px">Entrar</x-import>
+<div style="text-align:center;font-size:13px;color:var(--pt-text-60)">Ainda não tens conta? <span onClick="{{ goRole }}" style="font-weight:700;color:var(--pt-green);cursor:pointer">Criar conta</span></div>
+</div>
+</div>
+</sc-if>
+
+<!-- ===== DONO: perfil do cão e menus do dono ===== -->
+<sc-if value="{{ isDog }}">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--pt-bg);overflow:hidden">
+<div style="padding:58px 20px 0;display:flex;align-items:center;gap:14px">
+<div onClick="{{ back }}" style="width:38px;height:38px;border-radius:var(--r-full);background:var(--pt-white);box-shadow:var(--sh-sm);display:flex;align-items:center;justify-content:center;cursor:pointer">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A6741" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+</div>
+<div style="flex:1;height:6px;border-radius:var(--r-full);background:var(--pt-border);overflow:hidden">
+<div style="width:{{ dogProgress }};height:100%;background:var(--pt-green);transition:width .25s"></div>
+</div>
+</div>
+<div style="flex:1;overflow:auto;padding:26px 24px 24px">
+<h1 style="font-family:var(--font-display);font-weight:600;font-size:26px;margin:0 0 8px;color:var(--pt-green-dark)">Fala-nos do teu cão</h1>
+<p style="font-size:14px;line-height:1.6;margin:0 0 26px;color:var(--pt-text-60)">É com isto que escolhemos quem te vai ajudar.</p>
+<div style="display:flex;align-items:center;gap:16px;margin-bottom:26px">
+<div style="width:88px;height:88px;border-radius:var(--r-full);background:var(--pt-sand);display:flex;align-items:center;justify-content:center;cursor:pointer">
+<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#4A6741" stroke-width="1.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+</div>
+<div style="font-size:13px;line-height:1.5;color:var(--pt-text-60)">Adiciona uma foto.<br>Ajuda o treinador a reconhecê-lo.</div>
+</div>
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Input" label="Nome" placeholder="Bolota" value="{{ dogName }}" onChange="{{ setDogName }}" hint-size="100%,74px"></x-import>
+<div style="display:flex;gap:12px">
+<div style="flex:1.4"><x-import component-from-global-scope="PawtencialDesignSystem_c574af.Input" label="Raça" placeholder="Rafeiro / não sei" hint-size="100%,74px"></x-import></div>
+<div style="flex:1"><x-import component-from-global-scope="PawtencialDesignSystem_c574af.Input" label="Idade" placeholder="1 ano" hint-size="100%,74px"></x-import></div>
+</div>
+<div style="font-size:12px;font-weight:700;color:var(--pt-green-dark);margin:10px 0 10px">Objetivo principal</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<sc-for list="{{ goals }}" as="g" hint-placeholder-count="4">
+<div onClick="{{ g.pick }}" style="display:flex;align-items:flex-start;gap:13px;padding:16px;background:var(--pt-white);border:1.5px solid {{ g.border }};border-radius:var(--r-md);cursor:pointer;box-shadow:var(--sh-sm)">
+<div style="width:20px;height:20px;border-radius:var(--r-full);border:1.5px solid {{ g.dotBorder }};background:{{ g.dotBg }};flex-shrink:0;margin-top:1px"></div>
+<div>
+<div style="font-size:14px;font-weight:700;margin-bottom:3px">{{ g.title }}</div>
+<div style="font-size:12.5px;line-height:1.5;color:var(--pt-text-60)">{{ g.desc }}</div>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+<div style="padding:12px 24px 40px">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Button" size="lg" disabled="{{ dogIncomplete }}" onClick="{{ goHome }}" hint-size="100%,50px">Criar perfil</x-import>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isHome }}">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--pt-bg);overflow:hidden">
+<div style="padding:56px 20px 12px;display:flex;align-items:center;justify-content:space-between;background:var(--pt-bg);border-bottom:1px solid var(--pt-border)">
+<div style="display:flex;align-items:center;font-family:var(--font-display);font-weight:600;font-size:18px;color:var(--pt-green)">paw<img src="assets/paw-mark-simple.svg" style="width:0.85em;height:0.85em;margin:0 0.02em" alt="">tencial</div>
+<div onClick="{{ goNotifs }}" style="width:36px;height:36px;border-radius:var(--r-full);background:var(--pt-white);box-shadow:var(--sh-sm);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A6741" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.7 21a2 2 0 01-3.4 0"></path></svg>
+<div style="position:absolute;top:7px;right:8px;width:7px;height:7px;border-radius:var(--r-full);background:var(--pt-terracotta)"></div>
+</div>
+</div>
+<div style="flex:1;overflow:auto;padding:22px 20px 24px">
+<h1 style="font-family:var(--font-display);font-weight:600;font-size:24px;margin:0 0 4px;color:var(--pt-green-dark)">Olá, {{ ownerFirst }}</h1>
+<p style="font-size:13.5px;margin:0 0 20px;color:var(--pt-text-60)">{{ homeSub }}</p>
+
+<div style="background:var(--pt-white);border-radius:var(--r-lg);padding:18px;box-shadow:var(--sh-sm);margin-bottom:16px">
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Avatar" initials="B" size="sm" hint-size="40px,40px"></x-import>
+<div style="flex:1">
+<div style="font-family:var(--font-display);font-weight:600;font-size:16px">{{ dogNameLabel }}</div>
+<div style="font-size:12px;color:var(--pt-text-60)">Fase atual: {{ phaseLabel }}</div>
+</div>
+<div onClick="{{ goTrilho }}" style="cursor:pointer">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(44,44,44,0.4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+</div>
+</div>
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Trail" steps="{{ trailSteps }}" activeIndex="{{ phaseIndex }}" hint-size="100%,70px"></x-import>
+</div>
+
+<div style="display:flex;gap:12px;margin-bottom:26px">
+<div onClick="{{ goSearch }}" style="flex:1;background:var(--pt-green);border-radius:var(--r-lg);padding:16px;color:var(--pt-bone);cursor:pointer;box-shadow:var(--sh-sm)">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FAF7F2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4.3-4.3"></path></svg>
+<div style="font-size:13.5px;font-weight:700;margin-top:10px;line-height:1.3">Procurar<br>treinador</div>
+</div>
+<div onClick="{{ goBookings }}" style="flex:1;background:var(--pt-white);border-radius:var(--r-lg);padding:16px;cursor:pointer;box-shadow:var(--sh-sm)">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4A6741" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"></rect><path d="M8 3v4M16 3v4M3 11h18"></path></svg>
+<div style="font-size:13.5px;font-weight:700;margin-top:10px;line-height:1.3;color:var(--pt-green-dark)">As minhas<br>marcações</div>
+</div>
+</div>
+
+<div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px">
+<h2 style="font-family:var(--font-display);font-weight:600;font-size:17px;margin:0;color:var(--pt-green-dark)">Para esta fase</h2>
+<span onClick="{{ goSearch }}" style="font-size:12.5px;font-weight:500;color:var(--pt-green);cursor:pointer">Ver todos</span>
+</div>
+<p style="font-size:12.5px;line-height:1.5;margin:0 0 14px;color:var(--pt-text-60)">{{ suggestReason }}</p>
+<div style="display:flex;flex-direction:column;gap:12px">
+<sc-for list="{{ suggested }}" as="t" hint-placeholder-count="2">
+<div onClick="{{ t.open }}" style="cursor:pointer">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.TrainerCard" initials="{{ t.initials }}" name="{{ t.name }}" meta="{{ t.meta }}" rating="{{ t.rating }}" reviews="{{ t.reviews }}" tags="{{ t.tags }}" safetyLevel="{{ t.level }}" hint-size="100%,140px"></x-import>
+</div>
+</sc-for>
+</div>
+</div>
+<sc-if value="{{ true }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;background:var(--pt-white);border-top:1px solid var(--pt-border);padding:10px 8px 32px">
+<sc-for list="{{ tabs }}" as="tb" hint-placeholder-count="4">
+<div onClick="{{ tb.go }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:10px;font-weight:{{ tb.weight }};color:{{ tb.color }};cursor:pointer">
+<div style="width:22px;height:22px">{{ tb.icon }}</div>{{ tb.label }}
+</div>
+</sc-for>
+</div>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ isSearch }}">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--pt-bg);overflow:hidden;position:relative">
+<div style="padding:56px 20px 12px;background:var(--pt-bg);border-bottom:1px solid var(--pt-border)">
+<div style="display:flex;align-items:center;gap:10px;background:var(--pt-white);border:1.5px solid var(--pt-border);border-radius:var(--r-md);padding:12px 14px">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(44,44,44,0.4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4.3-4.3"></path></svg>
+<input value="{{ query }}" onChange="{{ setQuery }}" placeholder="Zona ou especialidade" style="flex:1;border:none;outline:none;font-size:14px;color:var(--pt-text);background:transparent">
+<div onClick="{{ openFilters }}" style="display:flex;align-items:center;gap:6px;cursor:pointer;padding-left:10px;border-left:1px solid var(--pt-border)">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A6741" stroke-width="1.5" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"></path></svg>
+<span style="font-size:12px;font-weight:700;color:var(--pt-green)">{{ filterCount }}</span>
+</div>
+</div>
+<div style="display:flex;gap:8px;margin-top:12px;overflow:auto">
+<sc-for list="{{ quickChips }}" as="c" hint-placeholder-count="4">
+<div onClick="{{ c.toggle }}" style="flex:none;padding:7px 13px;border-radius:var(--r-full);font-size:11.5px;font-weight:500;white-space:nowrap;cursor:pointer;background:{{ c.bg }};color:{{ c.color }};border:1px solid {{ c.border }}">{{ c.label }}</div>
+</sc-for>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px">
+<span style="font-size:12px;color:var(--pt-text-60)">{{ resultCount }}</span>
+<div style="display:flex;gap:2px;background:var(--pt-white);border:1px solid var(--pt-border);border-radius:var(--r-md);padding:3px">
+<sc-for list="{{ viewModes }}" as="v" hint-placeholder-count="3">
+<div onClick="{{ v.pick }}" style="padding:5px 11px;border-radius:var(--r-sm);font-size:11.5px;font-weight:700;cursor:pointer;background:{{ v.bg }};color:{{ v.color }}">{{ v.label }}</div>
+</sc-for>
+</div>
+</div>
+</div>
+
+<div style="flex:1;overflow:auto">
+<sc-if value="{{ isCards }}" hint-placeholder-val="{{ true }}">
+<div style="padding:16px 20px 20px;display:flex;flex-direction:column;gap:12px">
+<sc-for list="{{ results }}" as="t" hint-placeholder-count="3">
+<div onClick="{{ t.open }}" style="cursor:pointer">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.TrainerCard" initials="{{ t.initials }}" name="{{ t.name }}" meta="{{ t.meta }}" rating="{{ t.rating }}" reviews="{{ t.reviews }}" tags="{{ t.tags }}" safetyLevel="{{ t.level }}" hint-size="100%,150px"></x-import>
+</div>
+</sc-for>
+<sc-if value="{{ noResults }}">
+<div style="padding:20px 0">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.EmptyState" title="Nada com estes filtros" body="Tenta aumentar a distância ou tirar uma especialidade." hint-size="100%,200px"></x-import>
+<div style="display:flex;justify-content:center;margin-top:8px">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Button" variant="secondary" size="sm" onClick="{{ clearFilters }}" hint-size="auto,34px">Limpar filtros</x-import>
+</div>
+</div>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ isList }}">
+<div style="padding:8px 20px 20px">
+<sc-for list="{{ results }}" as="t" hint-placeholder-count="4">
+<div onClick="{{ t.open }}" style="display:flex;align-items:center;gap:13px;padding:14px 0;border-bottom:1px solid var(--pt-border);cursor:pointer">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Avatar" initials="{{ t.initials }}" size="sm" hint-size="40px,40px"></x-import>
+<div style="flex:1;min-width:0">
+<div style="display:flex;align-items:baseline;gap:7px">
+<span style="font-size:14px;font-weight:700">{{ t.name }}</span>
+<span style="font-size:12px;color:var(--pt-terracotta);font-weight:500">★ {{ t.rating }}</span>
+</div>
+<div style="font-size:11.5px;color:var(--pt-text-60);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ t.listMeta }}</div>
+</div>
+<div style="text-align:right">
+<div style="font-size:13px;font-weight:700;color:var(--pt-green-dark)">{{ t.price }}</div>
+<div style="font-size:10.5px;color:var(--pt-text-40)">{{ t.levelLabel }}</div>
+</div>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{ isMap }}">
+<div style="height:100%;position:relative;background:#E4E0D5;overflow:hidden">
+<div style="position:absolute;inset:0;opacity:0.5">
+<div style="position:absolute;left:0;right:0;top:32%;height:12px;background:#F2EFE7"></div>
+<div style="position:absolute;left:0;right:0;top:64%;height:9px;background:#F2EFE7"></div>
+<div style="position:absolute;top:0;bottom:0;left:26%;width:11px;background:#F2EFE7"></div>
+<div style="position:absolute;top:0;bottom:0;left:63%;width:8px;background:#F2EFE7"></div>
+<div style="position:absolute;left:0;right:0;bottom:0;height:22%;background:#CBD8DC"></div>
+<div style="position:absolute;left:8%;top:44%;width:70px;height:52px;border-radius:14px;background:#D9E0CE"></div>
+<div style="position:absolute;right:12%;top:14%;width:56px;height:44px;border-radius:14px;background:#D9E0CE"></div>
+</div>
+<div style="position:absolute;top:14px;left:20px;font-size:10.5px;font-weight:500;color:rgba(44,44,44,0.45);background:rgba(250,247,242,0.85);padding:5px 10px;border-radius:var(--r-full)">Mapa — placeholder (Lisboa)</div>
+<sc-for list="{{ results }}" as="t" hint-placeholder-count="3">
+<div onClick="{{ t.select }}" style="position:absolute;left:{{ t.mapX }};top:{{ t.mapY }};transform:translate(-50%,-100%);cursor:pointer;display:flex;flex-direction:column;align-items:center">
+<div style="padding:5px 10px;border-radius:var(--r-full);font-size:11.5px;font-weight:700;background:{{ t.pinBg }};color:{{ t.pinColor }};box-shadow:var(--sh-md);white-space:nowrap">{{ t.price }}</div>
+<div style="width:2px;height:9px;background:{{ t.pinBg }}"></div>
+</div>
+</sc-for>
+<div style="position:absolute;left:16px;right:16px;bottom:16px">
+<div onClick="{{ openSelected }}" style="cursor:pointer">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.TrainerCard" initials="{{ selected.initials }}" name="{{ selected.name }}" meta="{{ selected.meta }}" rating="{{ selected.rating }}" reviews="{{ selected.reviews }}" tags="{{ selected.tags }}" safetyLevel="{{ selected.level }}" hint-size="100%,150px"></x-import>
+</div>
+</div>
+</div>
+</sc-if>
+</div>
+
+<div style="display:flex;background:var(--pt-white);border-top:1px solid var(--pt-border);padding:10px 8px 32px">
+<sc-for list="{{ tabs }}" as="tb" hint-placeholder-count="4">
+<div onClick="{{ tb.go }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:10px;font-weight:{{ tb.weight }};color:{{ tb.color }};cursor:pointer">
+<div style="width:22px;height:22px">{{ tb.icon }}</div>{{ tb.label }}
+</div>
+</sc-for>
+</div>
+
+<sc-if value="{{ filtersOpen }}">
+<div style="position:absolute;inset:0;background:rgba(44,44,44,0.35);display:flex;align-items:flex-end">
+<div style="width:100%;background:var(--pt-white);border-radius:24px 24px 0 0;padding:20px 22px 40px;animation:pt-sheet .22s ease-out;max-height:82%;overflow:auto;box-shadow:var(--sh-lg)">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+<span style="font-family:var(--font-display);font-weight:600;font-size:19px;color:var(--pt-green-dark)">Filtros</span>
+<div onClick="{{ closeFilters }}" style="cursor:pointer">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(44,44,44,0.5)" stroke-width="1.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+</div>
+</div>
+
+<div style="font-size:12px;font-weight:700;color:var(--pt-green-dark);margin-bottom:8px">Distância — até {{ distLabel }}</div>
+<input type="range" min="1" max="20" value="{{ dist }}" onChange="{{ setDist }}" style="width:100%;accent-color:#4A6741;margin-bottom:22px">
+
+<div style="font-size:12px;font-weight:700;color:var(--pt-green-dark);margin-bottom:10px">Especialidade</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px">
+<sc-for list="{{ tagChips }}" as="c" hint-placeholder-count="6">
+<div onClick="{{ c.toggle }}" style="padding:8px 14px;border-radius:var(--r-full);font-size:12px;font-weight:500;cursor:pointer;background:{{ c.bg }};color:{{ c.color }}">{{ c.label }}</div>
+</sc-for>
+</div>
+
+<div style="font-size:12px;font-weight:700;color:var(--pt-green-dark);margin-bottom:8px">Preço por sessão — até {{ priceLabel }}</div>
+<input type="range" min="25" max="80" step="5" value="{{ price }}" onChange="{{ setPrice }}" style="width:100%;accent-color:#4A6741;margin-bottom:22px">
+
+<div style="font-size:12px;font-weight:700;color:var(--pt-green-dark);margin-bottom:4px">Nível de instrumentos</div>
+<div style="font-size:11.5px;line-height:1.5;color:var(--pt-text-60);margin-bottom:10px">Instrumentos proibidos nunca são permitidos na Pawtencial.</div>
+<div style="display:flex;gap:8px;margin-bottom:22px">
+<sc-for list="{{ levelChips }}" as="c" hint-placeholder-count="3">
+<div onClick="{{ c.pick }}" style="flex:1;text-align:center;padding:11px 8px;border-radius:var(--r-md);font-size:12px;font-weight:700;cursor:pointer;background:{{ c.bg }};color:{{ c.color }};border:1.5px solid {{ c.border }}">{{ c.label }}</div>
+</sc-for>
+</div>
+
+<div onClick="{{ toggleDgav }}" style="display:flex;align-items:center;gap:12px;padding:14px;border-radius:var(--r-md);background:var(--pt-bg);cursor:pointer;margin-bottom:14px">
+<div style="width:22px;height:22px;border-radius:7px;border:1.5px solid {{ dgavBorder }};background:{{ dgavBg }};flex-shrink:0"></div>
+<div>
+<div style="font-size:13px;font-weight:700">Certificados DGAV</div>
+<div style="font-size:11.5px;line-height:1.5;color:var(--pt-text-60)">Obrigatório para cães potencialmente perigosos.</div>
+</div>
+</div>
+
+<div style="font-size:12px;font-weight:700;color:var(--pt-green-dark);margin-bottom:10px">Disponibilidade</div>
+<div style="display:flex;gap:8px;margin-bottom:24px">
+<sc-for list="{{ availChips }}" as="c" hint-placeholder-count="3">
+<div onClick="{{ c.pick }}" style="flex:1;text-align:center;padding:10px 6px;border-radius:var(--r-md);font-size:11.5px;font-weight:500;cursor:pointer;background:{{ c.bg }};color:{{ c.color }};border:1.5px solid {{ c.border }}">{{ c.label }}</div>
+</sc-for>
+</div>
+
+<div style="display:flex;gap:10px;align-items:center">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Button" variant="ghost" onClick="{{ clearFilters }}" hint-size="auto,32px">Limpar</x-import>
+<div style="flex:1"><x-import component-from-global-scope="PawtencialDesignSystem_c574af.Button" size="lg" onClick="{{ closeFilters }}" hint-size="100%,50px">{{ applyLabel }}</x-import></div>
+</div>
+</div>
+</div>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ isTrainer }}">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--pt-bg);overflow:hidden">
+<div style="padding:56px 20px 12px;display:flex;align-items:center;justify-content:space-between">
+<div onClick="{{ back }}" style="width:38px;height:38px;border-radius:var(--r-full);background:var(--pt-white);box-shadow:var(--sh-sm);display:flex;align-items:center;justify-content:center;cursor:pointer">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A6741" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+</div>
+<div onClick="{{ toastSoon }}" style="width:38px;height:38px;border-radius:var(--r-full);background:var(--pt-white);box-shadow:var(--sh-sm);display:flex;align-items:center;justify-content:center;cursor:pointer">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A6741" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.5-7-9.5A4 4 0 0112 8a4 4 0 017 2.5C19 15.5 12 20 12 20z"></path></svg>
+</div>
+</div>
+
+<div style="flex:1;overflow:auto;padding:6px 20px 20px">
+<div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:16px">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Avatar" initials="{{ trainer.initials }}" size="lg" hint-size="88px,88px"></x-import>
+<div style="flex:1;padding-top:4px">
+<h1 style="font-family:var(--font-display);font-weight:600;font-size:22px;margin:0 0 4px;color:var(--pt-green-dark)">{{ trainer.name }}</h1>
+<div style="font-size:12.5px;color:var(--pt-text-60);margin-bottom:8px">{{ trainer.profileMeta }}</div>
+<div style="font-size:13px;color:var(--pt-terracotta);font-weight:500">★ {{ trainer.rating }} <span style="color:var(--pt-text-40);font-weight:400">· {{ trainer.reviews }} avaliações</span></div>
+</div>
+</div>
+
+<div style="display:flex;align-items:center;gap:10px;padding:13px 15px;border-radius:var(--r-md);background:var(--pt-green-tint);margin-bottom:16px">
+<svg width="19" height="19" style="flex-shrink:0;align-self:flex-start;margin-top:1px" viewBox="0 0 24 24" fill="none" stroke="#3A5233" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"></path><path d="M9 12l2 2 4-4"></path></svg>
+<div style="font-size:12.5px;line-height:1.45;color:var(--pt-green-dark)"><strong>Certificação verificada</strong> — vimos os documentos. {{ trainer.certLine }}</div>
+</div>
+
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px">
+<sc-for list="{{ trainer.tags }}" as="tg" hint-placeholder-count="3">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Tag" hint-size="auto,26px">{{ tg }}</x-import>
+</sc-for>
+</div>
+
+<p style="font-size:13.5px;line-height:1.65;color:var(--pt-text);margin:0 0 22px;text-wrap:pretty">{{ trainer.bio }}</p>
+
+<sc-if value="{{ methodsBloco }}" hint-placeholder-val="{{ true }}">
+<div style="background:var(--pt-white);border-radius:var(--r-lg);padding:18px;box-shadow:var(--sh-sm);margin-bottom:20px">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+<span style="font-family:var(--font-display);font-weight:600;font-size:16px;color:var(--pt-green-dark)">Métodos e instrumentos</span>
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Badge" level="{{ trainer.level }}" size="sm" hint-size="auto,20px"></x-import>
+</div>
+<p style="font-size:12px;line-height:1.5;color:var(--pt-text-60);margin:0 0 14px">{{ trainer.methodSummary }}</p>
+<div style="display:flex;flex-direction:column;gap:1px">
+<sc-for list="{{ trainer.instruments }}" as="ins" hint-placeholder-count="4">
+<div style="display:flex;align-items:flex-start;gap:11px;padding:11px 0;border-top:1px solid var(--pt-border)">
+<div style="width:18px;height:18px;border-radius:var(--r-full);background:{{ ins.iconBg }};color:{{ ins.iconColor }};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px">{{ ins.glyph }}</div>
+<div style="flex:1">
+<div style="font-size:13px;font-weight:500">{{ ins.name }}</div>
+<div style="font-size:11.5px;line-height:1.45;color:var(--pt-text-60);margin-top:2px">{{ ins.note }}</div>
+</div>
+<span style="font-size:10.5px;font-weight:700;color:{{ ins.iconColor }};white-space:nowrap;margin-top:2px">{{ ins.levelLabel }}</span>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ methodsEscala }}">
+<div style="background:var(--pt-white);border-radius:var(--r-lg);padding:18px;box-shadow:var(--sh-sm);margin-bottom:20px">
+<span style="font-family:var(--font-display);font-weight:600;font-size:16px;color:var(--pt-green-dark)">Métodos e instrumentos</span>
+<div style="display:flex;gap:5px;margin:14px 0 10px">
+<sc-for list="{{ scale }}" as="s" hint-placeholder-count="3">
+<div style="flex:1;display:flex;flex-direction:column;gap:6px">
+<div style="height:7px;border-radius:var(--r-full);background:{{ s.bar }}"></div>
+<div style="font-size:10.5px;font-weight:{{ s.weight }};color:{{ s.text }}">{{ s.label }}</div>
+</div>
+</sc-for>
+</div>
+<div style="font-size:12.5px;line-height:1.55;color:var(--pt-text);padding:12px 0 4px;border-top:1px solid var(--pt-border);margin-top:10px">{{ trainer.scaleLine }}</div>
+<div style="display:flex;flex-direction:column;gap:9px;margin-top:12px">
+<sc-for list="{{ trainer.instruments }}" as="ins" hint-placeholder-count="4">
+<div style="display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:var(--r-md);background:{{ ins.rowBg }}">
+<div style="font-size:12px;font-weight:700;color:{{ ins.iconColor }};width:14px;text-align:center">{{ ins.glyph }}</div>
+<div style="flex:1;font-size:12.5px;font-weight:500">{{ ins.name }}</div>
+<span style="font-size:10.5px;font-weight:700;color:{{ ins.iconColor }}">{{ ins.levelLabel }}</span>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<div style="background:var(--pt-white);border-radius:var(--r-lg);padding:18px;box-shadow:var(--sh-sm);margin-bottom:20px">
+<span style="font-family:var(--font-display);font-weight:600;font-size:16px;color:var(--pt-green-dark)">Preços e disponibilidade</span>
+<div style="display:flex;flex-direction:column;gap:10px;margin-top:14px">
+<sc-for list="{{ trainer.prices }}" as="p" hint-placeholder-count="2">
+<div style="display:flex;align-items:baseline;justify-content:space-between">
+<span style="font-size:13px">{{ p.label }}</span>
+<span style="font-size:14px;font-weight:700;color:var(--pt-green-dark)">{{ p.value }}</span>
+</div>
+</sc-for>
+</div>
+<div style="display:flex;gap:7px;margin-top:16px">
+<sc-for list="{{ trainer.slots }}" as="sl" hint-placeholder-count="4">
+<div style="flex:1;text-align:center;padding:9px 4px;border-radius:var(--r-md);background:{{ sl.bg }};color:{{ sl.color }}">
+<div style="font-size:10px;font-weight:500;opacity:.8">{{ sl.day }}</div>
+<div style="font-size:12.5px;font-weight:700;margin-top:2px">{{ sl.n }}</div>
+</div>
+</sc-for>
+</div>
+</div>
+
+<div style="margin-bottom:16px">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Banner" tone="success" hint-size="100%,60px">A primeira sessão está protegida — sem química, trocamos de treinador sem custo.</x-import>
+</div>
+
+<div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px">
+<span style="font-family:var(--font-display);font-weight:600;font-size:16px;color:var(--pt-green-dark)">Avaliações</span>
+<span style="font-size:12px;color:var(--pt-text-40)">{{ trainer.reviews }} no total</span>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px">
+<sc-for list="{{ trainer.reviewList }}" as="r" hint-placeholder-count="2">
+<div style="background:var(--pt-white);border-radius:var(--r-lg);padding:16px;box-shadow:var(--sh-sm)">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Avatar" initials="{{ r.initials }}" size="xs" hint-size="32px,32px"></x-import>
+<div style="flex:1">
+<div style="font-size:13px;font-weight:700">{{ r.who }}</div>
+<div style="font-size:11px;color:var(--pt-text-40)">{{ r.when }}</div>
+</div>
+<span style="font-size:12.5px;color:var(--pt-terracotta);font-weight:500">★ {{ r.stars }}</span>
+</div>
+<p style="font-size:12.5px;line-height:1.6;margin:0;color:var(--pt-text)">{{ r.text }}</p>
+<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">
+<sc-for list="{{ r.tags }}" as="rt" hint-placeholder-count="2">
+<span style="font-size:10.5px;font-weight:500;padding:4px 9px;border-radius:var(--r-full);background:var(--pt-bg);color:var(--pt-text-60)">{{ rt }}</span>
+</sc-for>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+
+<div style="background:var(--pt-white);border-top:1px solid var(--pt-border);padding:14px 20px 34px;display:flex;align-items:center;gap:14px;box-shadow:var(--sh-md)">
+<div>
+<div style="font-size:16px;font-weight:700;color:var(--pt-green-dark)">{{ trainer.price }}</div>
+<div style="font-size:11px;color:var(--pt-text-40)">por sessão</div>
+</div>
+<div style="flex:1"><x-import component-from-global-scope="PawtencialDesignSystem_c574af.Button" size="lg" onClick="{{ book }}" hint-size="100%,50px">Reservar sessão</x-import></div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isBookDate }}">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--pt-bg);overflow:hidden">
+<div style="padding:56px 20px 12px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--pt-border)">
+<div onClick="{{ back }}" style="width:38px;height:38px;border-radius:var(--r-full);background:var(--pt-white);box-shadow:var(--sh-sm);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A6741" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+</div>
+<div style="flex:1">
+<div style="font-size:15px;font-weight:700;color:var(--pt-green-dark)">Escolher horário</div>
+<div style="font-size:11.5px;color:var(--pt-text-40)">Passo 1 de 3</div>
+</div>
+</div>
+<div style="flex:1;overflow:auto;padding:20px">
+<div style="display:flex;align-items:center;gap:12px;background:var(--pt-white);border-radius:var(--r-lg);padding:14px;box-shadow:var(--sh-sm);margin-bottom:22px">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Avatar" initials="{{ trainer.initials }}" size="sm" hint-size="40px,40px"></x-import>
+<div style="flex:1">
+<div style="font-size:14px;font-weight:700">{{ trainer.name }}</div>
+<div style="font-size:11.5px;color:var(--pt-text-60)">{{ trainer.sessionLabel }}</div>
+</div>
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Badge" level="{{ trainer.level }}" size="sm" hint-size="auto,20px"></x-import>
+</div>
+<div style="font-size:12px;font-weight:700;color:var(--pt-green-dark);margin-bottom:10px">Dia</div>
+<div style="display:flex;gap:8px;overflow:auto;margin-bottom:24px;padding-bottom:4px">
+<sc-for list="{{ bookDays }}" as="d" hint-placeholder-count="5">
+<div onClick="{{ d.pick }}" style="flex:none;width:62px;text-align:center;padding:12px 4px;border-radius:var(--r-md);cursor:pointer;background:{{ d.bg }};color:{{ d.color }};border:1.5px solid {{ d.border }}">
+<div style="font-size:10.5px;font-weight:500;opacity:.75">{{ d.dow }}</div>
+<div style="font-size:16px;font-weight:700;margin:3px 0 1px">{{ d.num }}</div>
+<div style="font-size:9.5px;opacity:.7">{{ d.month }}</div>
+</div>
+</sc-for>
+</div>
+<div style="font-size:12px;font-weight:700;color:var(--pt-green-dark);margin-bottom:10px">Hora</div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:22px">
+<sc-for list="{{ bookTimes }}" as="t" hint-placeholder-count="6">
+<div onClick="{{ t.pick }}" style="text-align:center;padding:13px 4px;border-radius:var(--r-md);font-size:13.5px;font-weight:700;cursor:{{ t.cursor }};background:{{ t.bg }};color:{{ t.color }};border:1.5px solid {{ t.border }};text-decoration:{{ t.strike }}">{{ t.label }}</div>
+</sc-for>
+</div>
+<div style="font-size:12px;font-weight:700;color:var(--pt-green-dark);margin-bottom:10px">Local</div>
+<div style="display:flex;flex-direction:column;gap:9px">
+<sc-for list="{{ bookPlaces }}" as="p" hint-placeholder-count="2">
+<div onClick="{{ p.pick }}" style="display:flex;align-items:flex-start;gap:12px;padding:15px;background:var(--pt-white);border:1.5px solid {{ p.border }};border-radius:var(--r-md);cursor:pointer;box-shadow:var(--sh-sm)">
+<div style="width:19px;height:19px;border-radius:var(--r-full);border:1.5px solid {{ p.dotBorder }};background:{{ p.dotBg }};flex-shrink:0;margin-top:1px"></div>
+<div>
+<div style="font-size:13.5px;font-weight:700;margin-bottom:2px">{{ p.title }}</div>
+<div style="font-size:11.5px;line-height:1.5;color:var(--pt-text-60)">{{ p.desc }}</div>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+<div style="background:var(--pt-white);border-top:1px solid var(--pt-border);padding:14px 20px 34px;box-shadow:var(--sh-md)">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Button" size="lg" disabled="{{ bookDateIncomplete }}" onClick="{{ goBookSummary }}" hint-size="100%,50px">{{ bookDateCta }}</x-import>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isBookSummary }}">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--pt-bg);overflow:hidden">
+<div style="padding:56px 20px 12px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--pt-border)">
+<div onClick="{{ back }}" style="width:38px;height:38px;border-radius:var(--r-full);background:var(--pt-white);box-shadow:var(--sh-sm);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A6741" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+</div>
+<div style="flex:1">
+<div style="font-size:15px;font-weight:700;color:var(--pt-green-dark)">Confirmar e pagar</div>
+<div style="font-size:11.5px;color:var(--pt-text-40)">Passo 2 de 3</div>
+</div>
+</div>
+<div style="flex:1;overflow:auto;padding:20px">
+<div style="background:var(--pt-white);border-radius:var(--r-lg);padding:18px;box-shadow:var(--sh-sm);margin-bottom:16px">
+<div style="font-family:var(--font-display);font-weight:600;font-size:16px;color:var(--pt-green-dark);margin-bottom:14px">Resumo</div>
+<div style="display:flex;flex-direction:column;gap:1px">
+<sc-for list="{{ summaryRows }}" as="r" hint-placeholder-count="5">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:11px 0;border-top:1px solid var(--pt-border)">
+<span style="font-size:12.5px;color:var(--pt-text-60);flex-shrink:0">{{ r.label }}</span>
+<span style="font-size:13px;font-weight:500;text-align:right">{{ r.value }}</span>
+</div>
+</sc-for>
+</div>
+</div>
+<div style="background:var(--pt-white);border-radius:var(--r-lg);padding:18px;box-shadow:var(--sh-sm);margin-bottom:16px">
+<div style="font-family:var(--font-display);font-weight:600;font-size:16px;color:var(--pt-green-dark);margin-bottom:14px">Pagamento</div>
+<div style="display:flex;flex-direction:column;gap:9px">
+<sc-for list="{{ payMethods }}" as="m" hint-placeholder-count="3">
+<div onClick="{{ m.pick }}" style="display:flex;align-items:center;gap:12px;padding:14px;border:1.5px solid {{ m.border }};border-radius:var(--r-md);cursor:pointer">
+<div style="width:19px;height:19px;border-radius:var(--r-full);border:1.5px solid {{ m.dotBorder }};background:{{ m.dotBg }};flex-shrink:0"></div>
+<div style="flex:1;font-size:13.5px;font-weight:500">{{ m.label }}</div>
+<div style="font-size:11px;color:var(--pt-text-40)">{{ m.note }}</div>
+</div>
+</sc-for>
+</div>
+<div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:16px;padding-top:14px;border-top:1px solid var(--pt-border)">
+<span style="font-size:14px;font-weight:700;color:var(--pt-green-dark)">Total</span>
+<span style="font-size:19px;font-weight:700;color:var(--pt-green-dark)">{{ trainer.price }}</span>
+</div>
+<div style="font-size:11px;line-height:1.5;color:var(--pt-text-40);margin-top:6px">O pagamento fica retido até à sessão acontecer.</div>
+</div>
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Banner" tone="success" hint-size="100%,60px">A primeira sessão está protegida — sem química, trocamos de treinador sem custo.</x-import>
+</div>
+<div style="background:var(--pt-white);border-top:1px solid var(--pt-border);padding:14px 20px 34px;box-shadow:var(--sh-md)">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Button" size="lg" onClick="{{ pay }}" hint-size="100%,50px">{{ payLabel }}</x-import>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isBookDone }}">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--pt-bg);overflow:hidden">
+<div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:60px 30px 0;text-align:center">
+<div style="width:96px;height:96px;border-radius:var(--r-full);background:var(--pt-green-tint);display:flex;align-items:center;justify-content:center;margin-bottom:28px">
+<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#3A5233" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"></path></svg>
+</div>
+<h1 style="font-family:var(--font-display);font-weight:600;font-size:26px;line-height:1.25;margin:0 0 12px;color:var(--pt-green-dark);text-wrap:pretty">Sessão marcada</h1>
+<p style="font-size:14.5px;line-height:1.6;margin:0 0 22px;color:var(--pt-text-60);max-width:280px;text-wrap:pretty">{{ doneLine }}</p>
+<div style="width:100%;background:var(--pt-white);border-radius:var(--r-lg);padding:16px;box-shadow:var(--sh-sm);text-align:left;margin-bottom:16px">
+<div style="display:flex;align-items:center;gap:12px">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Avatar" initials="{{ trainer.initials }}" size="sm" hint-size="40px,40px"></x-import>
+<div style="flex:1">
+<div style="font-size:14px;font-weight:700">{{ trainer.name }}</div>
+<div style="font-size:11.5px;color:var(--pt-text-60)">{{ bookWhen }}</div>
+</div>
+</div>
+</div>
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Banner" tone="success" hint-size="100%,68px">A primeira sessão está protegida — se não houver química, trocamos de treinador sem custo.</x-import>
+</div>
+<div style="padding:20px 24px 40px;display:flex;flex-direction:column;gap:8px">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Button" size="lg" onClick="{{ goBookings }}" hint-size="100%,50px">Ver as minhas marcações</x-import>
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Button" variant="ghost" onClick="{{ openChat }}" style="{{ ghostFull }}" hint-size="100%,32px">Enviar mensagem ao treinador</x-import>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isBookings }}">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--pt-bg);overflow:hidden">
+<div style="padding:56px 20px 0">
+<h1 style="font-family:var(--font-display);font-weight:600;font-size:23px;margin:0 0 14px;color:var(--pt-green-dark)">As minhas marcações</h1>
+<div style="display:flex;gap:22px;border-bottom:1px solid var(--pt-border)">
+<sc-for list="{{ bookingTabs }}" as="bt" hint-placeholder-count="2">
+<div onClick="{{ bt.pick }}" style="padding-bottom:10px;font-size:13.5px;font-weight:{{ bt.weight }};color:{{ bt.color }};border-bottom:2px solid {{ bt.line }};cursor:pointer;margin-bottom:-1px">{{ bt.label }}</div>
+</sc-for>
+</div>
+</div>
+<div style="flex:1;overflow:auto;padding:18px 20px 20px">
+<sc-if value="{{ showUpcoming }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:12px">
+<sc-for list="{{ upcoming }}" as="b" hint-placeholder-count="2">
+<div style="background:var(--pt-white);border-radius:var(--r-lg);padding:16px;box-shadow:var(--sh-sm)">
+<div style="display:flex;align-items:center;gap:9px;margin-bottom:12px">
+<div style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:var(--r-full);background:{{ b.pillBg }};color:{{ b.pillColor }}">{{ b.pill }}</div>
+<div style="font-size:12px;color:var(--pt-text-60)">{{ b.when }}</div>
+</div>
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Avatar" initials="{{ b.initials }}" size="sm" hint-size="40px,40px"></x-import>
+<div style="flex:1">
+<div style="font-size:14px;font-weight:700">{{ b.name }}</div>
+<div style="font-size:11.5px;color:var(--pt-text-60)">{{ b.place }}</div>
+</div>
+<div style="font-size:14px;font-weight:700;color:var(--pt-green-dark)">{{ b.price }}</div>
+</div>
+<div style="display:flex;gap:8px;padding-top:12px;border-top:1px solid var(--pt-border)">
+<div onClick="{{ b.chat }}" style="flex:1;text-align:center;padding:10px;border-radius:var(--r-md);background:var(--pt-bg);font-size:12.5px;font-weight:700;color:var(--pt-green-dark);cursor:pointer">Mensagem</div>
+<div onClick="{{ b.reschedule }}" style="flex:1;text-align:center;padding:10px;border-radius:var(--r-md);background:var(--pt-bg);font-size:12.5px;font-weight:700;color:var(--pt-green-dark);cursor:pointer">Reagendar</div>
+<div onClick="{{ b.cancel }}" style="flex:none;padding:10px 14px;border-radius:var(--r-md);background:var(--pt-danger-bg);font-size:12.5px;font-weight:700;color:var(--pt-danger);cursor:pointer">Cancelar</div>
+</div>
+</div>
+</sc-for>
+<sc-if value="{{ noUpcoming }}">
+<div style="padding:36px 0">
+<div style="background:#fff;border-radius:18px;padding:28px 24px;text-align:center;display:flex;flex-direction:column;gap:6px">
+<div style="font-family:'Fraunces',Georgia,serif;font-size:19px;font-weight:600;color:#3f5a3a">Não tens marcações agendadas</div>
+<div style="font-size:14px;line-height:1.45;color:#6b6b63;text-wrap:pretty">Quando marcares a tua primeira sessão, ela aparece aqui.</div>
+</div>
+<div style="display:flex;justify-content:center;margin-top:16px">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Button" onClick="{{ goSearch }}" hint-size="auto,40px">Procurar treinador</x-import>
+</div>
+</div>
+</sc-if>
+</div>
+</sc-if>
+<sc-if value="{{ showHistory }}">
+<div style="display:flex;flex-direction:column;gap:12px">
+<sc-for list="{{ history }}" as="h" hint-placeholder-count="3">
+<div style="background:var(--pt-white);border-radius:var(--r-lg);padding:16px;box-shadow:var(--sh-sm)">
+<div style="display:flex;align-items:center;gap:12px">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Avatar" initials="{{ h.initials }}" size="sm" hint-size="40px,40px"></x-import>
+<div style="flex:1">
+<div style="font-size:14px;font-weight:700">{{ h.name }}</div>
+<div style="font-size:11.5px;color:var(--pt-text-60)">{{ h.when }} · {{ h.price }}</div>
+</div>
+<sc-if value="{{ h.rated }}">
+<span style="font-size:12.5px;color:var(--pt-terracotta);font-weight:500">★ {{ h.stars }}</span>
+</sc-if>
+</div>
+<sc-if value="{{ h.needsReview }}">
+<div onClick="{{ h.review }}" style="margin-top:13px;padding-top:13px;border-top:1px solid var(--pt-border);display:flex;align-items:center;justify-content:space-between;cursor:pointer">
+<span style="font-size:12.5px;font-weight:700;color:var(--pt-green-dark)">Avaliar esta sessão</span>
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A6741" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</div>
+</sc-if>
+</div>
+<div style="display:flex;background:var(--pt-white);border-top:1px solid var(--pt-border);padding:10px 8px 32px">
+<sc-for list="{{ tabs }}" as="tb" hint-placeholder-count="4">
+<div onClick="{{ tb.go }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:10px;font-weight:{{ tb.weight }};color:{{ tb.color }};cursor:pointer">
+<div style="width:22px;height:22px">{{ tb.icon }}</div>{{ tb.label }}
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isTrilho }}">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--pt-bg);overflow:hidden">
+<div style="padding:56px 20px 12px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--pt-border)">
+<div onClick="{{ goHome }}" style="width:38px;height:38px;border-radius:var(--r-full);background:var(--pt-white);box-shadow:var(--sh-sm);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A6741" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+</div>
+<div style="flex:1;font-size:15px;font-weight:700;color:var(--pt-green-dark)">O Trilho do {{ dogNameLabel }}</div>
+</div>
+<div style="flex:1;overflow:auto;padding:20px">
+<div style="background:var(--pt-white);border-radius:var(--r-lg);padding:18px;box-shadow:var(--sh-sm);margin-bottom:18px">
+<div style="display:flex;align-items:center;gap:14px;margin-bottom:6px">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Avatar" initials="B" size="lg" hint-size="88px,88px"></x-import>
+<div>
+<div style="font-family:var(--font-display);font-weight:600;font-size:20px;color:var(--pt-green-dark)">{{ dogNameLabel }}</div>
+<div style="font-size:12.5px;color:var(--pt-text-60);margin-top:2px">Rafeiro · 1 ano · Alvalade</div>
+<div style="font-size:12px;color:var(--pt-green);font-weight:500;margin-top:6px">Fase {{ phaseNumber }} de 5 · {{ phaseLabel }}</div>
+</div>
+</div>
+</div>
+<div style="font-family:var(--font-display);font-weight:600;font-size:16px;color:var(--pt-green-dark);margin-bottom:4px">As cinco fases</div>
+<p style="font-size:12.5px;line-height:1.55;color:var(--pt-text-60);margin:0 0 16px">Cada fase fecha quando tu e o treinador concordam que está feita. Sem prazos fixos.</p>
+<div style="display:flex;flex-direction:column;gap:0;margin-bottom:24px">
+<sc-for list="{{ phaseRows }}" as="p" hint-placeholder-count="5">
+<div style="display:flex;gap:14px">
+<div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0">
+<div style="width:26px;height:26px;border-radius:var(--r-full);background:{{ p.dotBg }};border:1.5px solid {{ p.dotBorder }};display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:{{ p.dotColor }}">{{ p.n }}</div>
+<div style="flex:1;width:2px;background:{{ p.lineBg }};min-height:{{ p.lineH }}"></div>
+</div>
+<div style="flex:1;padding-bottom:18px">
+<div style="font-size:14px;font-weight:700;color:{{ p.titleColor }}">{{ p.title }}</div>
+<div style="font-size:12.5px;line-height:1.55;color:var(--pt-text-60);margin-top:3px">{{ p.desc }}</div>
+<sc-if value="{{ p.isCurrent }}">
+<div style="display:inline-block;margin-top:8px;font-size:10.5px;font-weight:700;padding:4px 10px;border-radius:var(--r-full);background:var(--pt-green-tint);color:var(--pt-green-dark)">Estás aqui</div>
+</sc-if>
+</div>
+</div>
+</sc-for>
+</div>
+<div style="font-family:var(--font-display);font-weight:600;font-size:16px;color:var(--pt-green-dark);margin-bottom:12px">Objetivos definidos com o treinador</div>
+<div style="background:var(--pt-white);border-radius:var(--r-lg);padding:6px 16px;box-shadow:var(--sh-sm);margin-bottom:22px">
+<sc-for list="{{ dogGoals }}" as="g" hint-placeholder-count="3">
+<div style="display:flex;align-items:flex-start;gap:12px;padding:13px 0;border-bottom:1px solid var(--pt-border)">
+<div style="width:18px;height:18px;border-radius:6px;background:{{ g.boxBg }};border:1.5px solid {{ g.boxBorder }};flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--pt-bone);font-weight:700">{{ g.check }}</div>
+<div style="flex:1;font-size:13px;line-height:1.5;color:{{ g.textColor }};text-decoration:{{ g.strike }}">{{ g.text }}</div>
+</div>
+</sc-for>
+</div>
+<div style="font-family:var(--font-display);font-weight:600;font-size:16px;color:var(--pt-green-dark);margin-bottom:12px">Notas do treinador</div>
+<div style="display:flex;flex-direction:column;gap:12px">
+<sc-for list="{{ trainerNotes }}" as="n" hint-placeholder-count="3">
+<div style="background:var(--pt-white);border-radius:var(--r-lg);padding:16px;box-shadow:var(--sh-sm)">
+<div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:7px">
+<span style="font-size:12.5px;font-weight:700">{{ n.who }}</span>
+<span style="font-size:11px;color:var(--pt-text-40)">{{ n.when }}</span>
+</div>
+<p style="font-size:12.5px;line-height:1.6;margin:0;color:var(--pt-text)">{{ n.text }}</p>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isMessages }}">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--pt-bg);overflow:hidden">
+<div style="padding:56px 20px 14px;border-bottom:1px solid var(--pt-border)">
+<h1 style="font-family:var(--font-display);font-weight:600;font-size:23px;margin:0;color:var(--pt-green-dark)">Mensagens</h1>
+</div>
+<div style="flex:1;overflow:auto;padding:8px 20px 20px">
+<sc-for list="{{ threads }}" as="th" hint-placeholder-count="3">
+<div onClick="{{ th.open }}" style="display:flex;align-items:center;gap:13px;padding:15px 0;border-bottom:1px solid var(--pt-border);cursor:pointer">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Avatar" initials="{{ th.initials }}" size="sm" hint-size="40px,40px"></x-import>
+<div style="flex:1;min-width:0">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
+<span style="font-size:14px;font-weight:{{ th.nameWeight }}">{{ th.name }}</span>
+<span style="font-size:10.5px;color:var(--pt-text-40);flex-shrink:0">{{ th.when }}</span>
+</div>
+<div style="display:flex;align-items:center;gap:7px;margin-top:3px">
+<span style="font-size:12px;color:{{ th.previewColor }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:{{ th.previewWeight }}">{{ th.preview }}</span>
+</div>
+<div style="font-size:10.5px;font-weight:700;color:{{ th.stateColor }};margin-top:5px">{{ th.state }}</div>
+</div>
+<sc-if value="{{ th.unread }}">
+<div style="width:9px;height:9px;border-radius:var(--r-full);background:var(--pt-terracotta);flex-shrink:0"></div>
+</sc-if>
+</div>
+</sc-for>
+</div>
+<div style="display:flex;background:var(--pt-white);border-top:1px solid var(--pt-border);padding:10px 8px 32px">
+<sc-for list="{{ tabs }}" as="tb" hint-placeholder-count="4">
+<div onClick="{{ tb.go }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:10px;font-weight:{{ tb.weight }};color:{{ tb.color }};cursor:pointer">
+<div style="width:22px;height:22px">{{ tb.icon }}</div>{{ tb.label }}
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isChat }}">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--pt-bg);overflow:hidden">
+<div style="padding:56px 20px 12px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--pt-border);background:var(--pt-white)">
+<div onClick="{{ goMessages }}" style="width:36px;height:36px;border-radius:var(--r-full);background:var(--pt-bg);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A6741" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+</div>
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Avatar" initials="{{ chat.initials }}" size="xs" hint-size="32px,32px"></x-import>
+<div style="flex:1;min-width:0">
+<div style="font-size:14px;font-weight:700">{{ chat.name }}</div>
+<div style="font-size:11px;color:var(--pt-text-40)">{{ chat.sub }}</div>
+</div>
+<div onClick="{{ openTrainer }}" style="font-size:12px;font-weight:700;color:var(--pt-green);cursor:pointer;flex-shrink:0">Perfil</div>
+</div>
+<div style="flex:1;overflow:auto;padding:18px 20px;display:flex;flex-direction:column;gap:10px">
+<div style="align-self:center;font-size:10.5px;color:var(--pt-text-40);background:var(--pt-white);padding:5px 12px;border-radius:var(--r-full);margin-bottom:4px">{{ chat.day }}</div>
+<sc-for list="{{ chatMsgs }}" as="m" hint-placeholder-count="4">
+<div style="align-self:{{ m.align }};max-width:78%;background:{{ m.bg }};color:{{ m.color }};padding:11px 14px;border-radius:{{ m.radius }};box-shadow:var(--sh-sm)">
+<div style="font-size:13px;line-height:1.5">{{ m.text }}</div>
+<div style="font-size:9.5px;margin-top:5px;opacity:.6;text-align:right">{{ m.at }}</div>
+</div>
+</sc-for>
+</div>
+<div style="background:var(--pt-white);border-top:1px solid var(--pt-border);padding:12px 16px 32px;display:flex;align-items:center;gap:10px">
+<input value="{{ draft }}" onChange="{{ setDraft }}" onKeyDown="{{ draftKey }}" placeholder="Escreve uma mensagem" style="flex:1;border:1.5px solid var(--pt-border);border-radius:var(--r-md);padding:12px 14px;font-size:13.5px;outline:none;background:var(--pt-bg);color:var(--pt-text)">
+<div onClick="{{ send }}" style="width:44px;height:44px;border-radius:var(--r-md);background:{{ sendBg }};display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">
+<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#FAF7F2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l16-8-6 8 6 8z"></path></svg>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isReview }}">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--pt-bg);overflow:hidden">
+<div style="padding:56px 20px 12px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--pt-border)">
+<div onClick="{{ goBookings }}" style="width:38px;height:38px;border-radius:var(--r-full);background:var(--pt-white);box-shadow:var(--sh-sm);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A6741" stroke-width="1.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+</div>
+<div style="flex:1;font-size:15px;font-weight:700;color:var(--pt-green-dark)">Avaliar sessão</div>
+</div>
+<div style="flex:1;overflow:auto;padding:24px 20px 20px">
+<div style="text-align:center;margin-bottom:26px">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Avatar" initials="{{ reviewTarget.initials }}" size="lg" hint-size="88px,88px"></x-import>
+<div style="font-family:var(--font-display);font-weight:600;font-size:19px;color:var(--pt-green-dark);margin-top:12px">{{ reviewTarget.name }}</div>
+<div style="font-size:12.5px;color:var(--pt-text-60);margin-top:3px">{{ reviewTarget.when }}</div>
+</div>
+<div style="text-align:center;font-size:13px;font-weight:700;color:var(--pt-green-dark);margin-bottom:12px">Como foi?</div>
+<div style="display:flex;justify-content:center;gap:10px;margin-bottom:8px">
+<sc-for list="{{ stars }}" as="st" hint-placeholder-count="5">
+<div onClick="{{ st.pick }}" style="font-size:34px;line-height:1;color:{{ st.color }};cursor:pointer">★</div>
+</sc-for>
+</div>
+<div style="text-align:center;font-size:12.5px;color:var(--pt-text-60);min-height:20px;margin-bottom:24px">{{ ratingLabel }}</div>
+<div style="font-size:12px;font-weight:700;color:var(--pt-green-dark);margin-bottom:10px">O que correu bem?</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px">
+<sc-for list="{{ reviewTags }}" as="rt" hint-placeholder-count="4">
+<div onClick="{{ rt.toggle }}" style="padding:9px 14px;border-radius:var(--r-full);font-size:12px;font-weight:500;cursor:pointer;background:{{ rt.bg }};color:{{ rt.color }}">{{ rt.label }}</div>
+</sc-for>
+</div>
+<div style="font-size:12px;font-weight:700;color:var(--pt-green-dark);margin-bottom:8px">Comentário</div>
+<textarea value="{{ reviewText }}" onChange="{{ setReviewText }}" placeholder="Conta o que ajudou. Ajuda quem vem depois de ti." style="width:100%;box-sizing:border-box;min-height:100px;border:1.5px solid var(--pt-border);border-radius:var(--r-md);padding:13px;font-size:13.5px;line-height:1.55;font-family:var(--font-body);outline:none;resize:none;background:var(--pt-white);color:var(--pt-text)"></textarea>
+<div style="font-size:11px;line-height:1.5;color:var(--pt-text-40);margin-top:8px">A tua avaliação fica pública com o teu primeiro nome.</div>
+</div>
+<div style="background:var(--pt-white);border-top:1px solid var(--pt-border);padding:14px 20px 34px;box-shadow:var(--sh-md)">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Button" size="lg" disabled="{{ reviewIncomplete }}" onClick="{{ submitReview }}" hint-size="100%,50px">Enviar avaliação</x-import>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isNotifs }}">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--pt-bg);overflow:hidden">
+<div style="padding:56px 20px 12px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--pt-border)">
+<div onClick="{{ goHome }}" style="width:38px;height:38px;border-radius:var(--r-full);background:var(--pt-white);box-shadow:var(--sh-sm);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A6741" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+</div>
+<div style="flex:1;font-size:15px;font-weight:700;color:var(--pt-green-dark)">Notificações</div>
+<div onClick="{{ readAll }}" style="font-size:12px;font-weight:700;color:var(--pt-green);cursor:pointer">Marcar lidas</div>
+</div>
+<div style="flex:1;overflow:auto;padding:8px 20px 20px">
+<sc-for list="{{ notifs }}" as="n" hint-placeholder-count="4">
+<div onClick="{{ n.go }}" style="display:flex;gap:13px;padding:15px 0;border-bottom:1px solid var(--pt-border);cursor:pointer">
+<div style="width:36px;height:36px;border-radius:var(--r-full);background:{{ n.iconBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0">{{ n.icon }}</div>
+<div style="flex:1">
+<div style="font-size:13.5px;font-weight:{{ n.weight }};line-height:1.4">{{ n.title }}</div>
+<div style="font-size:12px;line-height:1.5;color:var(--pt-text-60);margin-top:3px">{{ n.body }}</div>
+<div style="font-size:10.5px;color:var(--pt-text-40);margin-top:5px">{{ n.when }}</div>
+</div>
+<sc-if value="{{ n.unread }}">
+<div style="width:9px;height:9px;border-radius:var(--r-full);background:var(--pt-terracotta);flex-shrink:0;margin-top:4px"></div>
+</sc-if>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isProfile }}">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--pt-bg);overflow:hidden">
+<div style="padding:56px 20px 14px;border-bottom:1px solid var(--pt-border)">
+<h1 style="font-family:var(--font-display);font-weight:600;font-size:23px;margin:0;color:var(--pt-green-dark)">Perfil</h1>
+</div>
+<div style="flex:1;overflow:auto;padding:20px">
+<div style="display:flex;align-items:center;gap:14px;background:var(--pt-white);border-radius:var(--r-lg);padding:16px;box-shadow:var(--sh-sm);margin-bottom:22px">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Avatar" initials="{{ ownerInitials }}" size="md" hint-size="56px,56px"></x-import>
+<div style="flex:1">
+<div style="font-family:var(--font-display);font-weight:600;font-size:17px;color:var(--pt-green-dark)">{{ ownerName }}</div>
+<div style="font-size:12px;color:var(--pt-text-60);margin-top:2px">{{ ownerEmail }} · Alvalade</div>
+</div>
+<div onClick="{{ toastSoon }}" style="cursor:pointer">
+<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="rgba(44,44,44,0.4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+</div>
+</div>
+<div style="font-size:12px;font-weight:700;color:var(--pt-green-dark);margin-bottom:10px">Os meus cães</div>
+<div onClick="{{ goTrilho }}" style="display:flex;align-items:center;gap:13px;background:var(--pt-white);border-radius:var(--r-lg);padding:15px;box-shadow:var(--sh-sm);margin-bottom:10px;cursor:pointer">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Avatar" initials="B" size="sm" hint-size="40px,40px"></x-import>
+<div style="flex:1">
+<div style="font-size:14px;font-weight:700">{{ dogNameLabel }}</div>
+<div style="font-size:11.5px;color:var(--pt-text-60)">Fase {{ phaseNumber }} · {{ phaseLabel }}</div>
+</div>
+<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="rgba(44,44,44,0.4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+</div>
+<div onClick="{{ toastSoon }}" style="display:flex;align-items:center;gap:10px;padding:14px 15px;border:1.5px dashed var(--pt-border);border-radius:var(--r-lg);cursor:pointer;margin-bottom:24px">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A6741" stroke-width="1.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+<span style="font-size:13px;font-weight:700;color:var(--pt-green-dark)">Adicionar outro cão</span>
+</div>
+<sc-for list="{{ settingsGroups }}" as="grp" hint-placeholder-count="3">
+<div style="margin-bottom:22px">
+<div style="font-size:12px;font-weight:700;color:var(--pt-green-dark);margin-bottom:10px">{{ grp.title }}</div>
+<div style="background:var(--pt-white);border-radius:var(--r-lg);padding:0 16px;box-shadow:var(--sh-sm)">
+<sc-for list="{{ grp.rows }}" as="row" hint-placeholder-count="3">
+<div onClick="{{ row.go }}" style="display:flex;align-items:center;gap:12px;padding:15px 0;border-bottom:1px solid var(--pt-border);cursor:pointer">
+<div style="flex:1">
+<div style="font-size:13.5px;font-weight:500">{{ row.label }}</div>
+<div style="font-size:11.5px;color:var(--pt-text-40);margin-top:2px">{{ row.note }}</div>
+</div>
+<sc-if value="{{ row.isToggle }}">
+<div style="width:44px;height:26px;border-radius:var(--r-full);background:{{ row.trackBg }};padding:3px;box-sizing:border-box;display:flex;justify-content:{{ row.knobPos }}">
+<div style="width:20px;height:20px;border-radius:var(--r-full);background:var(--pt-white);box-shadow:var(--sh-sm)"></div>
+</div>
+</sc-if>
+<sc-if value="{{ row.isLink }}">
+<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="rgba(44,44,44,0.4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+</sc-if>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-for>
+<div onClick="{{ logout }}" style="text-align:center;font-size:13px;font-weight:700;color:var(--pt-danger);padding:14px;cursor:pointer">Terminar sessão</div>
+</div>
+<div style="display:flex;background:var(--pt-white);border-top:1px solid var(--pt-border);padding:10px 8px 32px">
+<sc-for list="{{ tabs }}" as="tb" hint-placeholder-count="4">
+<div onClick="{{ tb.go }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:10px;font-weight:{{ tb.weight }};color:{{ tb.color }};cursor:pointer">
+<div style="width:22px;height:22px">{{ tb.icon }}</div>{{ tb.label }}
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isStub }}">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--pt-bg);overflow:hidden">
+<div style="padding:56px 20px 12px;border-bottom:1px solid var(--pt-border)">
+<span style="font-family:var(--font-display);font-weight:600;font-size:19px;color:var(--pt-green-dark)">{{ stubTitle }}</span>
+</div>
+<div style="flex:1;display:flex;align-items:center;justify-content:center;padding:24px">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.EmptyState" title="{{ stubEmptyTitle }}" body="{{ stubEmptyBody }}" hint-size="100%,240px"></x-import>
+</div>
+<div style="display:flex;background:var(--pt-white);border-top:1px solid var(--pt-border);padding:10px 8px 32px">
+<sc-for list="{{ tabs }}" as="tb" hint-placeholder-count="4">
+<div onClick="{{ tb.go }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:10px;font-weight:{{ tb.weight }};color:{{ tb.color }};cursor:pointer">
+<div style="width:22px;height:22px">{{ tb.icon }}</div>{{ tb.label }}
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<!-- ===== TREINADOR: onboarding profissional ===== -->
+<sc-if value="{{ isTSetup }}">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--pt-bg);overflow:hidden">
+<div style="padding:58px 20px 0;display:flex;align-items:center;gap:14px">
+<div style="flex:1;height:6px;border-radius:var(--r-full);background:var(--pt-border);overflow:hidden"><div style="width:50%;height:100%;background:var(--pt-green);transition:width .25s"></div></div>
+<span style="font-size:11.5px;font-weight:700;color:var(--pt-text-40)">1 de 2</span>
+</div>
+<div style="flex:1;overflow:auto;padding:26px 24px 24px">
+<h1 style="font-family:var(--font-display);font-weight:600;font-size:26px;margin:0 0 8px;color:var(--pt-green-dark);text-wrap:pretty">O teu perfil profissional</h1>
+<p style="font-size:14px;line-height:1.6;margin:0 0 26px;color:var(--pt-text-60);text-wrap:pretty">É o que os donos veem quando te procuram. Podes mudar tudo depois.</p>
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Input" label="Zona onde trabalhas" placeholder="Alvalade, Lisboa" value="{{ ts.zone }}" onChange="{{ setZone }}" hint-size="100%,74px"></x-import>
+<div style="font-size:12px;font-weight:700;color:var(--pt-green-dark);margin-bottom:4px">Especialidades</div>
+<div style="font-size:11.5px;color:var(--pt-text-60);margin-bottom:10px">Escolhe até 4. {{ tsSpecCount }}</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px">
+<sc-for list="{{ tsSpecs }}" as="c" hint-placeholder-count="8">
+<div onClick="{{ c.toggle }}" style="padding:8px 14px;border-radius:var(--r-full);font-size:12px;font-weight:500;cursor:pointer;background:{{ c.bg }};color:{{ c.color }};border:1px solid {{ c.border }}">{{ c.label }}</div>
+</sc-for>
+</div>
+<div style="font-size:12px;font-weight:700;color:var(--pt-green-dark);margin-bottom:8px">Preço por sessão de 60 min — {{ tsPriceLabel }}</div>
+<input type="range" min="25" max="80" step="5" value="{{ ts.price }}" onChange="{{ setTsPrice }}" style="width:100%;accent-color:#4A6741;margin-bottom:22px">
+<div style="font-size:12px;font-weight:700;color:var(--pt-green-dark);margin-bottom:10px">Onde dás sessões</div>
+<div style="display:flex;gap:8px">
+<sc-for list="{{ tsPlaces }}" as="c" hint-placeholder-count="3">
+<div onClick="{{ c.toggle }}" style="flex:1;text-align:center;padding:11px 6px;border-radius:var(--r-md);font-size:12px;font-weight:500;cursor:pointer;background:{{ c.bg }};color:{{ c.color }};border:1.5px solid {{ c.border }}">{{ c.label }}</div>
+</sc-for>
+</div>
+</div>
+<div style="padding:12px 24px 40px">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Button" size="lg" disabled="{{ tsIncomplete }}" onClick="{{ goTDocs }}" hint-size="100%,50px">Continuar</x-import>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isTDocs }}">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--pt-bg);overflow:hidden">
+<div style="padding:58px 20px 0;display:flex;align-items:center;gap:14px"><div onClick="{{ back }}" style="width:38px;height:38px;border-radius:var(--r-full);background:var(--pt-white);box-shadow:var(--sh-sm);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A6741" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+</div>
+<div style="flex:1;height:6px;border-radius:var(--r-full);background:var(--pt-border);overflow:hidden"><div style="width:100%;height:100%;background:var(--pt-green);transition:width .25s"></div></div>
+<span style="font-size:11.5px;font-weight:700;color:var(--pt-text-40)">2 de 2</span>
+</div>
+<div style="flex:1;overflow:auto;padding:26px 24px 24px">
+<h1 style="font-family:var(--font-display);font-weight:600;font-size:26px;margin:0 0 8px;color:var(--pt-green-dark);text-wrap:pretty">Métodos e certificação</h1>
+<p style="font-size:14px;line-height:1.6;margin:0 0 26px;color:var(--pt-text-60);text-wrap:pretty">Os donos veem os teus instrumentos antes de marcar. Verificamos os documentos à mão.</p>
+<div style="background:var(--pt-white);border-radius:var(--r-lg);box-shadow:var(--sh-sm);padding:18px;margin-bottom:16px">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+<span style="font-family:var(--font-display);font-weight:600;font-size:16px;color:var(--pt-green-dark)">Instrumentos que usas</span>
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Badge" level="{{ declaredLevel }}" size="sm" hint-size="auto,20px"></x-import>
+</div>
+<p style="font-size:12px;line-height:1.5;color:var(--pt-text-60);margin:0 0 8px">O nível é calculado a partir do que marcas.</p>
+<sc-for list="{{ tsInstr }}" as="ins" hint-placeholder-count="5">
+<div onClick="{{ ins.toggle }}" style="display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--pt-border);cursor:{{ ins.cursor }}">
+<div style="flex:1">
+<div style="font-size:13.5px;font-weight:500;color:{{ ins.nameColor }}">{{ ins.name }}</div>
+<div style="font-size:11.5px;line-height:1.45;color:{{ ins.noteColor }};margin-top:2px">{{ ins.note }}</div>
+</div>
+<sc-if value="{{ ins.locked }}"><span style="font-size:11px;font-weight:700;color:var(--pt-danger)">Não permitido</span></sc-if>
+<sc-if value="{{ ins.open }}"><div style="width:44px;height:26px;border-radius:var(--r-full);background:{{ ins.trackBg }};padding:3px;box-sizing:border-box;display:flex;justify-content:{{ ins.knobPos }};flex-shrink:0"><div style="width:20px;height:20px;border-radius:var(--r-full);background:var(--pt-white);box-shadow:var(--sh-sm)"></div></div></sc-if>
+</div>
+</sc-for>
+</div>
+<div style="background:var(--pt-white);border-radius:var(--r-lg);box-shadow:var(--sh-sm);padding:18px">
+<div style="font-family:var(--font-display);font-weight:600;font-size:16px;color:var(--pt-green-dark);margin-bottom:4px">Documentos</div>
+<p style="font-size:12px;line-height:1.5;color:var(--pt-text-60);margin:0 0 8px">PDF ou fotografia legível.</p>
+<sc-for list="{{ tsDocs }}" as="d" hint-placeholder-count="3">
+<div onClick="{{ d.toggle }}" style="display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--pt-border);cursor:pointer">
+<div style="width:34px;height:34px;border-radius:var(--r-sm);background:{{ d.iconBg }};color:{{ d.iconColor }};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0">{{ d.glyph }}</div>
+<div style="flex:1;min-width:0">
+<div style="font-size:13.5px;font-weight:500">{{ d.title }}</div>
+<div style="font-size:11.5px;line-height:1.45;color:var(--pt-text-60);margin-top:2px">{{ d.sub }}</div>
+</div>
+<span style="font-size:12px;font-weight:700;color:var(--pt-green)">{{ d.action }}</span>
+</div>
+</sc-for>
+</div>
+</div>
+<div style="padding:12px 24px 40px">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Button" size="lg" disabled="{{ docsIncomplete }}" onClick="{{ submitDocs }}" hint-size="100%,50px">Enviar para verificação</x-import>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isTPending }}">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--pt-bg);overflow:hidden">
+<div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:60px 32px 0;text-align:center">
+<div style="width:120px;height:120px;border-radius:var(--r-full);background:var(--pt-green-tint);display:flex;align-items:center;justify-content:center;margin-bottom:32px">
+<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#3A5233" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"></path><path d="M9 12l2 2 4-4"></path></svg>
+</div>
+<h1 style="font-family:var(--font-display);font-weight:600;font-size:26px;margin:0 0 8px;color:var(--pt-green-dark);text-wrap:pretty;font-size:25px;margin-bottom:12px">Estamos a verificar os teus documentos</h1>
+<p style="font-size:14px;line-height:1.6;margin:0;color:var(--pt-text-60);max-width:300px;text-wrap:pretty">Demora até 2 dias úteis. Avisamos-te por email. Entretanto podes definir horários e completar o perfil.</p>
+</div>
+<div style="padding:0 24px 44px">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Button" size="lg" onClick="{{ goTHome }}" hint-size="100%,50px">Ir para o painel</x-import>
+</div>
+</div>
+</sc-if>
+
+<!-- ===== TREINADOR: menus principais (Início · Agenda · Clientes · Perfil) ===== -->
+<sc-if value="{{ isTHome }}">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--pt-bg);overflow:hidden">
+<div style="padding:56px 20px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--pt-border)">
+<div style="display:flex;align-items:center;font-family:var(--font-display);font-weight:600;font-size:18px;color:var(--pt-green)">paw<img src="assets/paw-mark-simple.svg" style="width:0.85em;height:0.85em;margin:0 0.02em" alt="">tencial</div>
+<span style="padding:5px 11px;border-radius:var(--r-full);background:var(--pt-green-tint);font-size:11px;font-weight:700;color:var(--pt-green-dark)">Treinador</span>
+</div>
+<div style="flex:1;overflow:auto;padding:22px 20px 24px">
+<h1 style="font-family:var(--font-display);font-weight:600;font-size:24px;margin:0 0 4px;color:var(--pt-green-dark)">Olá, {{ tFirst }}</h1>
+<p style="font-size:13.5px;margin:0 0 20px;color:var(--pt-text-60)">{{ tHomeSub }}</p>
+<sc-if value="{{ tPendingState }}">
+<div style="margin-bottom:18px"><x-import component-from-global-scope="PawtencialDesignSystem_c574af.Banner" tone="warning" hint-size="100%,64px">Perfil em verificação. Até ser aprovado não apareces nas pesquisas nem recebes pedidos.</x-import></div>
+<div style="background:var(--pt-white);border-radius:var(--r-lg);box-shadow:var(--sh-sm);padding:4px 16px">
+<sc-for list="{{ tChecklist }}" as="ck" hint-placeholder-count="3">
+<div onClick="{{ ck.go }}" style="display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--pt-border);cursor:pointer">
+<div style="width:20px;height:20px;border-radius:var(--r-full);border:1.5px solid {{ ck.border }};background:{{ ck.bg }};color:var(--pt-bone);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">{{ ck.glyph }}</div>
+<div style="flex:1;font-size:13.5px;font-weight:500">{{ ck.label }}</div>
+<svg width="19" height="19" style="flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="rgba(44,44,44,0.4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+</div>
+</sc-for>
+</div>
+</sc-if>
+<sc-if value="{{ tApproved }}" hint-placeholder-val="{{ true }}">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:26px">
+<div style="background:var(--pt-white);border-radius:var(--r-lg);box-shadow:var(--sh-sm);padding:16px">
+<div style="font-size:11.5px;color:var(--pt-text-60)">Sessões esta semana</div>
+<div style="font-family:var(--font-display);font-weight:600;font-size:26px;color:var(--pt-green-dark);margin-top:6px">{{ tWeekCount }}</div>
+</div>
+<div style="background:var(--pt-white);border-radius:var(--r-lg);box-shadow:var(--sh-sm);padding:16px">
+<div style="font-size:11.5px;color:var(--pt-text-60)">A receber esta semana</div>
+<div style="font-family:var(--font-display);font-weight:600;font-size:26px;color:var(--pt-green-dark);margin-top:6px">{{ tWeekEarn }}</div>
+</div>
+</div>
+<div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px">
+<h2 style="font-family:var(--font-display);font-weight:600;font-size:17px;margin:0;color:var(--pt-green-dark)">Pedidos novos</h2>
+<span style="font-size:12px;color:var(--pt-text-60)">{{ tReqCount }}</span>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;margin-bottom:26px">
+<sc-for list="{{ tRequests }}" as="rq" hint-placeholder-count="2">
+<div style="background:var(--pt-white);border-radius:var(--r-lg);box-shadow:var(--sh-sm);padding:16px">
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Avatar" initials="{{ rq.initials }}" size="sm" hint-size="40px,40px"></x-import>
+<div style="flex:1;min-width:0">
+<div style="font-size:14px;font-weight:700">{{ rq.dog }} <span style="font-weight:400;color:var(--pt-text-60)">· {{ rq.owner }}</span></div>
+<div style="font-size:11.5px;color:var(--pt-text-60);margin-top:2px">{{ rq.dogInfo }}</div>
+</div>
+<sc-if value="{{ rq.first }}"><x-import component-from-global-scope="PawtencialDesignSystem_c574af.Tag" hint-size="auto,26px">1.ª sessão</x-import></sc-if>
+</div>
+<div style="font-size:12.5px;line-height:1.6;margin-bottom:10px">{{ rq.when }}<br>{{ rq.place }}</div>
+<div style="font-size:12.5px;line-height:1.55;color:var(--pt-text-60);background:var(--pt-bg);border-radius:var(--r-md);padding:10px 12px;margin-bottom:14px">{{ rq.note }}</div>
+<div style="display:flex;gap:10px">
+<div style="flex:1;display:flex"><x-import component-from-global-scope="PawtencialDesignSystem_c574af.Button" variant="ghost" onClick="{{ rq.decline }}" style="{{ fullBtn }}" hint-size="100%,42px">Recusar</x-import></div>
+<div style="flex:1;display:flex"><x-import component-from-global-scope="PawtencialDesignSystem_c574af.Button" variant="secondary" size="sm" onClick="{{ rq.accept }}" style="{{ fullBtn }}" hint-size="100%,42px">Aceitar</x-import></div>
+</div>
+</div>
+</sc-for>
+<sc-if value="{{ noRequests }}"><div style="padding:16px;border:1.5px dashed var(--pt-border);border-radius:var(--r-lg);font-size:12.5px;line-height:1.55;color:var(--pt-text-60);text-align:center">Sem pedidos por responder.</div></sc-if>
+</div>
+<h2 style="font-family:var(--font-display);font-weight:600;font-size:17px;margin:0;color:var(--pt-green-dark);margin-bottom:12px">Hoje</h2>
+<div style="display:flex;flex-direction:column;gap:10px">
+<sc-for list="{{ tToday }}" as="se" hint-placeholder-count="2">
+<div onClick="{{ se.open }}" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--pt-white);border-radius:var(--r-lg);box-shadow:var(--sh-sm);cursor:pointer">
+<div style="width:48px;flex-shrink:0">
+<div style="font-size:14px;font-weight:700;color:var(--pt-green-dark)">{{ se.time }}</div>
+<div style="font-size:10.5px;color:var(--pt-text-40)">{{ se.dur }}</div>
+</div>
+<div style="width:1px;align-self:stretch;background:var(--pt-border)"></div>
+<div style="flex:1;min-width:0">
+<div style="font-size:14px;font-weight:700">{{ se.dog }} <span style="font-weight:400;color:var(--pt-text-60)">· {{ se.owner }}</span></div>
+<div style="font-size:11.5px;color:var(--pt-text-60);margin-top:2px">{{ se.place }} · {{ se.kind }}</div>
+</div>
+<svg width="19" height="19" style="flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="rgba(44,44,44,0.4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+</div>
+</sc-for>
+<sc-if value="{{ noToday }}"><div style="padding:16px;border:1.5px dashed var(--pt-border);border-radius:var(--r-lg);font-size:12.5px;line-height:1.55;color:var(--pt-text-60);text-align:center">Sem sessões hoje.</div></sc-if>
+</div>
+</sc-if>
+</div>
+<div style="display:flex;background:var(--pt-white);border-top:1px solid var(--pt-border);padding:10px 8px 32px">
+<sc-for list="{{ tTabs }}" as="tb" hint-placeholder-count="4">
+<div onClick="{{ tb.go }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:10px;font-weight:{{ tb.weight }};color:{{ tb.color }};cursor:pointer">
+<div style="width:22px;height:22px">{{ tb.icon }}</div>{{ tb.label }}
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isTAgenda }}">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--pt-bg);overflow:hidden">
+<div style="padding:56px 20px 14px;border-bottom:1px solid var(--pt-border)">
+<h1 style="font-family:var(--font-display);font-weight:600;font-size:23px;margin:0 0 14px;color:var(--pt-green-dark)">Agenda</h1>
+<div style="display:flex;gap:6px">
+<sc-for list="{{ tDays }}" as="d" hint-placeholder-count="7">
+<div onClick="{{ d.pick }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 0;border-radius:var(--r-md);cursor:pointer;background:{{ d.bg }};color:{{ d.color }};border:1.5px solid {{ d.border }}">
+<span style="font-size:10.5px;font-weight:500">{{ d.dow }}</span>
+<span style="font-size:15px;font-weight:700">{{ d.num }}</span>
+<div style="width:5px;height:5px;border-radius:var(--r-full);background:{{ d.dot }}"></div>
+</div>
+</sc-for>
+</div>
+</div>
+<div style="flex:1;overflow:auto;padding:20px">
+<div style="font-size:12px;font-weight:700;color:var(--pt-green-dark);margin-bottom:10px">{{ tDayLabel }}</div>
+<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:26px">
+<sc-for list="{{ tDaySessions }}" as="se" hint-placeholder-count="2">
+<div onClick="{{ se.open }}" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--pt-white);border-radius:var(--r-lg);box-shadow:var(--sh-sm);cursor:pointer">
+<div style="width:48px;flex-shrink:0">
+<div style="font-size:14px;font-weight:700;color:var(--pt-green-dark)">{{ se.time }}</div>
+<div style="font-size:10.5px;color:var(--pt-text-40)">{{ se.dur }}</div>
+</div>
+<div style="width:1px;align-self:stretch;background:var(--pt-border)"></div>
+<div style="flex:1;min-width:0">
+<div style="font-size:14px;font-weight:700">{{ se.dog }} <span style="font-weight:400;color:var(--pt-text-60)">· {{ se.owner }}</span></div>
+<div style="font-size:11.5px;color:var(--pt-text-60);margin-top:2px">{{ se.place }} · {{ se.kind }}</div>
+</div>
+<svg width="19" height="19" style="flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="rgba(44,44,44,0.4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+</div>
+</sc-for>
+<sc-if value="{{ noDaySessions }}"><div style="padding:16px;border:1.5px dashed var(--pt-border);border-radius:var(--r-lg);font-size:12.5px;line-height:1.55;color:var(--pt-text-60);text-align:center">Sem sessões neste dia.</div></sc-if>
+</div>
+<div style="background:var(--pt-white);border-radius:var(--r-lg);box-shadow:var(--sh-sm);padding:18px">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+<span style="font-family:var(--font-display);font-weight:600;font-size:16px;color:var(--pt-green-dark)">Disponibilidade</span>
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Button" variant="ghost" onClick="{{ editHours }}" hint-size="auto,28px">Editar</x-import>
+</div>
+<sc-for list="{{ tHours }}" as="hr" hint-placeholder-count="3">
+<div style="display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--pt-border);font-size:13px">
+<span style="font-weight:500">{{ hr.days }}</span><span style="color:{{ hr.color }};text-align:right">{{ hr.hours }}</span>
+</div>
+</sc-for>
+</div>
+</div>
+<div style="display:flex;background:var(--pt-white);border-top:1px solid var(--pt-border);padding:10px 8px 32px">
+<sc-for list="{{ tTabs }}" as="tb" hint-placeholder-count="4">
+<div onClick="{{ tb.go }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:10px;font-weight:{{ tb.weight }};color:{{ tb.color }};cursor:pointer">
+<div style="width:22px;height:22px">{{ tb.icon }}</div>{{ tb.label }}
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isTClients }}">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--pt-bg);overflow:hidden">
+<div style="padding:56px 20px 14px;border-bottom:1px solid var(--pt-border)">
+<h1 style="font-family:var(--font-display);font-weight:600;font-size:23px;margin:0;color:var(--pt-green-dark)">Clientes</h1>
+</div>
+<div style="flex:1;overflow:auto;padding:20px;display:flex;flex-direction:column;gap:10px">
+<sc-for list="{{ tClients }}" as="cl" hint-placeholder-count="3">
+<div onClick="{{ cl.open }}" style="display:flex;align-items:center;gap:13px;padding:15px;background:var(--pt-white);border-radius:var(--r-lg);box-shadow:var(--sh-sm);cursor:pointer">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Avatar" initials="{{ cl.initials }}" size="sm" hint-size="40px,40px"></x-import>
+<div style="flex:1;min-width:0">
+<div style="font-size:14px;font-weight:700">{{ cl.dog }} <span style="font-weight:400;color:var(--pt-text-60)">· {{ cl.owner }}</span></div>
+<div style="font-size:11.5px;color:var(--pt-text-60);margin-top:2px">Fase {{ cl.phaseN }} · {{ cl.phaseName }}</div>
+<div style="font-size:11.5px;color:var(--pt-text-40);margin-top:2px">Próxima: {{ cl.next }}</div>
+</div>
+<svg width="19" height="19" style="flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="rgba(44,44,44,0.4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+</div>
+</sc-for>
+<sc-if value="{{ noClients }}">
+<div style="padding:40px 0">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.EmptyState" title="Ainda não tens clientes" body="Quando aceitares o primeiro pedido, o cão aparece aqui." hint-size="100%,200px"></x-import>
+</div>
+</sc-if>
+</div>
+<div style="display:flex;background:var(--pt-white);border-top:1px solid var(--pt-border);padding:10px 8px 32px">
+<sc-for list="{{ tTabs }}" as="tb" hint-placeholder-count="4">
+<div onClick="{{ tb.go }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:10px;font-weight:{{ tb.weight }};color:{{ tb.color }};cursor:pointer">
+<div style="width:22px;height:22px">{{ tb.icon }}</div>{{ tb.label }}
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isTClient }}">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--pt-bg);overflow:hidden">
+<div style="padding:56px 20px 12px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--pt-border)"><div onClick="{{ back }}" style="width:38px;height:38px;border-radius:var(--r-full);background:var(--pt-white);box-shadow:var(--sh-sm);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A6741" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+</div>
+<span style="font-family:var(--font-display);font-weight:600;font-size:18px;color:var(--pt-green-dark)">Ficha do cliente</span>
+</div>
+<div style="flex:1;overflow:auto;padding:20px">
+<div style="display:flex;align-items:center;gap:14px;margin-bottom:18px">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Avatar" initials="{{ client.initials }}" size="md" hint-size="56px,56px"></x-import>
+<div style="flex:1">
+<div style="font-family:var(--font-display);font-weight:600;font-size:20px;color:var(--pt-green-dark)">{{ client.dog }}</div>
+<div style="font-size:12px;color:var(--pt-text-60);margin-top:2px">{{ client.dogInfo }} · dono: {{ client.owner }}</div>
+</div>
+</div>
+<div style="background:var(--pt-white);border-radius:var(--r-lg);box-shadow:var(--sh-sm);padding:18px;margin-bottom:16px">
+<div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px">
+<span style="font-family:var(--font-display);font-weight:600;font-size:16px;color:var(--pt-green-dark)">O Trilho</span>
+<span style="font-size:12px;color:var(--pt-text-60)">{{ client.sessions }} sessões</span>
+</div>
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Trail" steps="{{ trailSteps }}" activeIndex="{{ client.phase }}" hint-size="100%,70px"></x-import>
+<div style="display:flex;gap:10px;margin-top:16px">
+<div style="flex:1;display:flex"><x-import component-from-global-scope="PawtencialDesignSystem_c574af.Button" variant="secondary" size="sm" disabled="{{ client.atEnd }}" onClick="{{ advancePhase }}" style="{{ fullBtn }}" hint-size="100%,38px">{{ client.advanceLabel }}</x-import></div>
+</div>
+</div>
+<div style="background:var(--pt-white);border-radius:var(--r-lg);box-shadow:var(--sh-sm);padding:18px;margin-bottom:16px">
+<div style="font-family:var(--font-display);font-weight:600;font-size:16px;color:var(--pt-green-dark);margin-bottom:4px">Nova nota de sessão</div>
+<p style="font-size:12px;line-height:1.5;color:var(--pt-text-60);margin:0 0 12px">O dono vê as notas n'O Trilho.</p>
+<textarea value="{{ noteDraft }}" onChange="{{ setNoteDraft }}" placeholder="O que trabalharam, o que repetir em casa." style="width:100%;box-sizing:border-box;min-height:84px;resize:none;border:1.5px solid var(--pt-border);border-radius:var(--r-md);padding:12px 14px;font-family:var(--font-body);font-size:13.5px;line-height:1.5;outline:none;color:var(--pt-text)"></textarea>
+<div style="display:flex;justify-content:flex-end;margin-top:10px">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Button" variant="secondary" size="sm" disabled="{{ noteEmpty }}" onClick="{{ saveNote }}" hint-size="auto,36px">Guardar nota</x-import>
+</div>
+</div>
+<div style="font-size:12px;font-weight:700;color:var(--pt-green-dark);margin-bottom:10px">Notas anteriores</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<sc-for list="{{ clientNotes }}" as="nt" hint-placeholder-count="2">
+<div style="background:var(--pt-white);border-radius:var(--r-lg);box-shadow:var(--sh-sm);padding:14px 16px">
+<div style="font-size:11px;font-weight:700;color:var(--pt-text-40);margin-bottom:5px">{{ nt.when }}</div>
+<div style="font-size:13px;line-height:1.55">{{ nt.text }}</div>
+</div>
+</sc-for>
+<sc-if value="{{ noClientNotes }}"><div style="padding:16px;border:1.5px dashed var(--pt-border);border-radius:var(--r-lg);font-size:12.5px;line-height:1.55;color:var(--pt-text-60);text-align:center">Ainda sem notas.</div></sc-if>
+</div>
+</div>
+<div style="padding:12px 20px 36px;border-top:1px solid var(--pt-border);background:var(--pt-bg)">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Button" variant="secondary" onClick="{{ msgOwner }}" style="{{ fullBtn }}" hint-size="100%,48px">Mensagem a {{ client.ownerFirst }}</x-import>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isTProfile }}">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--pt-bg);overflow:hidden">
+<div style="padding:56px 20px 14px;border-bottom:1px solid var(--pt-border)">
+<h1 style="font-family:var(--font-display);font-weight:600;font-size:23px;margin:0;color:var(--pt-green-dark)">Perfil</h1>
+</div>
+<div style="flex:1;overflow:auto;padding:20px">
+<div style="background:var(--pt-white);border-radius:var(--r-lg);box-shadow:var(--sh-sm);padding:16px;margin-bottom:12px">
+<div style="display:flex;align-items:center;gap:14px">
+<x-import component-from-global-scope="PawtencialDesignSystem_c574af.Avatar" initials="{{ tInitials }}" size="md" hint-size="56px,56px"></x-import>
+<div style="flex:1;min-width:0">
+<div style="font-family:var(--font-display);font-weight:600;font-size:17px;color:var(--pt-green-dark)">{{ tName }}</div>
+<div style="font-size:12px;color:var(--pt-text-60);margin-top:2px;overflow:hidden;text-overflow:ellipsis">{{ tEmail }}</div>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:8px;margin-top:14px;padding:10px 12px;border-radius:var(--r-md);background:{{ tStatus.bg }}">
+<div style="width:8px;height:8px;border-radius:var(--r-full);background:{{ tStatus.dot }}"></div>
+<span style="font-size:12.5px;font-weight:700;color:{{ tStatus.color }}">{{ tStatus.label }}</span>
+<span style="font-size:12px;color:{{ tStatus.color }}">{{ tStatus.note }}</span>
+</div>
+</div>
+<div onClick="{{ previewPublic }}" style="display:flex;align-items:center;gap:12px;padding:15px 16px;background:var(--pt-white);border-radius:var(--r-lg);box-shadow:var(--sh-sm);margin-bottom:24px;cursor:pointer">
+<div style="flex:1"><div style="font-size:13.5px;font-weight:500">Ver o meu perfil público</div><div style="font-size:11.5px;color:var(--pt-text-40);margin-top:2px">Como os donos te veem</div></div>
+<svg width="19" height="19" style="flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="rgba(44,44,44,0.4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+</div>
+<sc-for list="{{ tSettings }}" as="grp" hint-placeholder-count="3">
+<div style="margin-bottom:22px">
+<div style="font-size:12px;font-weight:700;color:var(--pt-green-dark);margin-bottom:10px">{{ grp.title }}</div>
+<div style="background:var(--pt-white);border-radius:var(--r-lg);box-shadow:var(--sh-sm);padding:0 16px">
+<sc-for list="{{ grp.rows }}" as="row" hint-placeholder-count="3">
+<div onClick="{{ row.go }}" style="display:flex;align-items:center;gap:12px;padding:15px 0;border-bottom:1px solid var(--pt-border);cursor:pointer">
+<div style="flex:1">
+<div style="font-size:13.5px;font-weight:500">{{ row.label }}</div>
+<div style="font-size:11.5px;color:var(--pt-text-40);margin-top:2px">{{ row.note }}</div>
+</div>
+<sc-if value="{{ row.isToggle }}"><div style="width:44px;height:26px;border-radius:var(--r-full);background:{{ row.trackBg }};padding:3px;box-sizing:border-box;display:flex;justify-content:{{ row.knobPos }};flex-shrink:0"><div style="width:20px;height:20px;border-radius:var(--r-full);background:var(--pt-white);box-shadow:var(--sh-sm)"></div></div></sc-if>
+<sc-if value="{{ row.isLink }}"><svg width="19" height="19" style="flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="rgba(44,44,44,0.4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></sc-if>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-for>
+<div onClick="{{ logout }}" style="text-align:center;font-size:13px;font-weight:700;color:var(--pt-danger);padding:14px;cursor:pointer">Terminar sessão</div>
+</div>
+<div style="display:flex;background:var(--pt-white);border-top:1px solid var(--pt-border);padding:10px 8px 32px">
+<sc-for list="{{ tTabs }}" as="tb" hint-placeholder-count="4">
+<div onClick="{{ tb.go }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:10px;font-weight:{{ tb.weight }};color:{{ tb.color }};cursor:pointer">
+<div style="width:22px;height:22px">{{ tb.icon }}</div>{{ tb.label }}
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ toast }}">
+<div style="position:absolute;left:20px;right:20px;top:60px;z-index:80;animation:pt-toast .32s var(--ease-standard, ease-out)">
+<div style="background:#2F4A2B;color:#F7F3EC;border-radius:14px;padding:14px 18px;font-size:14px;font-weight:600;line-height:1.4;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,0.18)">{{ toast }}</div>
+</div>
+</sc-if>
+
+</x-import>
+</div>
+
+<div style="width:270px;display:flex;flex-direction:column;gap:22px;padding-top:44px">
+<div>
+<div style="font-size:12px;font-weight:700;color:var(--pt-green-dark);margin-bottom:4px">Variantes em teste</div>
+<p style="font-size:11.5px;line-height:1.55;color:rgba(44,44,44,0.55);margin:0 0 12px">Troca aqui e vê no ecrã. Diz-me qual preferes por nome.</p>
+<div style="font-size:11px;font-weight:700;color:rgba(44,44,44,0.45);margin-bottom:7px">Procura — layout</div>
+<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px">
+<sc-for list="{{ viewOptions }}" as="v" hint-placeholder-count="3">
+<div onClick="{{ v.pick }}" style="padding:11px 13px;border-radius:12px;font-size:12.5px;font-weight:500;cursor:pointer;background:{{ v.bg }};color:{{ v.color }};border:1.5px solid {{ v.border }}">{{ v.name }}</div>
+</sc-for>
+</div>
+<div style="font-size:11px;font-weight:700;color:rgba(44,44,44,0.45);margin-bottom:7px">Métodos e instrumentos</div>
+<div style="display:flex;flex-direction:column;gap:6px">
+<sc-for list="{{ methodOptions }}" as="m" hint-placeholder-count="2">
+<div onClick="{{ m.pick }}" style="padding:11px 13px;border-radius:12px;font-size:12.5px;font-weight:500;cursor:pointer;background:{{ m.bg }};color:{{ m.color }};border:1.5px solid {{ m.border }}">{{ m.name }}<div style="font-size:11px;font-weight:400;opacity:.75;margin-top:3px;line-height:1.4">{{ m.desc }}</div></div>
+</sc-for>
+</div>
+</div>
+<div>
+<div style="font-size:11px;font-weight:700;color:rgba(44,44,44,0.45);margin-bottom:7px">Sessão</div>
+<div style="padding:12px 13px;border-radius:12px;background:rgba(255,255,255,0.75);border:1px solid rgba(44,44,44,0.08);font-size:12px;line-height:1.5;margin-bottom:8px">
+<div style="font-weight:700;color:var(--pt-green-dark)">{{ sessionTitle }}</div>
+<div style="color:rgba(44,44,44,0.55)">{{ sessionSub }}</div>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:6px">
+<sc-for list="{{ sessionActions }}" as="a" hint-placeholder-count="3">
+<div onClick="{{ a.go }}" style="padding:7px 11px;border-radius:var(--r-full);font-size:11.5px;font-weight:500;cursor:pointer;background:{{ a.bg }};color:{{ a.color }};border:1px solid rgba(44,44,44,0.08)">{{ a.label }}</div>
+</sc-for>
+</div>
+</div>
+<sc-for list="{{ jumpGroups }}" as="jg" hint-placeholder-count="3">
+<div>
+<div style="font-size:11px;font-weight:700;color:rgba(44,44,44,0.45);margin-bottom:7px">{{ jg.title }}</div>
+<div style="display:flex;flex-wrap:wrap;gap:6px">
+<sc-for list="{{ jg.items }}" as="j" hint-placeholder-count="6">
+<div onClick="{{ j.go }}" style="padding:7px 11px;border-radius:var(--r-full);font-size:11.5px;font-weight:500;cursor:pointer;background:rgba(255,255,255,0.75);color:var(--pt-green-dark);border:1px solid rgba(44,44,44,0.08)">{{ j.label }}</div>
+</sc-for>
+</div>
+</div>
+</sc-for>
+<div style="font-size:11px;line-height:1.6;color:rgba(44,44,44,0.45);border-top:1px solid rgba(44,44,44,0.1);padding-top:14px">
+Contas de teste: ana@exemplo.pt e rita@exemplo.pt, palavra-passe pawtencial1. No código de confirmação qualquer combinação de 6 dígitos serve, exceto 000000 (mostra o erro). A sessão e as contas novas ficam guardadas neste browser.
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;searchView&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;cartoes&quot;,&quot;lista&quot;,&quot;mapa&quot;],&quot;default&quot;:&quot;cartoes&quot;,&quot;tsType&quot;:&quot;'cartoes'|'lista'|'mapa'&quot;,&quot;section&quot;:&quot;Variantes&quot;},&quot;methodsVariant&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;bloco&quot;,&quot;escala&quot;],&quot;default&quot;:&quot;bloco&quot;,&quot;tsType&quot;:&quot;'bloco'|'escala'&quot;,&quot;section&quot;:&quot;Variantes&quot;}}">
+const TRAINERS = [
+  { id: 'rita', initials: 'RS', name: 'Rita Salgueiro', zone: 'Alvalade', km: 2.1, rating: 4.9, reviews: 127, priceN: 45, years: 8,
+    tags: ['Reatividade', 'Ansiedade'], level: 'livre', dgav: false, avail: 'esta', mapX: '32%', mapY: '38%',
+    certLine: 'Técnica de comportamento animal, CBATI-KA desde 2018.',
+    bio: 'Trabalho sobretudo com cães que reagem na rua — a outros cães, a pessoas, a trotinetes. O plano começa sempre por baixar o nível de stress em casa antes de tocarmos na rua. Falo contigo por mensagem entre sessões.',
+    methodSummary: 'Só reforço positivo. Não uso nenhum instrumento aversivo, em nenhuma circunstância.',
+    scaleLine: 'A Rita trabalha inteiramente na faixa livre. Nada do que usa aplica desconforto ao cão.',
+    instruments: [
+      { name: 'Trela longa (3–5 m)', note: 'Para trabalho de distância em espaço aberto.', level: 'livre' },
+      { name: 'Peitoral em Y', note: 'Sem restrição de movimento do ombro.', level: 'livre' },
+      { name: 'Clicker e comida', note: 'Base de todo o trabalho de contracondicionamento.', level: 'livre' },
+      { name: 'Coleira de pico, elétrica ou enforcadora', note: 'Nunca usadas.', level: 'proibido' },
+    ],
+    prices: [{ label: 'Sessão individual (60 min)', value: '45€' }, { label: 'Pack 5 sessões', value: '195€' }, { label: 'Avaliação inicial em casa', value: '55€' }],
+    slots: [{ day: 'Ter', n: '3' }, { day: 'Qua', n: '1' }, { day: 'Sex', n: '4' }, { day: 'Sáb', n: '2' }],
+    reviewList: [
+      { initials: 'JM', who: 'João M.', when: 'há 2 semanas', stars: 5, text: 'O nosso cão passava-se com bicicletas. Em quatro sessões já conseguimos passar no parque sem drama. A Rita explica tudo devagar e não julga.', tags: ['Pontualidade', 'Comunicação'] },
+      { initials: 'CT', who: 'Cátia T.', when: 'há 1 mês', stars: 5, text: 'Muito clara sobre o que era realista e o que não era. Deu-me exercícios simples para os dias entre sessões.', tags: ['Resultados'] },
+    ] },
+  { id: 'tomas', initials: 'TF', name: 'Tomás Ferraz', zone: 'Arroios', km: 3.4, rating: 4.8, reviews: 86, priceN: 40, years: 5,
+    tags: ['Primeiro cão', 'Rotina'], level: 'livre', dgav: false, avail: 'esta', mapX: '58%', mapY: '52%',
+    certLine: 'Formação em treino de cachorros, certificado pela APDT.',
+    bio: 'Ajudo quem acabou de trazer o primeiro cão para casa. Rotina, sono, casa de banho, sozinho sem gritar. Sessões em casa e no bairro.',
+    methodSummary: 'Reforço positivo com comida e brincadeira. Sem instrumentos aversivos.',
+    scaleLine: 'O Tomás trabalha na faixa livre, com trela normal e comida.',
+    instruments: [
+      { name: 'Trela fixa 1,5 m', note: 'Passeio normal, sem tensão.', level: 'livre' },
+      { name: 'Comida e brinquedo', note: 'Reforço principal.', level: 'livre' },
+      { name: 'Coleira de pico ou elétrica', note: 'Nunca usadas.', level: 'proibido' },
+    ],
+    prices: [{ label: 'Sessão individual (60 min)', value: '40€' }, { label: 'Pack 4 sessões cachorro', value: '145€' }],
+    slots: [{ day: 'Seg', n: '2' }, { day: 'Ter', n: '4' }, { day: 'Qui', n: '3' }, { day: 'Dom', n: '1' }],
+    reviewList: [
+      { initials: 'AR', who: 'Ana R.', when: 'há 3 semanas', stars: 5, text: 'Primeiro cão, muitas dúvidas. Saí da primeira sessão com um plano de rotina escrito num papel. Isso mudou tudo.', tags: ['Comunicação', 'Resultados'] },
+    ] },
+  { id: 'sofia', initials: 'SA', name: 'Sofia Andrade', zone: 'Parque das Nações', km: 5.6, rating: 5.0, reviews: 41, priceN: 55, years: 11,
+    tags: ['Cães potencialmente perigosos', 'Obediência'], level: 'condicional', dgav: true, avail: 'prox', mapX: '75%', mapY: '26%',
+    certLine: 'Treinadora reconhecida pela DGAV para cães potencialmente perigosos.',
+    bio: 'Faço o treino legalmente obrigatório para raças potencialmente perigosas e preparo o exame. Também trabalho obediência avançada. Explico-te o que a lei exige antes de marcares.',
+    methodSummary: 'Reforço positivo como base. Usa dois instrumentos condicionais, sempre explicados antes e com o teu acordo.',
+    scaleLine: 'A Sofia usa instrumentos condicionais em casos específicos. Nada aqui é aversivo por norma, mas tens de saber o que é usado e porquê.',
+    instruments: [
+      { name: 'Peitoral anti-puxão', note: 'Em cães de força elevada, no início do trabalho de trela.', level: 'condicional' },
+      { name: 'Açaimo de cesto', note: 'Obrigatório por lei em espaço público para estas raças. Habituação gradual.', level: 'condicional' },
+      { name: 'Comida de alto valor', note: 'Reforço principal em todas as sessões.', level: 'livre' },
+      { name: 'Coleira elétrica ou de pico', note: 'Nunca usadas.', level: 'proibido' },
+    ],
+    prices: [{ label: 'Sessão individual (75 min)', value: '55€' }, { label: 'Programa obrigatório DGAV', value: '380€' }],
+    slots: [{ day: 'Qua', n: '1' }, { day: 'Qui', n: '2' }, { day: 'Sáb', n: '3' }, { day: 'Dom', n: '2' }],
+    reviewList: [
+      { initials: 'PL', who: 'Pedro L.', when: 'há 1 semana', stars: 5, text: 'Tinha o prazo da câmara a chegar e ninguém me sabia explicar o processo. A Sofia tratou do treino e do que eu tinha de entregar.', tags: ['Pontualidade', 'Resultados'] },
+      { initials: 'MF', who: 'Marta F.', when: 'há 2 meses', stars: 5, text: 'Disse-me à primeira que ia usar açaimo e porquê. Preferi assim, sem surpresas.', tags: ['Comunicação'] },
+    ] },
+  { id: 'miguel', initials: 'MB', name: 'Miguel Bandeira', zone: 'Campo de Ourique', km: 4.0, rating: 4.7, reviews: 203, priceN: 38, years: 6,
+    tags: ['Socialização', 'Trela'], level: 'condicional', dgav: false, avail: 'esta', mapX: '20%', mapY: '62%',
+    certLine: 'Educador canino certificado, 6 anos em Lisboa.',
+    bio: 'Passeios de treino em grupo pequeno e trabalho de trela. Bom para cães que nunca aprenderam a estar perto de outros cães sem se descontrolar.',
+    methodSummary: 'Reforço positivo. Usa peitoral anti-puxão em cães que puxam muito, com explicação prévia.',
+    scaleLine: 'O Miguel usa um instrumento condicional. Podes pedir para não ser usado.',
+    instruments: [
+      { name: 'Peitoral anti-puxão', note: 'Só enquanto o cão aprende a andar sem tensão.', level: 'condicional' },
+      { name: 'Trela fixa e comida', note: 'Uso diário.', level: 'livre' },
+      { name: 'Coleira de pico, elétrica ou enforcadora', note: 'Nunca usadas.', level: 'proibido' },
+    ],
+    prices: [{ label: 'Sessão individual (60 min)', value: '38€' }, { label: 'Passeio de treino em grupo', value: '22€' }],
+    slots: [{ day: 'Seg', n: '3' }, { day: 'Qua', n: '2' }, { day: 'Sex', n: '2' }, { day: 'Sáb', n: '4' }],
+    reviewList: [
+      { initials: 'RS', who: 'Rui S.', when: 'há 3 dias', stars: 5, text: 'Os passeios de grupo fizeram mais pelo meu cão do que um ano de parque. Ritmo calmo, nada forçado.', tags: ['Resultados'] },
+    ] },
+  { id: 'ines', initials: 'IV', name: 'Inês Valadares', zone: 'Belém', km: 6.8, rating: 4.9, reviews: 64, priceN: 50, years: 9,
+    tags: ['Desporto canino', 'Avançado'], level: 'livre', dgav: false, avail: 'prox', mapX: '12%', mapY: '30%',
+    certLine: 'Instrutora de agility e mantrailing, federada.',
+    bio: 'Para quem já tem as bases e quer ir mais longe: agility, mantrailing, obediência de competição. Trabalho por objetivos e avalio a condição física antes de começar.',
+    methodSummary: 'Só reforço positivo, com trabalho por marcador.',
+    scaleLine: 'A Inês trabalha inteiramente na faixa livre.',
+    instruments: [
+      { name: 'Trela longa e arnês de desporto', note: 'Mantrailing e trabalho de pista.', level: 'livre' },
+      { name: 'Marcador verbal e comida', note: 'Base do treino técnico.', level: 'livre' },
+      { name: 'Qualquer instrumento aversivo', note: 'Nunca usados.', level: 'proibido' },
+    ],
+    prices: [{ label: 'Sessão individual (60 min)', value: '50€' }, { label: 'Bloco mensal (4 sessões)', value: '180€' }],
+    slots: [{ day: 'Ter', n: '2' }, { day: 'Qui', n: '1' }, { day: 'Sáb', n: '3' }, { day: 'Dom', n: '3' }],
+    reviewList: [
+      { initials: 'HC', who: 'Helena C.', when: 'há 1 mês', stars: 5, text: 'Levou-nos do zero a uma primeira prova de agility em seis meses. Exigente e sempre a explicar o porquê.', tags: ['Resultados', 'Comunicação'] },
+    ] },
+];
+
+const SLIDES = [
+  { title: 'Encontra o treinador certo para o teu cão', body: 'Dizes-nos o que precisas. Mostramos-te quem trabalha com isso, perto de ti.', cta: 'Continuar' },
+  { title: 'Certificação verificada por nós', body: 'Vemos os certificados um a um. Só entra quem prova o que diz.', cta: 'Continuar' },
+  { title: 'A primeira sessão está protegida', body: 'Sem química, trocamos de treinador sem custo. Sem perguntas.', cta: 'Criar conta' },
+];
+
+const GOALS = [
+  { key: 'social', title: 'Socialização', desc: 'Estar perto de outros cães e pessoas sem descontrolar.', phase: 1 },
+  { key: 'rotina', title: 'Rotina e bases', desc: 'Primeiro cão, casa de banho, ficar sozinho, andar na trela.', phase: 0 },
+  { key: 'comport', title: 'Comportamento específico', desc: 'Reatividade, ansiedade, medos, guarda de recursos.', phase: 2 },
+  { key: 'avancado', title: 'Avançado e desporto', desc: 'Obediência avançada, agility, mantrailing.', phase: 3 },
+];
+
+const PHASES = ['Primeiras Pegadas', 'Lado a Lado', 'Superação', 'Exploração', 'Pawtencial'];
+
+const PHASE_DESC = [
+  'Rotina em casa, o nome, a trela sem tensão, ficar sozinho por pouco tempo.',
+  'Passeio calmo, atenção em ti na rua, primeiros encontros com outros cães.',
+  'Trabalho no problema específico — reatividade, medos, ansiedade, guarda.',
+  'Sítios novos, mais gente, mais barulho. O mesmo cão, com confiança.',
+  'Autonomia no dia a dia, ou desporto e obediência avançada se for isso que queres.',
+];
+
+const BOOK_DAYS = [
+  { dow: 'Ter', num: '26', month: 'ago', times: ['09:00', '11:00', '17:30'] },
+  { dow: 'Qua', num: '27', month: 'ago', times: ['10:00'] },
+  { dow: 'Qui', num: '28', month: 'ago', times: [] },
+  { dow: 'Sex', num: '29', month: 'ago', times: ['09:00', '14:00', '16:00', '18:30'] },
+  { dow: 'Sáb', num: '30', month: 'ago', times: ['10:30', '12:00'] },
+  { dow: 'Dom', num: '31', month: 'ago', times: [] },
+];
+const ALL_TIMES = ['09:00', '10:00', '10:30', '11:00', '12:00', '14:00', '16:00', '17:30', '18:30'];
+
+const PLACES = [
+  { key: 'casa', title: 'Em casa', desc: 'Alvalade — o treinador vai a ti. Melhor para as primeiras sessões.' },
+  { key: 'rua', title: 'Na rua, perto de casa', desc: 'Jardim ou zona combinada com o treinador.' },
+];
+
+const UPCOMING = [
+  { id: 'u1', trainer: 'rita', initials: 'RS', name: 'Rita Salgueiro', when: 'Sex, 29 ago · 09:00', place: 'Em casa · Alvalade', price: '45€', pill: 'Confirmada', tone: 'ok' },
+  { id: 'u2', trainer: 'miguel', initials: 'MB', name: 'Miguel Bandeira', when: 'Sáb, 6 set · 10:30', place: 'Jardim da Estrela', price: '22€', pill: 'A aguardar treinador', tone: 'warn' },
+];
+
+const HISTORY = [
+  { id: 'h1', trainer: 'tomas', initials: 'TF', name: 'Tomás Ferraz', when: '12 ago', price: '40€', stars: null },
+  { id: 'h2', trainer: 'tomas', initials: 'TF', name: 'Tomás Ferraz', when: '5 ago', price: '40€', stars: '5' },
+  { id: 'h3', trainer: 'miguel', initials: 'MB', name: 'Miguel Bandeira', when: '28 jul', price: '22€', stars: '4' },
+];
+
+const THREADS = [
+  { id: 'rita', initials: 'RS', name: 'Rita Salgueiro', when: '09:14', preview: 'Antes de sexta, tenta só isto: quando ele...', state: 'Respondido', unread: false },
+  { id: 'miguel', initials: 'MB', name: 'Miguel Bandeira', when: 'ontem', preview: 'Tens disponibilidade ao sábado de manhã?', state: 'Por responder', unread: true },
+  { id: 'tomas', initials: 'TF', name: 'Tomás Ferraz', when: '12 ago', preview: 'Obrigada pelo plano da rotina.', state: 'Respondido', unread: false },
+];
+
+const CHATS = {
+  rita: { sub: 'Reatividade · responde em ~2h', day: 'Hoje', msgs: [
+    { me: true, text: 'Olá Rita. Marquei para sexta às 9h. O Bolota passa-se com trotinetes, é o pior momento do passeio.', at: '08:52' },
+    { me: false, text: 'Olá Ana. Perfeito, sexta às 9h em casa. Antes disso não tentes corrigir na rua — só afasta e dá comida quando ele vê a trotinete de longe.', at: '09:10' },
+    { me: false, text: 'Antes de sexta, tenta só isto: quando ele olhar e não reagir, marca e paga. Nada mais.', at: '09:14' },
+  ] },
+  miguel: { sub: 'Socialização · responde em ~5h', day: 'Ontem', msgs: [
+    { me: false, text: 'Tens disponibilidade ao sábado de manhã? O grupo pequeno está a ficar cheio.', at: '18:20' },
+  ] },
+  tomas: { sub: 'Primeiro cão · sessões concluídas', day: '12 ago', msgs: [
+    { me: true, text: 'Obrigada pelo plano da rotina. Já dorme a noite toda.', at: '21:03' },
+    { me: false, text: 'Ótimo. Mantém as horas fixas duas semanas antes de mudares nada.', at: '21:20' },
+  ] },
+};
+
+const DOG_GOALS = [
+  { text: 'Andar na trela sem puxar durante 5 minutos', done: true },
+  { text: 'Ficar sozinho 30 minutos sem chorar', done: true },
+  { text: 'Passar por uma trotinete a 5 m sem reagir', done: false },
+  { text: 'Vir quando chamado no jardim, sem trela', done: false },
+];
+
+const NOTES = [
+  { who: 'Rita Salgueiro', when: '19 ago', text: 'Sessão em casa. O Bolota fica tenso quando ouve rodas antes de as ver. Trabalhámos som gravado a volume baixo, boa resposta. Repetir 3x por semana, 5 minutos.' },
+  { who: 'Rita Salgueiro', when: '12 ago', text: 'Primeira avaliação. Cão sociável com pessoas, sem problemas de comida. O gatilho é movimento rápido. Não é agressividade, é susto.' },
+  { who: 'Tomás Ferraz', when: '5 ago', text: 'Rotina fechada: refeições às 8h e 19h, sesta a seguir ao passeio da manhã. A dormir melhor.' },
+];
+
+const NOTIFS = [
+  { id: 'n1', kind: 'ok', title: 'Sessão confirmada com a Rita Salgueiro', body: 'Sex, 29 ago às 09:00, em casa.', when: 'há 20 min', unread: true, go: 'bookings' },
+  { id: 'n2', kind: 'msg', title: 'Nova mensagem do Miguel Bandeira', body: 'Tens disponibilidade ao sábado de manhã?', when: 'ontem', unread: true, go: 'chat-miguel' },
+  { id: 'n3', kind: 'clock', title: 'A sessão de sexta é amanhã', body: 'Tem a trela normal à mão, não a extensível.', when: 'ontem', unread: false, go: 'bookings' },
+  { id: 'n4', kind: 'star', title: 'Avalia a sessão de 12 de agosto', body: 'Dois minutos ajudam quem procura depois de ti.', when: 'há 3 dias', unread: false, go: 'review-h1' },
+  { id: 'n5', kind: 'paw', title: 'A Inês Valadares abriu vagas em Belém', body: 'Desporto canino, a 6,8 km de ti.', when: 'há 5 dias', unread: false, go: 'search' },
+];
+
+const REVIEW_TAGS = ['Pontualidade', 'Comunicação', 'Resultados', 'Paciência', 'Explicou os métodos'];
+const RATING_LABELS = ['', 'Correu mal', 'Ficou a meio', 'Foi razoável', 'Correu bem', 'Correu muito bem'];
+const ALL_TAGS = ['Reatividade', 'Ansiedade', 'Primeiro cão', 'Rotina', 'Socialização', 'Trela', 'Obediência', 'Desporto canino', 'Avançado', 'Cães potencialmente perigosos'];
+const LEVEL_LABEL = { livre: 'Livre', condicional: 'Condicional', proibido: 'Proibido' };
+const LEVEL_RANK = { livre: 0, condicional: 1, proibido: 2 };
+
+// ================= AUTENTICAÇÃO =================
+// Protótipo: contas e sessão guardadas em localStorage. Em produção isto seria
+// um backend (ex.: POST /auth/signup, /auth/verify, /auth/login) que devolve um token.
+const SESSION_KEY = 'pawtencial.session';
+const ACCOUNTS_KEY = 'pawtencial.accounts';
+const DEMO_ACCOUNTS = [
+  { email: 'ana@exemplo.pt', password: 'pawtencial1', role: 'owner', name: 'Ana Reis', status: 'ativo' },
+  { email: 'rita@exemplo.pt', password: 'pawtencial1', role: 'trainer', name: 'Rita Salgueiro', status: 'aprovado' },
+];
+const store = {
+  get(k, fb) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : fb; } catch (e) { return fb; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+  del(k) { try { localStorage.removeItem(k); } catch (e) {} },
+};
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const PHONE_RE = /^(\+351)?9[1236]\d{7}$/;
+const NIF_RE = /^[125689]\d{8}$/;
+// Redireccionamento por tipo de conta (e estado de verificação do treinador)
+const homeFor = sess => !sess ? 'welcome' : sess.role === 'trainer' ? (sess.status === 'incompleto' ? 'tSetup' : 'tHome') : 'home';
+
+// ================= TREINADOR: dados de exemplo =================
+const T_INSTR = [
+  { k: 'coleira', name: 'Coleira plana ou peitoral', level: 'livre' },
+  { k: 'peitoral', name: 'Peitoral anti-puxão', level: 'livre' },
+  { k: 'trelalonga', name: 'Trela longa (5 a 10 m)', level: 'livre' },
+  { k: 'acaimo', name: 'Açaimo de cesto', level: 'condicional', note: 'Só com historial de mordida e acordo do dono.' },
+  { k: 'halti', name: 'Cabeçada (halti)', level: 'condicional', note: 'Com habituação prévia, nunca com correções.' },
+  { k: 'proib', name: 'Coleira de estrangulamento, picos ou elétrica', level: 'proibido', note: 'Proibida na Pawtencial, em qualquer caso.' },
+];
+const T_DOCS = [
+  { k: 'cert', title: 'Certificado de formação', hint: 'Obrigatório. CBATI, CPDT ou equivalente.', file: 'certificado-formacao.pdf' },
+  { k: 'seguro', title: 'Seguro de responsabilidade civil', hint: 'Obrigatório. Apólice em vigor.', file: 'apolice-rc-2026.pdf' },
+  { k: 'dgav', title: 'Certificação DGAV', hint: 'Opcional. Para cães potencialmente perigosos.', file: 'dgav-certificado.pdf' },
+];
+const T_PLACES = [['casa', 'Casa do cliente'], ['espaco', 'Espaço próprio'], ['parque', 'Parque']];
+const T_DAYS = [
+  { dow: 'Qua', full: 'Quarta', num: '30', month: 'set' }, { dow: 'Qui', full: 'Quinta', num: '1', month: 'out' },
+  { dow: 'Sex', full: 'Sexta', num: '2', month: 'out' }, { dow: 'Sáb', full: 'Sábado', num: '3', month: 'out' },
+  { dow: 'Dom', full: 'Domingo', num: '4', month: 'out' }, { dow: 'Seg', full: 'Segunda', num: '5', month: 'out' },
+  { dow: 'Ter', full: 'Terça', num: '6', month: 'out' },
+];
+const T_CLIENTS = [
+  { id: 'c2', initials: 'P', dog: 'Pipoca', dogInfo: 'Beagle · 3 anos', owner: 'Marta Lopes', phase: 2, sessions: 4, next: 'Hoje, 09:00' },
+  { id: 'c3', initials: 'T', dog: 'Tejo', dogInfo: 'Rafeiro · 5 anos', owner: 'Rui Almeida', phase: 1, sessions: 2, next: 'Hoje, 17:30' },
+  { id: 'c4', initials: 'L', dog: 'Lua', dogInfo: 'Labrador · 2 anos', owner: 'Sara Pinto', phase: 3, sessions: 11, next: 'Sex, 2 out · 11:00' },
+];
+const T_SESSIONS = {
+  0: [{ time: '09:00', client: 'c2', place: 'Em casa, Areeiro', kind: 'Sessão 5' }, { time: '17:30', client: 'c3', place: 'Quinta das Conchas', kind: 'Sessão 3' }],
+  2: [{ time: '11:00', client: 'c4', place: 'Em casa, Lumiar', kind: 'Sessão 12' }],
+  3: [{ time: '10:00', client: 'c3', place: 'Quinta das Conchas', kind: 'Sessão 4' }],
+  5: [{ time: '18:00', client: 'c2', place: 'Em casa, Areeiro', kind: 'Sessão 6' }],
+};
+const T_REQUESTS = [
+  { id: 'r1', initials: 'B', dog: 'Bolota', dogInfo: 'Rafeiro · 1 ano', owner: 'Ana Reis', day: 2, time: '09:00', when: 'Sex, 2 out · 09:00', place: 'Em casa, Alvalade', first: true, note: 'Reage a trotinetes e bicicletas na rua. Com pessoas está bem.' },
+  { id: 'r2', initials: 'N', dog: 'Nina', dogInfo: 'Border collie · 8 meses', owner: 'João Matos', day: 3, time: '11:30', when: 'Sáb, 3 out · 11:30', place: 'Jardim do Campo Grande', first: true, note: 'Puxa muito à trela e salta para cima das pessoas.' },
+];
+const T_NOTES = {
+  c2: [{ when: '23 set', text: 'Passeio com distrações. Já se senta quando vê outro cão a 10 m. Próximo passo: 5 m.' }, { when: '16 set', text: 'Trabalhámos o olhar para o dono antes de atravessar. Repetir em casa, 5 minutos por dia.' }],
+  c3: [{ when: '25 set', text: 'Muita energia no início. Começámos com trela longa e jogos de faro para baixar a ativação.' }],
+  c4: [{ when: '26 set', text: 'Chamada a 30 m no parque, com distrações. Pronta para passar à última fase.' }],
+};
+const T_HOURS = [{ days: 'Segunda a sexta', hours: '09:00–13:00 · 17:00–20:00' }, { days: 'Sábado', hours: '09:00–13:00' }, { days: 'Domingo', hours: 'Sem horário', off: true }];
+
+const ICONS = {
+  home: 'M4 11l8-6.5 8 6.5v8a1.5 1.5 0 01-1.5 1.5h-13A1.5 1.5 0 014 19z',
+  search: null,
+  cal: null,
+  user: null,
+};
+
+class Component extends DCLogic {
+  state = {
+    screen: 'welcome', slide: 0, dogName: '', goal: null,
+    view: 'cartoes', methods: 'bloco',
+    query: '', filtersOpen: false, dist: 10, price: 80, tags: [], level: 'todos', dgav: false, avail: 'todas',
+    trainerId: 'rita', selectedId: 'rita', toast: null, stub: null,
+    bookDay: null, bookTime: null, bookPlace: 'casa', payMethod: 'mbway',
+    bookingsTab: 'proximas', cancelled: [], chatId: 'rita', draft: '', sent: {},
+    reviewId: 'h1', reviewStars: 0, reviewTagSel: [], reviewText: '', rated: {},
+    notifsRead: false, toggles: { push: true, sms: false, email: true, novidades: false },
+    // --- autenticação ---
+    session: null, role: null, submitted: false, showPw: false, code: '', codeError: null,
+    f: { name: '', email: '', phone: '', nif: '', password: '', terms: false },
+    login: { email: '', password: '' }, loginError: null,
+    // --- treinador ---
+    ts: { zone: '', specs: [], price: 45, places: ['casa'], uses: { coleira: true, peitoral: true, trelalonga: true, acaimo: false, halti: false }, docs: {} },
+    tDay: 0, accepted: [], declined: [], clientId: 'c2', clientPhase: {}, clientNotes: {}, noteDraft: '',
+    tDone: { hours: false, photo: false, bio: false }, tToggles: { pedidos: true, mensagens: true, resumo: false },
+  };
+
+  componentDidMount() {
+    if (this.props.searchView) this.setState({ view: this.props.searchView });
+    if (this.props.methodsVariant) this.setState({ methods: this.props.methodsVariant });
+    // Sessão persistida: reabre diretamente no menu do tipo de conta
+    const sess = store.get(SESSION_KEY, null);
+    if (sess) this.setState({ session: sess, role: sess.role, screen: homeFor(sess) });
+  }
+
+  toast(msg) {
+    clearTimeout(this._t);
+    this.setState({ toast: msg });
+    this._t = setTimeout(() => this.setState({ toast: null }), 2600);
+  }
+
+  icon(name, color) {
+    const p = { fill: 'none', stroke: color, strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round' };
+    const paths = {
+      home: [React.createElement('path', { key: 1, d: 'M4 11l8-6.5 8 6.5v7.5a1.5 1.5 0 01-1.5 1.5h-13A1.5 1.5 0 014 18.5z' })],
+      search: [React.createElement('circle', { key: 1, cx: 11, cy: 11, r: 7 }), React.createElement('path', { key: 2, d: 'M20 20l-4.3-4.3' })],
+      cal: [React.createElement('rect', { key: 1, x: 3, y: 5, width: 18, height: 16, rx: 3 }), React.createElement('path', { key: 2, d: 'M8 3v4M16 3v4M3 11h18' })],
+      user: [React.createElement('path', { key: 1, d: 'M20 21a8 8 0 00-16 0' }), React.createElement('circle', { key: 2, cx: 12, cy: 8, r: 4 })],
+      users: [React.createElement('path', { key: 1, d: 'M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2' }), React.createElement('circle', { key: 2, cx: 9, cy: 7, r: 4 }), React.createElement('path', { key: 3, d: 'M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75' })],
+    };
+    return React.createElement('svg', { width: 22, height: 22, viewBox: '0 0 24 24', ...p }, paths[name]);
+  }
+
+  notifIcon(kind) {
+    const color = kind === 'star' ? '#D97757' : '#3A5233';
+    const p = { fill: 'none', stroke: color, strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round' };
+    const paths = {
+      ok: [React.createElement('path', { key: 1, d: 'M5 12.5l4.5 4.5L19 7.5' })],
+      msg: [React.createElement('path', { key: 1, d: 'M20 15a2 2 0 01-2 2H8l-4 4V6a2 2 0 012-2h12a2 2 0 012 2z' })],
+      clock: [React.createElement('circle', { key: 1, cx: 12, cy: 12, r: 8 }), React.createElement('path', { key: 2, d: 'M12 8v4.5l3 1.8' })],
+      star: [React.createElement('path', { key: 1, d: 'M12 4l2.4 5 5.6.8-4 4 1 5.6-5-2.8-5 2.8 1-5.6-4-4 5.6-.8z' })],
+      shield: [React.createElement('path', { key: 1, d: 'M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z' }), React.createElement('path', { key: 2, d: 'M9 12l2 2 4-4' })],
+      paw: [React.createElement('circle', { key: 1, cx: 8, cy: 8.5, r: 1.9 }), React.createElement('circle', { key: 2, cx: 12, cy: 7, r: 1.9 }), React.createElement('circle', { key: 3, cx: 16, cy: 8.5, r: 1.9 }), React.createElement('path', { key: 4, d: 'M12 11c3 0 4.5 2.2 4.5 4 0 1.6-1.4 2.5-4.5 2.5S7.5 16.6 7.5 15c0-1.8 1.5-4 4.5-4z' })],
+    };
+    return React.createElement('svg', { width: 18, height: 18, viewBox: '0 0 24 24', ...p }, paths[kind]);
+  }
+
+  filtered() {
+    const s = this.state;
+    const q = s.query.trim().toLowerCase();
+    return TRAINERS.filter(t => {
+      if (t.km > s.dist) return false;
+      if (t.priceN > s.price) return false;
+      if (s.dgav && !t.dgav) return false;
+      if (s.level !== 'todos' && LEVEL_RANK[t.level] > LEVEL_RANK[s.level]) return false;
+      if (s.avail === 'esta' && t.avail !== 'esta') return false;
+      if (s.tags.length && !t.tags.some(x => s.tags.includes(x))) return false;
+      if (q && !(t.name + ' ' + t.zone + ' ' + t.tags.join(' ')).toLowerCase().includes(q)) return false;
+      return true;
+    });
+  }
+
+  decorate(t) {
+    return {
+      ...t,
+      meta: t.zone + ' · ' + String(t.km).replace('.', ',') + ' km · ' + t.priceN + '€/sessão',
+      listMeta: t.tags.join(' · ') + ' · ' + String(t.km).replace('.', ',') + ' km',
+      profileMeta: t.zone + ' · ' + t.years + ' anos de experiência',
+      price: t.priceN + '€',
+      sessionLabel: t.prices[0].label,
+      levelLabel: LEVEL_LABEL[t.level],
+      pinBg: t.id === this.state.selectedId ? '#D97757' : '#FFFFFF',
+      pinColor: t.id === this.state.selectedId ? '#FAF7F2' : '#3A5233',
+      mapX: t.mapX, mapY: t.mapY,
+      open: () => this.setState({ screen: 'trainer', trainerId: t.id, selectedId: t.id }),
+      select: () => this.setState({ selectedId: t.id }),
+      instruments: t.instruments.map(i => ({
+        ...i,
+        levelLabel: LEVEL_LABEL[i.level],
+        glyph: i.level === 'proibido' ? '✕' : '✓',
+        iconBg: i.level === 'proibido' ? 'var(--pt-danger-bg)' : i.level === 'condicional' ? 'var(--pt-warning-bg)' : 'var(--pt-success-bg)',
+        iconColor: i.level === 'proibido' ? 'var(--pt-danger)' : i.level === 'condicional' ? 'var(--pt-warning-text)' : 'var(--pt-green-dark)',
+        rowBg: i.level === 'proibido' ? 'var(--pt-danger-bg)' : i.level === 'condicional' ? 'var(--pt-warning-bg)' : 'var(--pt-success-bg)',
+      })),
+      slots: t.slots.map(s => ({ ...s, bg: s.n === '1' ? 'var(--pt-bg)' : 'var(--pt-green-tint)', color: s.n === '1' ? 'var(--pt-text-40)' : 'var(--pt-green-dark)' })),
+    };
+  }
+
+  chip(active, label, onClick, key) {
+    return {
+      label, key,
+      bg: active ? 'var(--pt-green)' : 'var(--pt-white)',
+      color: active ? 'var(--pt-bone)' : 'var(--pt-text)',
+      border: active ? 'var(--pt-green)' : 'var(--pt-border)',
+      toggle: onClick, pick: onClick,
+    };
+  }
+
+  // ---------- Autenticação ----------
+  accounts() { return [...DEMO_ACCOUNTS, ...store.get(ACCOUNTS_KEY, [])]; }
+  saveSession(sess) { store.set(SESSION_KEY, sess); this.setState({ session: sess, role: sess.role }); }
+  // Atualiza a sessão e a conta guardada (ex.: estado de verificação do treinador)
+  updateAccount(patch) {
+    const sess = { ...(this.state.session || {}), ...patch };
+    store.set(ACCOUNTS_KEY, store.get(ACCOUNTS_KEY, []).map(a => a.email === sess.email ? { ...a, ...patch } : a));
+    this.saveSession(sess);
+  }
+  loginWith(acc) {
+    const sess = { email: acc.email, name: acc.name, role: acc.role, status: acc.status };
+    this.saveSession(sess);
+    this.setState({ screen: homeFor(sess), loginError: null, login: { email: '', password: '' } });
+  }
+  logout() {
+    store.del(SESSION_KEY);
+    this.setState({ session: null, role: null, screen: 'welcome', slide: 0, loginError: null });
+    this.toast('Sessão terminada.');
+  }
+  setF(k, v) { this.setState(st => ({ f: { ...st.f, [k]: v } })); }
+  pwRules(p, email) {
+    const local = (email.split('@')[0] || '').toLowerCase();
+    return [
+      { label: 'Pelo menos 8 caracteres', ok: p.length >= 8 },
+      { label: 'Uma letra e um número', ok: /[a-zA-Z]/.test(p) && /\d/.test(p) },
+      { label: 'Não inclui o teu email', ok: p.length > 0 && (local.length < 3 || !p.toLowerCase().includes(local)) },
+    ];
+  }
+  // Validação do registo; os campos pedidos dependem do tipo de conta
+  validate() {
+    const { f } = this.state; const role = this.state.role || 'owner'; const e = {};
+    const email = f.email.trim().toLowerCase(); const ph = f.phone.replace(/\s/g, '');
+    if (f.name.trim().split(/\s+/).length < 2) e.name = 'Escreve o nome e o apelido.';
+    if (!EMAIL_RE.test(email)) e.email = 'Este email não parece válido.';
+    else if (this.accounts().some(a => a.email === email)) e.email = 'Já existe uma conta com este email. Entra em vez de criar.';
+    if (role === 'trainer' && !ph) e.phone = 'Precisamos do telefone para te avisar de pedidos.';
+    else if (ph && !PHONE_RE.test(ph)) e.phone = 'Usa um número português, ex.: 912 345 678.';
+    if (role === 'trainer' && !NIF_RE.test(f.nif.replace(/\s/g, ''))) e.nif = 'O NIF tem 9 dígitos.';
+    if (!this.pwRules(f.password, email).every(r => r.ok)) e.password = 'A palavra-passe não cumpre as regras.';
+    if (!f.terms) e.terms = 'Tens de aceitar para continuar.';
+    return e;
+  }
+  fieldView(errors, key, helper) {
+    const err = this.state.submitted && errors[key];
+    return { state: err ? 'error' : 'default', helper: err || helper || '' };
+  }
+  createAccount() {
+    const { f } = this.state; const role = this.state.role || 'owner';
+    const acc = { email: f.email.trim().toLowerCase(), password: f.password, role, name: f.name.trim(), status: role === 'trainer' ? 'incompleto' : 'ativo' };
+    store.set(ACCOUNTS_KEY, [...store.get(ACCOUNTS_KEY, []), acc]);
+    this.saveSession({ email: acc.email, name: acc.name, role, status: acc.status });
+    this.setState({ screen: role === 'trainer' ? 'tSetup' : 'dog', f: { name: '', email: '', phone: '', nif: '', password: '', terms: false }, code: '' });
+    this.toast('Email confirmado. Conta criada.');
+  }
+
+  // ---------- Treinador ----------
+  trainerData() {
+    const s = this.state;
+    const approved = !s.session || s.session.role !== 'trainer' || s.session.status === 'aprovado';
+    const acc = T_REQUESTS.filter(r => s.accepted.includes(r.id));
+    const clients = approved ? [...acc.map(r => ({ id: r.id, initials: r.initials, dog: r.dog, dogInfo: r.dogInfo, owner: r.owner, phase: 0, sessions: 0, next: r.when })), ...T_CLIENTS] : [];
+    const byDay = T_DAYS.map((_, i) => !approved ? [] : [...(T_SESSIONS[i] || []),
+      ...acc.filter(r => r.day === i).map(r => ({ time: r.time, client: r.id, place: r.place, kind: '1.ª sessão' }))].sort((a, b) => a.time.localeCompare(b.time)));
+    const requests = approved ? T_REQUESTS.filter(r => !s.accepted.includes(r.id) && !s.declined.includes(r.id)) : [];
+    return { approved, clients, byDay, requests };
+  }
+  sessionRow(se, clients) {
+    const c = clients.find(x => x.id === se.client) || {};
+    return { ...se, dur: '60 min', dog: c.dog, owner: c.owner, open: () => this.setState({ screen: 'tClient', clientId: se.client, noteDraft: '' }) };
+  }
+  sw(on) { return { trackBg: on ? 'var(--pt-green)' : 'rgba(44,44,44,0.18)', knobPos: on ? 'flex-end' : 'flex-start' }; }
+
+  renderVals() {
+    const s = this.state;
+    const goal = GOALS.find(g => g.key === s.goal);
+    const phaseIndex = goal ? goal.phase : 0;
+    const results = this.filtered().map(t => this.decorate(t));
+    const selectedRaw = this.filtered().find(t => t.id === s.selectedId) || this.filtered()[0] || TRAINERS[0];
+    const trainer = this.decorate(TRAINERS.find(t => t.id === s.trainerId));
+    const suggestedRaw = TRAINERS.filter(t => (goal && goal.key === 'comport' ? ['rita', 'sofia'] : goal && goal.key === 'avancado' ? ['ines', 'sofia'] : goal && goal.key === 'social' ? ['miguel', 'tomas'] : ['tomas', 'miguel']).includes(t.id));
+    const filterCount = (s.tags.length ? 1 : 0) + (s.dist !== 10 ? 1 : 0) + (s.price !== 80 ? 1 : 0) + (s.level !== 'todos' ? 1 : 0) + (s.dgav ? 1 : 0) + (s.avail !== 'todas' ? 1 : 0);
+    const tabDefs = [['home', 'Início', 'home'], ['search', 'Procurar', 'search'], ['bookings', 'Marcações', 'cal'], ['profile', 'Perfil', 'user']];
+    const TAB_OF = { search: 'search', bookings: 'bookings', bookDate: 'bookings', bookSummary: 'bookings', bookDone: 'bookings', review: 'bookings', profile: 'profile', messages: 'profile' };
+    const activeTab = TAB_OF[s.screen] || 'home';
+    const scaleActive = trainer.level;
+    // autenticação
+    const role = s.role || 'owner';
+    const errors = this.validate();
+    const nErr = Object.keys(errors).length;
+    const sess = s.session;
+    const ownerSess = sess && sess.role === 'owner' ? sess : null;
+    const trainerSess = sess && sess.role === 'trainer' ? sess : null;
+    // treinador
+    const td = this.trainerData();
+    const tPrice = s.ts.price || 45;
+    const weekCount = td.byDay.reduce((n, d) => n + d.length, 0);
+    const clientRaw = td.clients.find(c => c.id === s.clientId) || td.clients[0] || T_CLIENTS[0];
+    const cPhase = s.clientPhase[clientRaw.id] ?? clientRaw.phase;
+    const cNotes = [...(s.clientNotes[clientRaw.id] || []), ...(T_NOTES[clientRaw.id] || [])];
+    const tStatusKey = trainerSess ? trainerSess.status : 'aprovado';
+    const declaredLevel = T_INSTR.some(i => i.level === 'condicional' && s.ts.uses[i.k]) ? 'condicional' : 'livre';
+    const T_TAB_OF = { tHome: 'tHome', tAgenda: 'tAgenda', tClients: 'tClients', tClient: 'tClients', tProfile: 'tProfile' };
+    const chipOn = (on, label, fn) => ({ label, bg: on ? 'var(--pt-green)' : 'var(--pt-white)', color: on ? 'var(--pt-bone)' : 'var(--pt-text)', border: on ? 'var(--pt-green)' : 'var(--pt-border)', toggle: fn });
+
+    return {
+      isWelcome: s.screen === 'welcome', isSignup: s.screen === 'signup', isDog: s.screen === 'dog',
+      isHome: s.screen === 'home', isSearch: s.screen === 'search', isTrainer: s.screen === 'trainer',
+      isStub: s.screen === 'stub', true: true,
+      isBookDate: s.screen === 'bookDate', isBookSummary: s.screen === 'bookSummary', isBookDone: s.screen === 'bookDone',
+      isBookings: s.screen === 'bookings', isTrilho: s.screen === 'trilho', isMessages: s.screen === 'messages',
+      isChat: s.screen === 'chat', isReview: s.screen === 'review', isNotifs: s.screen === 'notifs', isProfile: s.screen === 'profile',
+      isRole: s.screen === 'role', isLogin: s.screen === 'login', isVerify: s.screen === 'verify',
+      isTSetup: s.screen === 'tSetup', isTDocs: s.screen === 'tDocs', isTPending: s.screen === 'tPending',
+      isTHome: s.screen === 'tHome', isTAgenda: s.screen === 'tAgenda', isTClients: s.screen === 'tClients', isTClient: s.screen === 'tClient', isTProfile: s.screen === 'tProfile',
+
+      // ===== Tipo de conta =====
+      roles: [
+        { k: 'owner', title: 'Tenho um cão', desc: 'Encontra um treinador certificado perto de ti e acompanha o progresso do teu cão.', icon: this.notifIcon('paw') },
+        { k: 'trainer', title: 'Sou treinador', desc: 'Recebe pedidos, gere a agenda e acompanha os teus clientes. Pedimos certificação.', icon: this.notifIcon('shield') },
+      ].map(r => ({ ...r,
+        border: s.role === r.k ? 'var(--pt-green)' : 'transparent',
+        dotBorder: s.role === r.k ? 'var(--pt-green)' : 'rgba(44,44,44,0.2)',
+        dotBg: s.role === r.k ? 'var(--pt-green)' : 'transparent',
+        pick: () => this.setState({ role: r.k, submitted: false }) })),
+      noRole: !s.role,
+      goRole: () => this.setState({ screen: 'role' }),
+      goSignupForm: () => this.setState({ screen: 'signup', role: s.role || 'owner' }),
+      goLogin: () => this.setState({ screen: 'login', loginError: null }),
+
+      // ===== Registo =====
+      isTrainerRole: role === 'trainer', isOwnerRole: role === 'owner',
+      roleLabel: role === 'trainer' ? 'Conta de treinador' : 'Conta de dono',
+      signupIntro: role === 'trainer' ? 'Primeiro a conta. A seguir pedimos o perfil profissional e a certificação.' : 'Precisamos só do essencial para te ligarmos a um treinador.',
+      signupProgress: s.screen === 'verify' ? '66%' : '33%',
+      f: s.f,
+      set: { name: e => this.setF('name', e.target.value), email: e => this.setF('email', e.target.value), phone: e => this.setF('phone', e.target.value), nif: e => this.setF('nif', e.target.value), password: e => this.setF('password', e.target.value) },
+      v: {
+        name: this.fieldView(errors, 'name'),
+        email: this.fieldView(errors, 'email', 'Enviamos um código para confirmar.'),
+        phone: this.fieldView(errors, 'phone', role === 'trainer' ? 'Para te avisarmos de pedidos novos.' : 'Opcional. Só para avisos de sessão.'),
+        nif: this.fieldView(errors, 'nif', 'Para emitirmos as faturas das sessões.'),
+        password: { border: s.submitted && errors.password ? 'var(--pt-danger)' : 'var(--pt-border)' },
+      },
+      pwType: s.showPw ? 'text' : 'password', pwToggle: s.showPw ? 'Ocultar' : 'Mostrar',
+      togglePw: () => this.setState({ showPw: !s.showPw }),
+      pwRules: this.pwRules(s.f.password, s.f.email).map(r => ({ label: r.label,
+        color: r.ok ? 'var(--pt-green-dark)' : s.submitted ? 'var(--pt-danger)' : 'var(--pt-text-40)',
+        bg: r.ok ? 'var(--pt-green)' : 'rgba(44,44,44,0.15)', glyph: r.ok ? '✓' : '' })),
+      terms: { border: s.f.terms ? 'var(--pt-green)' : s.submitted && errors.terms ? 'var(--pt-danger)' : 'rgba(44,44,44,0.2)', bg: s.f.terms ? 'var(--pt-green)' : 'transparent', glyph: s.f.terms ? '✓' : '',
+        text: role === 'trainer' ? 'Aceito os termos, a política de privacidade e o código de métodos da Pawtencial.' : 'Aceito os termos de utilização e a política de privacidade.',
+        error: s.submitted ? errors.terms || '' : '' },
+      toggleTerms: () => this.setF('terms', !s.f.terms),
+      signupSummary: s.submitted && nErr ? 'Falta corrigir ' + nErr + (nErr === 1 ? ' campo.' : ' campos.') : '',
+      submitSignup: () => nErr ? this.setState({ submitted: true }) : this.setState({ screen: 'verify', code: '', codeError: null, submitted: false }),
+      socialSignup: () => this.toast('Google e Apple ligam-se na versão com servidor.'),
+
+      // ===== Confirmação de email =====
+      code: s.code,
+      setCode: e => this.setState({ code: e.target.value.replace(/\D/g, '').slice(0, 6), codeError: null }),
+      codeBorder: s.codeError ? 'var(--pt-danger)' : s.code.length === 6 ? 'var(--pt-green)' : 'var(--pt-border)',
+      codeError: s.codeError, codeIncomplete: s.code.length < 6,
+      resend: () => { this.setState({ code: '', codeError: null }); this.toast('Enviámos um código novo.'); },
+      confirmCode: () => s.code === '000000' ? this.setState({ codeError: 'Código errado. Confirma no email ou pede outro.' }) : this.createAccount(),
+
+      // ===== Entrar =====
+      login: s.login,
+      setLoginEmail: e => this.setState({ login: { ...s.login, email: e.target.value }, loginError: null }),
+      setLoginPw: e => this.setState({ login: { ...s.login, password: e.target.value }, loginError: null }),
+      loginState: s.loginError ? 'error' : 'default',
+      loginPwBorder: s.loginError ? 'var(--pt-danger)' : 'var(--pt-border)',
+      loginError: s.loginError,
+      doLogin: () => {
+        const email = s.login.email.trim().toLowerCase();
+        if (!email || !s.login.password) return this.setState({ loginError: 'Preenche o email e a palavra-passe.' });
+        const acc = this.accounts().find(a => a.email === email);
+        if (!acc || acc.password !== s.login.password) return this.setState({ loginError: 'Email ou palavra-passe errados.' });
+        this.loginWith(acc);
+      },
+      forgot: () => EMAIL_RE.test(s.login.email.trim()) ? this.toast('Enviámos um link para ' + s.login.email.trim() + '.') : this.setState({ loginError: 'Escreve o teu email para recuperares a palavra-passe.' }),
+      logout: () => this.logout(),
+
+      // ===== Dono (dados da sessão) =====
+      ownerName: ownerSess ? ownerSess.name : 'Ana Reis',
+      ownerFirst: (ownerSess ? ownerSess.name : 'Ana').split(' ')[0],
+      ownerInitials: (ownerSess ? ownerSess.name : 'Ana Reis').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase(),
+      ownerEmail: ownerSess ? ownerSess.email : 'ana.reis@exemplo.pt',
+
+      // ===== Treinador: onboarding =====
+      ts: s.ts,
+      setZone: e => this.setState({ ts: { ...s.ts, zone: e.target.value } }),
+      tsSpecs: ALL_TAGS.map(t => chipOn(s.ts.specs.includes(t), t, () => {
+        if (s.ts.specs.includes(t)) return this.setState({ ts: { ...s.ts, specs: s.ts.specs.filter(x => x !== t) } });
+        if (s.ts.specs.length >= 4) return this.toast('Máximo de 4 especialidades.');
+        this.setState({ ts: { ...s.ts, specs: [...s.ts.specs, t] } });
+      })),
+      tsSpecCount: s.ts.specs.length ? s.ts.specs.length + (s.ts.specs.length === 1 ? ' escolhida.' : ' escolhidas.') : '',
+      tsPriceLabel: s.ts.price + '€', setTsPrice: e => this.setState({ ts: { ...s.ts, price: Number(e.target.value) } }),
+      tsPlaces: T_PLACES.map(([k, l]) => chipOn(s.ts.places.includes(k), l, () => this.setState({ ts: { ...s.ts, places: s.ts.places.includes(k) ? s.ts.places.filter(x => x !== k) : [...s.ts.places, k] } }))),
+      tsIncomplete: !s.ts.zone.trim() || !s.ts.specs.length || !s.ts.places.length,
+      goTDocs: () => this.setState({ screen: 'tDocs' }),
+      tsInstr: T_INSTR.map(i => {
+        const locked = i.level === 'proibido'; const on = !!s.ts.uses[i.k];
+        return { ...i, ...this.sw(on), locked, open: !locked, cursor: locked ? 'default' : 'pointer',
+          note: i.note || 'Nível livre',
+          nameColor: locked ? 'var(--pt-text-40)' : 'var(--pt-text)', noteColor: locked ? 'var(--pt-danger)' : 'var(--pt-text-60)',
+          toggle: () => locked ? null : this.setState({ ts: { ...s.ts, uses: { ...s.ts.uses, [i.k]: !on } } }) };
+      }),
+      declaredLevel,
+      tsDocs: T_DOCS.map(d => {
+        const up = !!s.ts.docs[d.k];
+        return { title: d.title, sub: up ? d.file : d.hint, glyph: up ? '✓' : '+', action: up ? 'Remover' : 'Carregar',
+          iconBg: up ? 'var(--pt-success-bg)' : 'var(--pt-bg)', iconColor: up ? 'var(--pt-green-dark)' : 'var(--pt-text-40)',
+          toggle: () => this.setState({ ts: { ...s.ts, docs: { ...s.ts.docs, [d.k]: !up } } }) };
+      }),
+      docsIncomplete: !s.ts.docs.cert || !s.ts.docs.seguro,
+      submitDocs: () => {
+        if (trainerSess) this.updateAccount({ status: 'pendente', zone: s.ts.zone, specs: s.ts.specs, price: s.ts.price, level: declaredLevel });
+        this.setState({ screen: 'tPending' });
+      },
+      goTHome: () => this.setState({ screen: 'tHome' }),
+
+      // ===== Treinador: menus =====
+      tName: trainerSess ? trainerSess.name : 'Rita Salgueiro',
+      tFirst: (trainerSess ? trainerSess.name : 'Rita').split(' ')[0],
+      tInitials: (trainerSess ? trainerSess.name : 'Rita Salgueiro').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase(),
+      tEmail: trainerSess ? trainerSess.email : 'rita@exemplo.pt',
+      tApproved: td.approved, tPendingState: !td.approved,
+      tHomeSub: !td.approved ? 'Falta pouco para começares a receber pedidos.' : td.byDay[0].length === 0 ? 'Hoje não tens sessões.' : td.byDay[0].length === 1 ? 'Tens 1 sessão hoje.' : 'Tens ' + td.byDay[0].length + ' sessões hoje.',
+      tChecklist: [
+        { label: 'Definir horários', done: s.tDone.hours, go: () => this.setState({ screen: 'tAgenda' }) },
+        { label: 'Adicionar foto de perfil', done: s.tDone.photo, go: () => { this.setState({ tDone: { ...s.tDone, photo: true } }); this.toast('Foto adicionada.'); } },
+        { label: 'Escrever a apresentação', done: s.tDone.bio, go: () => { this.setState({ tDone: { ...s.tDone, bio: true } }); this.toast('Apresentação guardada.'); } },
+      ].map(c => ({ ...c, glyph: c.done ? '✓' : '', bg: c.done ? 'var(--pt-green)' : 'transparent', border: c.done ? 'var(--pt-green)' : 'rgba(44,44,44,0.2)' })),
+      tWeekCount: String(weekCount), tWeekEarn: weekCount * tPrice + '€',
+      tRequests: td.requests.map(r => ({ ...r,
+        accept: () => { this.setState({ accepted: [...s.accepted, r.id] }); this.toast('Sessão confirmada. Avisámos ' + r.owner.split(' ')[0] + '.'); },
+        decline: () => { this.setState({ declined: [...s.declined, r.id] }); this.toast('Pedido recusado. Sugerimos outro treinador ao dono.'); } })),
+      tReqCount: td.requests.length ? td.requests.length + ' por responder' : '',
+      noRequests: td.requests.length === 0,
+      tToday: td.byDay[0].map(se => this.sessionRow(se, td.clients)), noToday: td.byDay[0].length === 0,
+      tDays: T_DAYS.map((d, i) => { const on = s.tDay === i; return { ...d,
+        bg: on ? 'var(--pt-green)' : 'var(--pt-white)', color: on ? 'var(--pt-bone)' : 'var(--pt-text)', border: on ? 'var(--pt-green)' : 'var(--pt-border)',
+        dot: td.byDay[i].length ? (on ? 'var(--pt-bone)' : 'var(--pt-green)') : 'transparent', pick: () => this.setState({ tDay: i }) }; }),
+      tDayLabel: (s.tDay === 0 ? 'Hoje, ' : T_DAYS[s.tDay].full + ', ') + T_DAYS[s.tDay].num + ' ' + T_DAYS[s.tDay].month,
+      tDaySessions: td.byDay[s.tDay].map(se => this.sessionRow(se, td.clients)), noDaySessions: td.byDay[s.tDay].length === 0,
+      tHours: T_HOURS.map(x => ({ ...x, color: x.off ? 'var(--pt-text-40)' : 'var(--pt-text-60)' })),
+      editHours: () => { this.setState({ tDone: { ...s.tDone, hours: true } }); this.toast('Editor de horários por desenhar. Marcado como feito.'); },
+      tClients: td.clients.map(c => { const p = s.clientPhase[c.id] ?? c.phase; return { ...c, phaseN: p + 1, phaseName: PHASES[p], open: () => this.setState({ screen: 'tClient', clientId: c.id, noteDraft: '' }) }; }),
+      noClients: td.clients.length === 0,
+      client: { ...clientRaw, phase: cPhase, ownerFirst: clientRaw.owner.split(' ')[0], atEnd: cPhase >= 4,
+        advanceLabel: cPhase >= 4 ? 'Trilho concluído' : 'Passar para ' + PHASES[cPhase + 1] },
+      advancePhase: () => { if (cPhase >= 4) return; this.setState({ clientPhase: { ...s.clientPhase, [clientRaw.id]: cPhase + 1 } }); this.toast(clientRaw.dog + ' passou para ' + PHASES[cPhase + 1] + '.'); },
+      clientNotes: cNotes, noClientNotes: cNotes.length === 0,
+      noteDraft: s.noteDraft, setNoteDraft: e => this.setState({ noteDraft: e.target.value }), noteEmpty: !s.noteDraft.trim(),
+      saveNote: () => { this.setState({ clientNotes: { ...s.clientNotes, [clientRaw.id]: [{ when: 'Hoje', text: s.noteDraft.trim() }, ...(s.clientNotes[clientRaw.id] || [])] }, noteDraft: '' }); this.toast('Nota guardada. O dono já a vê.'); },
+      msgOwner: () => this.toast('Mensagens do lado do treinador por desenhar.'),
+      fullBtn: { width: '100%' },
+      tStatus: {
+        aprovado: { label: 'Verificado', note: '· apareces nas pesquisas', bg: 'var(--pt-success-bg)', dot: 'var(--pt-green)', color: 'var(--pt-green-dark)' },
+        pendente: { label: 'Em verificação', note: '· até 2 dias úteis', bg: 'var(--pt-warning-bg)', dot: 'var(--pt-terracotta)', color: 'var(--pt-warning-text)' },
+        incompleto: { label: 'Perfil incompleto', note: '· falta a certificação', bg: 'var(--pt-warning-bg)', dot: 'var(--pt-terracotta)', color: 'var(--pt-warning-text)' },
+      }[tStatusKey] || {},
+      previewPublic: () => this.setState({ screen: 'trainer', trainerId: 'rita' }),
+      tSettings: [
+        { title: 'Trabalho', rows: [
+          { label: 'Horários e disponibilidade', note: 'Seg a sáb', isLink: true, go: () => this.setState({ screen: 'tAgenda' }) },
+          { label: 'Preço por sessão', note: tPrice + '€ · 60 min', isLink: true, go: () => this.setState({ screen: 'tSetup' }) },
+          { label: 'Métodos e instrumentos', note: 'Nível ' + LEVEL_LABEL[declaredLevel].toLowerCase(), isLink: true, go: () => this.setState({ screen: 'tDocs' }) },
+        ] },
+        { title: 'Recebimentos', rows: [
+          { label: 'Conta bancária', note: 'IBAN PT50 •••• 4417', isLink: true, go: () => this.toast('Ecrã de edição por desenhar.') },
+          { label: 'Faturas', note: 'Emitidas no NIF registado', isLink: true, go: () => this.toast('Ecrã de faturas por desenhar.') },
+        ] },
+        { title: 'Notificações', rows: [
+          { label: 'Pedidos novos', note: 'Push e SMS', key: 'pedidos' },
+          { label: 'Mensagens de donos', note: 'Push', key: 'mensagens' },
+          { label: 'Resumo semanal', note: 'Email à segunda', key: 'resumo' },
+        ].map(r => ({ ...r, isToggle: true, on: s.tToggles[r.key], go: () => this.setState({ tToggles: { ...s.tToggles, [r.key]: !s.tToggles[r.key] } }) })) },
+      ].map(g => ({ title: g.title, rows: g.rows.map(r => ({ ...r, isToggle: !!r.isToggle, isLink: !!r.isLink, ...this.sw(r.on) })) })),
+      tTabs: [['tHome', 'Início', 'home'], ['tAgenda', 'Agenda', 'cal'], ['tClients', 'Clientes', 'users'], ['tProfile', 'Perfil', 'user']].map(([k, label, ic]) => {
+        const on = (T_TAB_OF[s.screen] || 'tHome') === k;
+        return { label, weight: on ? 700 : 400, color: on ? 'var(--pt-terracotta)' : 'var(--pt-text-40)', icon: this.icon(ic, on ? '#D97757' : 'rgba(44,44,44,0.4)'), go: () => this.setState({ screen: k }) };
+      }),
+
+      slideTitle: SLIDES[s.slide].title, slideBody: SLIDES[s.slide].body, slideCta: SLIDES[s.slide].cta,
+      slideDots: SLIDES.map((_, i) => ({ w: i === s.slide ? '22px' : '7px', bg: i === s.slide ? 'var(--pt-terracotta)' : 'rgba(44,44,44,0.15)' })),
+      ghostFull: { width: '100%', padding: '10px' },
+      nextSlide: () => s.slide < 2 ? this.setState({ slide: s.slide + 1 }) : this.setState({ screen: 'role' }),
+      goSignup: () => this.setState({ screen: 'role' }),
+      goDog: () => this.setState({ screen: 'dog' }),
+      goHome: () => this.setState({ screen: 'home' }),
+      goSearch: () => this.setState({ screen: 'search' }),
+      goBookings: () => this.setState({ screen: 'bookings', bookingsTab: 'proximas' }),
+      back: () => {
+        if (s.screen === 'trainer' && s.session && s.session.role === 'trainer') return this.setState({ screen: 'tProfile' });
+        const map = { role: 'welcome', login: 'welcome', signup: 'role', verify: 'signup', tDocs: 'tSetup', tClient: 'tClients', trainer: 'search', dog: 'signup', bookDate: 'trainer', bookSummary: 'bookDate', trilho: 'home', chat: 'messages', review: 'bookings', notifs: 'home' };
+        this.setState({ screen: map[s.screen] || 'welcome' });
+      },
+      goTrilho: () => this.setState({ screen: 'trilho' }),
+      goNotifs: () => this.setState({ screen: 'notifs' }),
+      goMessages: () => this.setState({ screen: 'messages' }),
+      openChat: () => this.setState({ screen: 'chat', chatId: this.state.trainerId in CHATS ? this.state.trainerId : 'rita' }),
+      openTrainer: () => this.setState({ screen: 'trainer', trainerId: s.chatId }),
+      goBookSummary: () => this.setState({ screen: 'bookSummary' }),
+      toastSoon: () => this.toast('Esta parte chega na próxima ronda.'),
+
+      dogName: s.dogName, setDogName: e => this.setState({ dogName: e.target.value }),
+      dogNameLabel: s.dogName || 'Bolota',
+      dogIncomplete: !s.goal,
+      dogProgress: s.goal ? '100%' : '55%',
+      goals: GOALS.map(g => ({
+        ...g,
+        border: s.goal === g.key ? 'var(--pt-green)' : 'var(--pt-border)',
+        dotBorder: s.goal === g.key ? 'var(--pt-green)' : 'rgba(44,44,44,0.2)',
+        dotBg: s.goal === g.key ? 'var(--pt-green)' : 'transparent',
+        pick: () => this.setState({ goal: g.key }),
+      })),
+
+      homeSub: goal ? 'Objetivo: ' + goal.title.toLowerCase() + '.' : 'Vamos começar pelo básico.',
+      phaseLabel: PHASES[phaseIndex], phaseIndex, trailSteps: PHASES,
+      suggestReason: goal ? 'Treinadores que trabalham com ' + goal.title.toLowerCase() + ' a menos de 5 km de ti.' : 'Treinadores perto de ti para começar.',
+      suggested: suggestedRaw.map(t => this.decorate(t)),
+
+      query: s.query, setQuery: e => this.setState({ query: e.target.value }),
+      filterCount: filterCount ? String(filterCount) : 'Filtros',
+      openFilters: () => this.setState({ filtersOpen: true }),
+      closeFilters: () => this.setState({ filtersOpen: false }),
+      filtersOpen: s.filtersOpen,
+      resultCount: results.length + (results.length === 1 ? ' treinador' : ' treinadores'),
+      results, noResults: results.length === 0,
+      isCards: s.view === 'cartoes', isList: s.view === 'lista', isMap: s.view === 'mapa',
+      selected: this.decorate(selectedRaw),
+      openSelected: () => this.setState({ screen: 'trainer', trainerId: selectedRaw.id }),
+      viewModes: [['cartoes', 'Cartões'], ['lista', 'Lista'], ['mapa', 'Mapa']].map(([k, l]) => ({
+        label: l, bg: s.view === k ? 'var(--pt-green)' : 'transparent', color: s.view === k ? 'var(--pt-bone)' : 'var(--pt-text-60)',
+        pick: () => this.setState({ view: k }),
+      })),
+      quickChips: [
+        this.chip(s.dgav, 'Certificados DGAV', () => this.setState({ dgav: !s.dgav })),
+        this.chip(s.tags.includes('Reatividade'), 'Reatividade', () => this.setState({ tags: s.tags.includes('Reatividade') ? s.tags.filter(x => x !== 'Reatividade') : [...s.tags, 'Reatividade'] })),
+        this.chip(s.tags.includes('Primeiro cão'), 'Primeiro cão', () => this.setState({ tags: s.tags.includes('Primeiro cão') ? s.tags.filter(x => x !== 'Primeiro cão') : [...s.tags, 'Primeiro cão'] })),
+        this.chip(s.level === 'livre', 'Só instrumentos livres', () => this.setState({ level: s.level === 'livre' ? 'todos' : 'livre' })),
+        this.chip(s.avail === 'esta', 'Esta semana', () => this.setState({ avail: s.avail === 'esta' ? 'todas' : 'esta' })),
+      ],
+      tagChips: ALL_TAGS.map(t => ({
+        label: t,
+        bg: s.tags.includes(t) ? 'var(--pt-green)' : 'var(--pt-bg)',
+        color: s.tags.includes(t) ? 'var(--pt-bone)' : 'var(--pt-text)',
+        toggle: () => this.setState({ tags: s.tags.includes(t) ? s.tags.filter(x => x !== t) : [...s.tags, t] }),
+      })),
+      dist: s.dist, distLabel: s.dist + ' km', setDist: e => this.setState({ dist: Number(e.target.value) }),
+      price: s.price, priceLabel: s.price + '€', setPrice: e => this.setState({ price: Number(e.target.value) }),
+      levelChips: [['todos', 'Todos'], ['condicional', 'Até condicional'], ['livre', 'Só livre']].map(([k, l]) => this.chip(s.level === k, l, () => this.setState({ level: k }))),
+      availChips: [['todas', 'Qualquer'], ['esta', 'Esta semana'], ['fds', 'Fins de semana']].map(([k, l]) => this.chip(s.avail === k, l, () => this.setState({ avail: k }))),
+      dgavBorder: s.dgav ? 'var(--pt-green)' : 'rgba(44,44,44,0.2)',
+      dgavBg: s.dgav ? 'var(--pt-green)' : 'transparent',
+      toggleDgav: () => this.setState({ dgav: !s.dgav }),
+      applyLabel: 'Ver ' + results.length + (results.length === 1 ? ' treinador' : ' treinadores'),
+      clearFilters: () => this.setState({ dist: 10, price: 80, tags: [], level: 'todos', dgav: false, avail: 'todas', query: '' }),
+
+      trainer,
+      methodsBloco: s.methods === 'bloco', methodsEscala: s.methods === 'escala',
+      scale: ['proibido', 'condicional', 'livre'].map(k => ({
+        label: LEVEL_LABEL[k],
+        bar: k === scaleActive || (scaleActive === 'condicional' && k === 'livre') ? (k === 'condicional' ? 'var(--pt-terracotta)' : 'var(--pt-green)') : k === 'proibido' ? 'rgba(176,73,43,0.18)' : 'var(--pt-border)',
+        text: k === scaleActive ? (k === 'condicional' ? 'var(--pt-warning-text)' : 'var(--pt-green-dark)') : 'var(--pt-text-40)',
+        weight: k === scaleActive ? 700 : 400,
+      })),
+      book: () => this.setState({ screen: 'bookDate', bookDay: null, bookTime: null }),
+
+      bookDays: BOOK_DAYS.map((d, i) => {
+        const on = s.bookDay === i, none = d.times.length === 0;
+        return { dow: d.dow, num: d.num, month: d.month,
+          bg: on ? 'var(--pt-green)' : none ? 'var(--pt-bg)' : 'var(--pt-white)',
+          color: on ? 'var(--pt-bone)' : none ? 'var(--pt-text-40)' : 'var(--pt-text)',
+          border: on ? 'var(--pt-green)' : 'var(--pt-border)',
+          pick: () => none ? this.toast('Sem horários neste dia.') : this.setState({ bookDay: i, bookTime: null }) };
+      }),
+      bookTimes: ALL_TIMES.map(t => {
+        const day = s.bookDay === null ? null : BOOK_DAYS[s.bookDay];
+        const free = day ? day.times.includes(t) : false;
+        const on = free && s.bookTime === t;
+        return { label: t,
+          bg: on ? 'var(--pt-green)' : free ? 'var(--pt-white)' : 'var(--pt-bg)',
+          color: on ? 'var(--pt-bone)' : free ? 'var(--pt-text)' : 'var(--pt-text-40)',
+          border: on ? 'var(--pt-green)' : free ? 'var(--pt-border)' : 'transparent',
+          cursor: free ? 'pointer' : 'default', strike: free ? 'none' : 'line-through',
+          pick: () => free ? this.setState({ bookTime: t }) : null };
+      }),
+      bookPlaces: PLACES.map(p => ({ ...p,
+        border: s.bookPlace === p.key ? 'var(--pt-green)' : 'var(--pt-border)',
+        dotBorder: s.bookPlace === p.key ? 'var(--pt-green)' : 'rgba(44,44,44,0.2)',
+        dotBg: s.bookPlace === p.key ? 'var(--pt-green)' : 'transparent',
+        pick: () => this.setState({ bookPlace: p.key }) })),
+      bookDateIncomplete: s.bookDay === null || !s.bookTime,
+      bookDateCta: s.bookTime ? 'Continuar' : 'Escolhe dia e hora',
+      bookWhen: s.bookDay === null ? '—' : BOOK_DAYS[s.bookDay].dow + ', ' + BOOK_DAYS[s.bookDay].num + ' ' + BOOK_DAYS[s.bookDay].month + ' · ' + (s.bookTime || ''),
+      summaryRows: [
+        { label: 'Treinador', value: trainer.name },
+        { label: 'Cão', value: (s.dogName || 'Bolota') + ' · rafeiro, 1 ano' },
+        { label: 'Quando', value: s.bookDay === null ? '—' : BOOK_DAYS[s.bookDay].dow + ', ' + BOOK_DAYS[s.bookDay].num + ' ' + BOOK_DAYS[s.bookDay].month + ' às ' + s.bookTime },
+        { label: 'Local', value: (PLACES.find(p => p.key === s.bookPlace) || PLACES[0]).title },
+        { label: 'Duração', value: trainer.sessionLabel },
+      ],
+      payMethods: [
+        { key: 'mbway', label: 'MB WAY', note: '·9xx 123' },
+        { key: 'cartao', label: 'Cartão terminado em 4417', note: 'Visa' },
+        { key: 'novo', label: 'Adicionar método', note: '' },
+      ].map(m => ({ ...m,
+        border: s.payMethod === m.key ? 'var(--pt-green)' : 'var(--pt-border)',
+        dotBorder: s.payMethod === m.key ? 'var(--pt-green)' : 'rgba(44,44,44,0.2)',
+        dotBg: s.payMethod === m.key ? 'var(--pt-green)' : 'transparent',
+        pick: () => this.setState({ payMethod: m.key }) })),
+      payLabel: 'Pagar ' + trainer.price,
+      pay: () => this.setState({ screen: 'bookDone' }),
+      doneLine: 'Enviámos os detalhes por email. O ' + (s.dogName || 'Bolota') + ' vai ter a primeira sessão com ' + trainer.name.split(' ')[0] + '.',
+
+      bookingTabs: [['proximas', 'Próximas'], ['historico', 'Histórico']].map(([k, l]) => ({
+        label: l, weight: s.bookingsTab === k ? 700 : 400,
+        color: s.bookingsTab === k ? 'var(--pt-green-dark)' : 'var(--pt-text-40)',
+        line: s.bookingsTab === k ? 'var(--pt-green)' : 'transparent',
+        pick: () => this.setState({ bookingsTab: k }),
+      })),
+      showUpcoming: s.bookingsTab === 'proximas', showHistory: s.bookingsTab === 'historico',
+      upcoming: UPCOMING.filter(b => !s.cancelled.includes(b.id)).map(b => ({ ...b,
+        pillBg: b.tone === 'ok' ? 'var(--pt-success-bg)' : 'var(--pt-warning-bg)',
+        pillColor: b.tone === 'ok' ? 'var(--pt-green-dark)' : 'var(--pt-warning-text)',
+        chat: () => this.setState({ screen: 'chat', chatId: b.trainer }),
+        reschedule: () => { this.setState({ screen: 'bookDate', trainerId: b.trainer, bookDay: null, bookTime: null }); this.toast('Escolhe uma nova data.'); },
+        cancel: () => { this.setState({ cancelled: [...s.cancelled, b.id] }); this.toast('Sessão cancelada. Devolvemos o valor em 3 dias.'); },
+      })),
+      noUpcoming: UPCOMING.filter(b => !s.cancelled.includes(b.id)).length === 0,
+      history: HISTORY.map(h => {
+        const stars = s.rated[h.id] || h.stars;
+        return { ...h, stars, rated: !!stars, needsReview: !stars,
+          review: () => this.setState({ screen: 'review', reviewId: h.id, reviewStars: 0, reviewTagSel: [], reviewText: '' }) };
+      }),
+
+      phaseNumber: phaseIndex + 1,
+      phaseRows: PHASES.map((p, i) => ({
+        n: i < phaseIndex ? '✓' : String(i + 1), title: p, desc: PHASE_DESC[i], isCurrent: i === phaseIndex,
+        dotBg: i < phaseIndex ? 'var(--pt-green)' : i === phaseIndex ? 'var(--pt-green-tint)' : 'transparent',
+        dotBorder: i <= phaseIndex ? 'var(--pt-green)' : 'rgba(44,44,44,0.15)',
+        dotColor: i < phaseIndex ? 'var(--pt-bone)' : i === phaseIndex ? 'var(--pt-green-dark)' : 'var(--pt-text-40)',
+        titleColor: i <= phaseIndex ? 'var(--pt-green-dark)' : 'var(--pt-text-60)',
+        lineBg: i < phaseIndex ? 'var(--pt-green)' : 'var(--pt-border)',
+        lineH: i === 4 ? '0px' : '20px',
+      })),
+      dogGoals: DOG_GOALS.map(g => ({ text: g.text, check: g.done ? '✓' : '',
+        boxBg: g.done ? 'var(--pt-green)' : 'transparent',
+        boxBorder: g.done ? 'var(--pt-green)' : 'rgba(44,44,44,0.2)',
+        textColor: g.done ? 'var(--pt-text-40)' : 'var(--pt-text)',
+        strike: g.done ? 'line-through' : 'none' })),
+      trainerNotes: NOTES,
+
+      threads: THREADS.map(t => ({ ...t,
+        nameWeight: t.unread ? 700 : 500,
+        previewColor: t.unread ? 'var(--pt-text)' : 'var(--pt-text-60)',
+        previewWeight: t.unread ? 500 : 400,
+        state: t.unread ? 'Por responder' : t.state,
+        stateColor: t.unread ? 'var(--pt-warning-text)' : 'var(--pt-text-40)',
+        open: () => this.setState({ screen: 'chat', chatId: t.id }),
+      })),
+      chat: { initials: (THREADS.find(t => t.id === s.chatId) || THREADS[0]).initials,
+        name: (THREADS.find(t => t.id === s.chatId) || THREADS[0]).name,
+        sub: CHATS[s.chatId].sub, day: CHATS[s.chatId].day },
+      chatMsgs: [...CHATS[s.chatId].msgs, ...(s.sent[s.chatId] || [])].map(m => ({
+        text: m.text, at: m.at, align: m.me ? 'flex-end' : 'flex-start',
+        bg: m.me ? 'var(--pt-green)' : 'var(--pt-white)',
+        color: m.me ? 'var(--pt-bone)' : 'var(--pt-text)',
+        radius: m.me ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
+      })),
+      draft: s.draft, setDraft: e => this.setState({ draft: e.target.value }),
+      sendBg: s.draft.trim() ? 'var(--pt-terracotta)' : 'rgba(44,44,44,0.2)',
+      send: () => {
+        if (!s.draft.trim()) return;
+        const now = new Date();
+        const at = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+        this.setState({ sent: { ...s.sent, [s.chatId]: [...(s.sent[s.chatId] || []), { me: true, text: s.draft.trim(), at }] }, draft: '' });
+      },
+      draftKey: e => { if (e.key === 'Enter') { e.preventDefault(); this.renderVals().send(); } },
+
+      reviewTarget: (() => { const h = HISTORY.find(x => x.id === s.reviewId) || HISTORY[0]; return { initials: h.initials, name: h.name, when: 'Sessão de ' + h.when }; })(),
+      stars: [1, 2, 3, 4, 5].map(n => ({ color: n <= s.reviewStars ? 'var(--pt-terracotta)' : 'rgba(44,44,44,0.15)', pick: () => this.setState({ reviewStars: n }) })),
+      ratingLabel: RATING_LABELS[s.reviewStars] || 'Toca nas estrelas',
+      reviewTags: REVIEW_TAGS.map(t => ({ label: t,
+        bg: s.reviewTagSel.includes(t) ? 'var(--pt-green)' : 'var(--pt-white)',
+        color: s.reviewTagSel.includes(t) ? 'var(--pt-bone)' : 'var(--pt-text)',
+        toggle: () => this.setState({ reviewTagSel: s.reviewTagSel.includes(t) ? s.reviewTagSel.filter(x => x !== t) : [...s.reviewTagSel, t] }) })),
+      reviewText: s.reviewText, setReviewText: e => this.setState({ reviewText: e.target.value }),
+      reviewIncomplete: s.reviewStars === 0,
+      submitReview: () => { this.setState({ rated: { ...s.rated, [s.reviewId]: String(s.reviewStars) }, screen: 'bookings', bookingsTab: 'historico' }); this.toast('Avaliação enviada. Obrigada.'); },
+
+      notifs: NOTIFS.map(n => ({ ...n,
+        unread: n.unread && !s.notifsRead,
+        weight: n.unread && !s.notifsRead ? 700 : 500,
+        iconBg: n.kind === 'ok' ? 'var(--pt-success-bg)' : n.kind === 'msg' ? 'var(--pt-green-tint)' : n.kind === 'star' ? 'rgba(217,119,87,0.12)' : 'var(--pt-sand)',
+        icon: this.notifIcon(n.kind),
+        go: () => {
+          if (n.go === 'bookings') this.setState({ screen: 'bookings', bookingsTab: 'proximas' });
+          else if (n.go === 'search') this.setState({ screen: 'search' });
+          else if (n.go.startsWith('chat-')) this.setState({ screen: 'chat', chatId: n.go.slice(5) });
+          else if (n.go.startsWith('review-')) this.setState({ screen: 'review', reviewId: n.go.slice(7), reviewStars: 0, reviewTagSel: [], reviewText: '' });
+        },
+      })),
+      readAll: () => { this.setState({ notifsRead: true }); this.toast('Tudo lido.'); },
+
+      settingsGroups: [
+        { title: 'Conta', rows: [
+          { label: 'Dados pessoais', note: 'Nome, email, telefone', isLink: true, go: () => this.toast('Ecrã de edição por desenhar.') },
+          { label: 'Métodos de pagamento', note: 'MB WAY · cartão 4417', isLink: true, go: () => this.toast('Ecrã de edição por desenhar.') },
+          { label: 'Mensagens', note: THREADS.filter(t => t.unread).length + ' por responder', isLink: true, go: () => this.setState({ screen: 'messages' }) },
+        ] },
+        { title: 'Notificações', rows: [
+          { label: 'Push', note: 'Confirmações, lembretes e mensagens', isToggle: true, on: s.toggles.push, go: () => this.setState({ toggles: { ...s.toggles, push: !s.toggles.push } }) },
+          { label: 'SMS', note: 'Só lembretes de sessão', isToggle: true, on: s.toggles.sms, go: () => this.setState({ toggles: { ...s.toggles, sms: !s.toggles.sms } }) },
+          { label: 'Email', note: 'Recibos e resumos', isToggle: true, on: s.toggles.email, go: () => this.setState({ toggles: { ...s.toggles, email: !s.toggles.email } }) },
+          { label: 'Novidades de treinadores', note: 'Vagas de quem marcaste como favorito', isToggle: true, on: s.toggles.novidades, go: () => this.setState({ toggles: { ...s.toggles, novidades: !s.toggles.novidades } }) },
+        ] },
+        { title: 'Ajuda', rows: [
+          { label: 'Política de reembolso', note: 'Primeira sessão protegida, cancelamentos', isLink: true, go: () => this.toast('Documento por escrever.') },
+          { label: 'Como verificamos certificações', note: 'O que pedimos a cada treinador', isLink: true, go: () => this.toast('Documento por escrever.') },
+          { label: 'Falar com o suporte', note: 'Respondemos em dias úteis', isLink: true, go: () => this.toast('Chat de suporte por desenhar.') },
+        ] },
+      ].map(g => ({ title: g.title, rows: g.rows.map(r => ({ ...r,
+        isToggle: !!r.isToggle, isLink: !!r.isLink,
+        trackBg: r.on ? 'var(--pt-green)' : 'rgba(44,44,44,0.18)',
+        knobPos: r.on ? 'flex-end' : 'flex-start' })) })),
+
+      stubTitle: 'Perfil', stubEmptyTitle: 'Por desenhar', stubEmptyBody: 'Este ecrã entra numa próxima ronda.',
+
+      tabs: tabDefs.map(([k, label, ic]) => {
+        const on = activeTab === k;
+        return {
+          label, weight: on ? 700 : 400, color: on ? 'var(--pt-terracotta)' : 'var(--pt-text-40)',
+          icon: this.icon(ic, on ? '#D97757' : 'rgba(44,44,44,0.4)'),
+          go: () => k === 'bookings' ? this.setState({ screen: 'bookings', bookingsTab: 'proximas' }) : this.setState({ screen: k }),
+        };
+      }),
+      toast: s.toast,
+
+      viewOptions: [['cartoes', 'Cartões (recomendado)'], ['lista', 'Lista compacta'], ['mapa', 'Mapa com pins']].map(([k, name]) => ({
+        name, bg: s.view === k ? 'var(--pt-green)' : 'rgba(255,255,255,0.75)', color: s.view === k ? 'var(--pt-bone)' : 'var(--pt-text)',
+        border: s.view === k ? 'var(--pt-green)' : 'rgba(44,44,44,0.08)',
+        pick: () => this.setState({ view: k, screen: 'search' }),
+      })),
+      methodOptions: [
+        { k: 'bloco', name: 'A — Bloco aberto', desc: 'Cartão sempre expandido, instrumento a instrumento com nota.' },
+        { k: 'escala', name: 'B — Escala de nível', desc: 'Barra Proibido/Condicional/Livre no topo, depois as linhas.' },
+      ].map(o => ({
+        name: o.name, desc: o.desc,
+        bg: s.methods === o.k ? 'var(--pt-green)' : 'rgba(255,255,255,0.75)', color: s.methods === o.k ? 'var(--pt-bone)' : 'var(--pt-text)',
+        border: s.methods === o.k ? 'var(--pt-green)' : 'rgba(44,44,44,0.08)',
+        pick: () => this.setState({ methods: o.k, screen: 'trainer' }),
+      })),
+      // ===== Painel lateral (fora do telemóvel) =====
+      sessionTitle: sess ? sess.name + ' · ' + (sess.role === 'trainer' ? 'treinador' : 'dono') : 'Sem sessão',
+      sessionSub: sess ? sess.email + (sess.role === 'trainer' ? ' · ' + ({ aprovado: 'verificado', pendente: 'em verificação', incompleto: 'perfil incompleto' }[sess.status] || '') : '') : 'Entra com uma conta de teste ou cria uma nova.',
+      sessionActions: (sess ? [
+        { label: 'Terminar sessão', go: () => this.logout() },
+        ...(sess.role === 'trainer' && sess.status !== 'aprovado' ? [{ label: 'Simular aprovação', go: () => { this.updateAccount({ status: 'aprovado' }); this.setState({ screen: 'tHome' }); this.toast('Perfil aprovado. Já apareces nas pesquisas.'); } }] : []),
+        ...(sess.role === 'trainer' && sess.status === 'aprovado' ? [{ label: 'Voltar a "em verificação"', go: () => { this.updateAccount({ status: 'pendente' }); this.setState({ screen: 'tHome' }); } }] : []),
+      ] : [
+        { label: 'Entrar como Ana (dono)', go: () => this.loginWith(DEMO_ACCOUNTS[0]) },
+        { label: 'Entrar como Rita (treinador)', go: () => this.loginWith(DEMO_ACCOUNTS[1]) },
+      ]).map(a => ({ ...a, bg: 'rgba(255,255,255,0.75)', color: 'var(--pt-green-dark)' })),
+      jumpGroups: [
+        { title: 'Conta', items: [
+          { label: 'Boas-vindas', go: () => this.setState({ screen: 'welcome', slide: 0 }) },
+          { label: 'Tipo de conta', go: () => this.setState({ screen: 'role' }) },
+          { label: 'Registo — dono', go: () => this.setState({ screen: 'signup', role: 'owner', submitted: false }) },
+          { label: 'Registo — treinador', go: () => this.setState({ screen: 'signup', role: 'trainer', submitted: false }) },
+          { label: 'Erros de validação', go: () => this.setState({ screen: 'signup', role: s.role || 'owner', submitted: true }) },
+          { label: 'Confirmar email', go: () => this.setState({ screen: 'verify', code: '', codeError: null, f: { ...s.f, email: s.f.email || 'tu@exemplo.pt' } }) },
+          { label: 'Entrar', go: () => this.setState({ screen: 'login', loginError: null }) },
+        ] },
+        { title: 'Dono', items: [
+        { label: 'Perfil do cão', go: () => this.setState({ screen: 'dog' }) },
+        { label: 'Home', go: () => this.setState({ screen: 'home' }) },
+        { label: 'Procura', go: () => this.setState({ screen: 'search' }) },
+        { label: 'Filtros', go: () => this.setState({ screen: 'search', filtersOpen: true }) },
+        { label: 'Perfil de treinador', go: () => this.setState({ screen: 'trainer' }) },
+        { label: 'Reserva — horário', go: () => this.setState({ screen: 'bookDate' }) },
+        { label: 'Reserva — pagamento', go: () => this.setState({ screen: 'bookSummary', bookDay: 3, bookTime: '09:00' }) },
+        { label: 'Confirmação', go: () => this.setState({ screen: 'bookDone', bookDay: 3, bookTime: '09:00' }) },
+        { label: 'Marcações', go: () => this.setState({ screen: 'bookings', bookingsTab: 'proximas' }) },
+        { label: 'Histórico', go: () => this.setState({ screen: 'bookings', bookingsTab: 'historico' }) },
+        { label: 'O Trilho', go: () => this.setState({ screen: 'trilho' }) },
+        { label: 'Mensagens', go: () => this.setState({ screen: 'messages' }) },
+        { label: 'Chat', go: () => this.setState({ screen: 'chat', chatId: 'rita' }) },
+        { label: 'Avaliação', go: () => this.setState({ screen: 'review', reviewId: 'h1', reviewStars: 0, reviewTagSel: [], reviewText: '' }) },
+        { label: 'Notificações', go: () => this.setState({ screen: 'notifs' }) },
+        { label: 'Perfil e definições', go: () => this.setState({ screen: 'profile' }) },
+        { label: 'Estado vazio', go: () => this.setState({ screen: 'bookings', bookingsTab: 'proximas', cancelled: ['u1', 'u2'] }) },
+        ] },
+        { title: 'Treinador', items: [
+          { label: 'Perfil profissional', go: () => this.setState({ screen: 'tSetup' }) },
+          { label: 'Métodos e documentos', go: () => this.setState({ screen: 'tDocs' }) },
+          { label: 'Em verificação', go: () => this.setState({ screen: 'tPending' }) },
+          { label: 'Início', go: () => this.setState({ screen: 'tHome' }) },
+          { label: 'Agenda', go: () => this.setState({ screen: 'tAgenda' }) },
+          { label: 'Clientes', go: () => this.setState({ screen: 'tClients' }) },
+          { label: 'Ficha de cliente', go: () => this.setState({ screen: 'tClient', clientId: 'c2' }) },
+          { label: 'Perfil e definições', go: () => this.setState({ screen: 'tProfile' }) },
+        ] },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>
