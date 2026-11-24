@@ -132,7 +132,7 @@ function createWindow() {
     show: false,
     title: 'Kivo',
     backgroundColor: '#F5F7FA',
-    icon: path.join(__dirname, '..', 'build', 'icon.png'),
+    icon: process.platform === 'darwin' ? undefined : path.join(__dirname, '..', 'build', 'icon.png'), // macOS usa o .icns do pacote
     autoHideMenuBar: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -190,7 +190,9 @@ function hardenSession() {
 }
 
 app.on('second-instance', () => { if (win) { if (win.isMinimized()) win.restore(); win.focus(); } });
-app.on('window-all-closed', () => app.quit());
+// macOS: a aplicação continua ativa na Dock ao fechar a janela (convenção do sistema); clicar no ícone reabre-a.
+app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
+app.on('activate', () => { if (!win && storage) createWindow(); });
 app.on('before-quit', () => { try { storage && storage.flush(); } catch (e) { /* ignorar */ } });
 app.on('web-contents-created', (_e, wc) => { wc.on('will-attach-webview', e => e.preventDefault()); wc.setWindowOpenHandler(() => ({ action: 'deny' })); });
 

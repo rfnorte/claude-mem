@@ -1,4 +1,4 @@
-# Kivo — aplicação desktop para Windows
+# Kivo — aplicação desktop para Windows e macOS
 
 Conversão do protótipo **Kivo v3** (Claude Design → artefacto "Kivo") numa aplicação Windows nativa, **totalmente offline**, com Electron e electron-builder.
 A interface, o design e o comportamento são os do protótipo original; as alterações estão listadas em [`docs/AUDITORIA.md`](docs/AUDITORIA.md).
@@ -10,6 +10,8 @@ A interface, o design e o comportamento são os do protótipo original; as alter
 | `dist/Kivo-Setup-1.0.0.exe` | Instalador NSIS (escolha da pasta, atalhos no ambiente de trabalho e menu Iniciar, desinstalador) |
 | `dist/Kivo-Portable-1.0.0.exe` | Versão portátil (corre sem instalar) |
 | `dist/win-unpacked/` | Aplicação descompactada (diagnóstico) |
+| `dist/Kivo-1.0.0-macOS-arm64.zip` | macOS Apple Silicon (`npm run dist:mac`) — instruções em [`docs/MACOS.md`](docs/MACOS.md) |
+| `dist/Kivo-1.0.0-macOS-x64.zip` | macOS Intel |
 
 O utilizador final **não** precisa de Node.js, npm ou Electron.
 
@@ -37,7 +39,9 @@ kivo-desktop/
 └─ docs/                Auditoria e relatório de testes
 ```
 
-## Onde ficam os dados (Windows)
+## Onde ficam os dados
+
+macOS: `~/Library/Application Support/Kivo/` (mesma estrutura). Windows:
 
 Tudo em **`%APPDATA%\Kivo\`** (ex.: `C:\Users\<utilizador>\AppData\Roaming\Kivo\`) — nunca na pasta de instalação.
 
@@ -68,7 +72,9 @@ Requisitos de desenvolvimento: Node.js 20+.
 npm install
 npm start            # abre a aplicação em modo de desenvolvimento
 npm test             # testes end-to-end (em Linux sem ecrã: xvfb-run -a npm test)
-npm run dist         # gera dist/Kivo-Setup-1.0.0.exe e dist/Kivo-Portable-1.0.0.exe
+npm run dist         # Windows: dist/Kivo-Setup-1.0.0.exe e dist/Kivo-Portable-1.0.0.exe
+npm run dist:mac     # macOS (arm64 + x64, .zip, sem assinatura) — funciona em Linux/Windows/macOS
+npm run dist:mac:signed  # só num Mac: .dmg + .zip com assinatura ad-hoc
 ```
 
 Em Windows, `npm run dist` funciona diretamente. Em Linux/macOS também funciona sem Wine (ver `scripts/build-win.js`).

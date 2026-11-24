@@ -11,7 +11,9 @@
     "start": "electron .",
     "test": "playwright test --trace off",
     "dist": "node scripts/build-win.js",
-    "dist:dir": "electron-builder --win dir --x64"
+    "dist:dir": "electron-builder --win dir --x64",
+    "dist:mac": "electron-builder --mac zip --arm64 --x64",
+    "dist:mac:signed": "electron-builder --mac dmg zip --arm64 --x64 -c.mac.identity=-"
   },
   "devDependencies": {
     "@playwright/test": "^1.65.1",
