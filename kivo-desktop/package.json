@@ -1,0 +1,21 @@
+{
+  "name": "kivo-desktop",
+  "productName": "Kivo",
+  "version": "1.0.0",
+  "description": "Kivo — finanças pessoais (aplicação desktop offline)",
+  "author": "Kivo",
+  "license": "UNLICENSED",
+  "private": true,
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "playwright test --trace off",
+    "dist": "node scripts/build-win.js",
+    "dist:dir": "electron-builder --win dir --x64"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.1",
+    "electron": "^38.8.6",
+    "electron-builder": "^26.18.0"
+  }
+}

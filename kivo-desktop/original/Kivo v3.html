@@ -1,0 +1,1681 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kivo v3 — protótipo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_ds/shared-services-erp-bc952c0e-4396-40fa-9d1c-81a7aa4d8f29/tokens/sserp-tokens.css">
+<style>
+/* Tokens do design system SSERP (tokens/sserp-tokens.css). Os nomes curtos abaixo são aliases usados pela app. */
+:root {
+  --canvas: var(--background);
+  --card: var(--surface);
+  --subtle: var(--surface-hover);
+  --ink: var(--text-primary);
+  --ink2: var(--text-secondary);
+  --ink3: var(--text-muted);
+  --line: var(--border);
+  --linestrong: var(--border-strong);
+  --accent: var(--primary);
+  --accentdark: var(--primary-dark);
+  --accentsubtle: var(--primary-subtle);
+  --pos: var(--favorable);
+  --possubtle: var(--success-subtle);
+  --neg: var(--unfavorable);
+  --negdark: #991b1b;
+  --negsubtle: var(--error-subtle);
+  --warn: var(--warning-text);
+  --warnfill: var(--warning);
+  --warnsubtle: var(--warning-subtle);
+  --info: var(--info-text);
+  --infosubtle: var(--info-subtle);
+  --infoline: #bae6fd;
+  --shadow-card: var(--shadow-sm);
+  --shadow-float: var(--shadow-md);
+  /* Cores de grupo de categoria (usadas em pontos e barras, nunca como cor de texto). */
+  --cat-income: #15803d;
+  --cat-home: #1e3a8a;
+  --cat-bills: #0f766e;
+  --cat-food: #d97706;
+  --cat-transport: #2563eb;
+  --cat-health: #dc2626;
+  --cat-personal: #7c3aed;
+  --cat-shopping: #9d174d;
+  --cat-fun: #ca8a04;
+  --cat-travel: #0891b2;
+  --cat-education: #4338ca;
+  --cat-family: #65a30d;
+  --cat-gifts: #db2777;
+  --cat-taxes: #475569;
+  --cat-debt: #92400e;
+  --cat-savings: #0d9488;
+  --cat-transfer: #7c8ba1;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--canvas); color: var(--ink); font-family: var(--font-sans); font-size: var(--type-body-size); line-height: 20px; -webkit-font-smoothing: antialiased; }
+a { color: inherit; text-decoration: none; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+svg { flex-shrink: 0; }
+
+.page { display: flex; min-height: 100vh; background: var(--canvas); }
+.sidebar-slot { width: 240px; flex-shrink: 0; display: flex; align-items: flex-start; }
+.sidebar { width: 240px; display: flex; flex-direction: column; gap: 4px; padding: 16px 12px; background: var(--card); border-right: 1px solid var(--line); position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+.brand { display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 12px; margin-bottom: 16px; font-size: 16px; font-weight: 600; }
+.nav-group { display: flex; flex-direction: column; gap: 2px; margin-bottom: 8px; }
+.nav-sec { padding: 8px 12px 4px; color: var(--ink2); }
+.main { flex: 1; min-width: 0; }
+.main-in { max-width: 1600px; margin: 0 auto; padding: 24px; }
+.topbar { display: none; }
+
+.h1 { margin: 0; font-size: var(--type-h1-size); line-height: var(--type-h1-line-height); font-weight: var(--type-h1-weight); letter-spacing: var(--type-h1-tracking); }
+.hl { margin: 0; font-size: 16px; line-height: 24px; font-weight: 600; }
+.cap { font-size: 12px; line-height: 16px; color: var(--ink2); }
+.micro { font-size: 12px; line-height: 16px; color: var(--ink2); }
+.display { font-size: var(--type-display-size); line-height: var(--type-display-line-height); font-weight: var(--type-display-weight); letter-spacing: var(--type-display-tracking); font-variant-numeric: tabular-nums; }
+.tnum { font-variant-numeric: tabular-nums; }
+.label-caps { font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+.kpi-label { font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink2); margin-bottom: 4px; }
+.link { font-size: 12px; line-height: 16px; color: var(--accent); }
+.link:hover { color: var(--accentdark); text-decoration: underline; }
+.pos { color: var(--pos); }
+.neg { color: var(--neg); }
+.warn { color: var(--warn); }
+.info { color: var(--info); }
+.strong { color: var(--ink); font-weight: 500; }
+.sub { margin: 4px 0 0; }
+
+.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 24px; box-shadow: var(--shadow-card); }
+.card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.g12 { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 24px; }
+.c3 { grid-column: span 3; } .c4 { grid-column: span 4; } .c5 { grid-column: span 5; } .c6 { grid-column: span 6; }
+.c7 { grid-column: span 7; } .c8 { grid-column: span 8; } .c12 { grid-column: span 12; }
+.head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 24px; }
+.stack { display: flex; flex-direction: column; gap: 8px; }
+.between { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.inline { display: inline-flex; align-items: center; gap: 6px; }
+.summary { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-bottom: 16px; align-items: baseline; }
+.hr { border: 0; border-top: 1px solid var(--line); margin: 16px 0; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 32px; padding: 0 12px; border: 1px solid transparent; border-radius: var(--radius-md); background: var(--accent); color: #fff; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 500; white-space: nowrap; cursor: pointer; }
+.btn:hover { background: var(--accentdark); }
+.btn svg { width: 16px; height: 16px; }
+.btn-outline { background: var(--card); color: var(--ink); border-color: var(--linestrong); }
+.btn-outline:hover { background: var(--subtle); }
+.btn-ghost { background: transparent; color: var(--ink); }
+.btn-ghost:hover { background: var(--subtle); }
+.btn-sm { height: 28px; padding: 0 10px; font-size: 13px; }
+.btn-danger-ghost { background: transparent; color: var(--neg); }
+.btn-danger-ghost:hover { background: var(--negsubtle); }
+.btn-lg { height: 40px; padding: 0 20px; }
+.icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border: 0; border-radius: var(--radius-md); background: transparent; color: var(--ink2); cursor: pointer; }
+.icon-btn:hover { background: var(--subtle); color: var(--ink); }
+.icon-btn svg { width: 16px; height: 16px; }
+
+.input { height: 32px; width: 100%; min-width: 0; padding: 4px 12px; border: 1px solid var(--linestrong); border-radius: var(--radius-md); background: var(--card); color: var(--ink); font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 400; }
+.input::placeholder { color: var(--ink3); }
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label, .field .flabel { font-size: 12px; line-height: 16px; color: var(--ink2); }
+.check { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink); cursor: pointer; }
+.check input { width: 16px; height: 16px; margin: 0; accent-color: var(--accent); }
+
+/* Chip de categoria: fundo neutro, ponto com a cor do grupo, texto em --ink (contraste AA em qualquer cor). */
+.chip { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; padding: 2px 8px; border-radius: var(--radius-sm); background: var(--subtle); color: var(--ink); font-size: 12px; line-height: 20px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chip-dashed { background: transparent; border: 1px dashed var(--linestrong); color: var(--ink2); padding: 1px 7px; }
+.chip .dot { width: 8px; height: 8px; }
+.chip-grp { color: var(--ink2); font-weight: 400; }
+.dot { width: 10px; height: 10px; border-radius: 999px; flex-shrink: 0; display: inline-block; }
+.badge { display: inline-flex; align-items: center; gap: 4px; padding: 0 6px; border-radius: var(--radius-sm); background: var(--subtle); color: var(--ink2); font-size: 12px; line-height: 20px; font-weight: 600; white-space: nowrap; }
+.badge svg { width: 12px; height: 12px; }
+.badge-warn { background: var(--warnsubtle); color: var(--warn); }
+.badge-pos { background: var(--possubtle); color: var(--pos); }
+.badge-info { background: var(--infosubtle); color: var(--info); }
+.badge-neg { background: var(--negsubtle); color: var(--neg); }
+
+.kbd { display: inline-block; min-width: 20px; padding: 0 6px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: var(--radius-sm); background: var(--card); color: var(--ink); font-size: 12px; line-height: 18px; text-align: center; font-family: inherit; }
+.kbd-row { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px 12px; font-size: 12px; line-height: 24px; color: var(--ink2); }
+
+.table { width: 100%; border-collapse: collapse; }
+.table th { padding: 8px 0; font-size: 12px; line-height: 16px; font-weight: 500; color: var(--ink2); text-align: left; }
+.table td { padding: 10px 0; border-top: 1px solid var(--line); vertical-align: middle; }
+.table th + th, .table td + td { padding-left: 16px; }
+.table .r { text-align: right; }
+
+.rows { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-md); box-shadow: var(--shadow-card); overflow-x: auto; }
+.row { display: grid; align-items: center; gap: 16px; padding: 0 20px; border-bottom: 1px solid var(--line); }
+.row:last-child { border-bottom: 0; }
+.row:hover { background: var(--surface-subtle); }
+.row-head { background: var(--surface-subtle); font-size: 12px; line-height: 16px; font-weight: 500; color: var(--ink2); height: 40px; }
+.row-sec { display: flex; align-items: center; height: 32px; padding: 0 20px; background: var(--surface-subtle); border-bottom: 1px solid var(--line); }
+.row-sec:hover { background: var(--surface-subtle); }
+.ellipsis { display: block; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+
+.bar { height: 8px; margin-top: 6px; border-radius: 999px; background: var(--subtle); overflow: hidden; }
+.bar > span { display: block; height: 8px; border-radius: 999px; }
+
+.nav { position: relative; display: flex; align-items: center; gap: 12px; min-height: 40px; padding: 0 12px; border-radius: var(--radius-md); color: var(--ink2); font-size: 14px; line-height: 20px; font-weight: 500; }
+.nav:hover { background: var(--subtle); color: var(--ink); }
+.nav svg { width: 20px; height: 20px; }
+.nav[aria-current="page"] { background: var(--accentsubtle); color: var(--accentdark); box-shadow: inset 3px 0 0 var(--accent); }
+.nav-count { margin-left: auto; padding: 0 8px; border-radius: var(--radius-sm); background: var(--warning); color: var(--on-warning); font-size: 12px; line-height: 20px; font-weight: 600; }
+.nav-locked { flex-wrap: wrap; padding: 8px 12px; column-gap: 12px; row-gap: 2px; }
+.nav-locked .lock { margin-left: auto; width: 16px; height: 16px; }
+.nav-locked .nav-hint { flex-basis: 100%; padding-left: 32px; font-size: 12px; line-height: 16px; color: var(--ink2); font-weight: 400; }
+
+.alert { display: flex; align-items: center; gap: 12px; padding: 8px 8px 8px 12px; border-radius: var(--radius-md); }
+.alert svg { width: 16px; height: 16px; }
+.alert-warn { background: var(--warnsubtle); }
+.alert-warn > svg { color: var(--warn); }
+.alert-info { background: var(--infosubtle); border: 1px solid var(--infoline); color: var(--info); }
+
+.step { display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; gap: 16px; align-items: start; padding: 16px 0; border-top: 1px solid var(--line); }
+.step:first-child { border-top: 0; padding-top: 0; }
+.step-ic { width: 24px; height: 24px; }
+
+.picker { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 24px; margin-top: 16px; }
+.picker h3 { margin: 0 0 4px; display: flex; align-items: center; gap: 8px; font-size: 12px; line-height: 16px; font-weight: 600; color: var(--ink2); }
+.picker-list { display: flex; flex-wrap: wrap; gap: 4px; }
+.pick { height: 28px; padding: 0 8px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--card); color: var(--ink); font-family: inherit; font-size: 13px; cursor: pointer; }
+.pick:hover { background: var(--accentsubtle); border-color: var(--accent); }
+
+.swatch { width: 24px; height: 24px; border: 0; border-radius: 999px; cursor: pointer; padding: 0; }
+.swatch[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--card), 0 0 0 4px var(--accent); }
+
+.chart { width: 100%; height: auto; display: block; }
+.legend { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 12px; }
+
+[hidden] { display: none !important; }
+.dialog { width: 520px; max-width: calc(100vw - 32px); padding: 24px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--card); color: var(--ink); box-shadow: var(--shadow-lg); }
+.dialog-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 16px; }
+.dialog-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 24px; }
+.err { font-size: 12px; line-height: 16px; color: var(--neg); }
+.input[aria-invalid="true"] { border-color: var(--neg); }
+textarea.input { height: auto; min-height: 72px; resize: vertical; }
+.toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 50; display: flex; align-items: center; gap: 12px; max-width: calc(100vw - 32px); padding: 8px 8px 8px 16px; border-radius: var(--radius-md); background: var(--ink); color: #fff; box-shadow: var(--shadow-float); }
+.toast { width: max-content; max-width: min(560px, calc(100vw - 32px)); }
+.toast > svg { width: 16px; height: 16px; flex-shrink: 0; }
+.toast [data-toast-msg] { flex: 1; min-width: 0; }
+.toast .icon-btn { color: #fff; flex-shrink: 0; }
+.alert-info > svg, .alert > svg { flex-shrink: 0; }
+.toast .icon-btn:hover { background: rgba(255, 255, 255, 0.12); color: #fff; }
+.btn-danger { background: var(--neg); }
+.btn-danger:hover { background: var(--negdark); }
+.spinner { width: 24px; height: 24px; border: 2px solid var(--line); border-top-color: var(--accent); border-radius: 999px; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+#dz.drag { border-color: var(--accent); background: var(--accentsubtle); }
+.split-detail { display: grid; gap: 4px; padding: 8px 68px 8px 132px; background: var(--surface-subtle); border-bottom: 1px solid var(--line); }
+dialog::backdrop { background: rgba(23, 32, 51, 0.4); }
+.locked-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; }
+.ghost-row { height: 12px; border-radius: var(--radius-sm); background: var(--subtle); }
+
+.tx { grid-template-columns: 96px minmax(180px, 1fr) minmax(150px, 220px) 120px 110px 72px; height: 56px; }
+.row.tx:not(.row-head) { cursor: pointer; }
+.bl { grid-template-columns: minmax(160px, 1fr) 130px 90px 100px 250px; height: 56px; }
+.rule { grid-template-columns: minmax(0, 1fr) minmax(140px, 220px) 110px 72px 72px; min-height: 56px; }
+.sort { display: inline-flex; align-items: center; gap: 4px; padding: 0; border: 0; background: none; font: inherit; color: inherit; cursor: pointer; }
+.sort:hover { color: var(--ink); }
+.pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; }
+.btn:disabled { opacity: 0.5; cursor: default; }
+.btn-outline:disabled:hover { background: var(--card); }
+.kv-empty { display: none; }
+body.kv-wiped .view[data-kv-wipe] .main-in > :not(.head):not(.kv-empty) { display: none !important; }
+body.kv-wiped .kv-empty { display: flex; }
+#acc-list:empty::before { content: "Ainda não há contas. Adiciona a primeira abaixo."; display: block; padding: 20px; font-size: 12px; color: var(--ink2); }
+#people:empty::before { content: "Sem nomes adicionados."; font-size: 12px; color: var(--ink2); }
+.search-btn { display: flex; align-items: center; gap: 8px; width: 100%; height: 32px; padding: 0 6px 0 10px; margin: -8px 0 12px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface-subtle); color: var(--ink2); font: inherit; font-size: 13px; cursor: pointer; }
+.search-btn:hover { border-color: var(--linestrong); color: var(--ink); }
+.search-btn svg { width: 16px; height: 16px; }
+.cmdk { width: 640px; padding: 0; margin: 12vh auto auto; overflow: hidden; }
+.cmdk-input { display: block; width: 100%; height: 52px; padding: 0 16px; border: 0; border-bottom: 1px solid var(--line); background: transparent; color: var(--ink); font: inherit; font-size: 16px; outline: none; }
+.cmdk-list { position: relative; max-height: min(420px, 60vh); overflow-y: auto; padding: 4px 8px 8px; }
+.cmdk-sec { padding: 10px 8px 4px; }
+.cmdk-item { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 40px; padding: 6px 8px; border: 0; border-radius: var(--radius-md); background: transparent; color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
+.cmdk-item:hover, .cmdk-item[aria-selected="true"] { background: var(--accentsubtle); }
+.metric-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px 24px; }
+@media (max-width: 767px) { .metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.imp { grid-template-columns: minmax(200px, 1fr) 130px 110px 110px 90px; height: 48px; }
+
+@media (max-width: 1279px) {
+  .c3 { grid-column: span 6; }
+  .picker { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 1023px) {
+  .sidebar-slot { display: none; position: fixed; inset: 0 auto 0 0; z-index: 20; box-shadow: var(--shadow-float); }
+  body.menu-open .sidebar-slot { display: flex; }
+  .topbar { display: flex; align-items: center; gap: 8px; height: 48px; padding: 0 16px; background: var(--card); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 10; }
+  .main-in { padding: 16px; }
+  .g12 > * { grid-column: 1 / -1; }
+  .locked-hero { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="sidebar-slot" id="sidebar"><aside class="sidebar" aria-label="Menu principal">
+  <div class="brand">
+    <img src="data:image/png;base64,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" width="24" height="24" alt="" style="display: block; flex-shrink: 0">
+    Kivo
+    <button class="icon-btn" type="button" data-menu-close aria-label="Fechar menu" style="margin-left: auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+  </div>
+  <button class="search-btn" type="button" data-kv-cmdk aria-keyshortcuts="Control+K"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span style="flex: 1; text-align: left">Pesquisar</span><span class="kbd">Ctrl K</span></button>
+  <nav aria-label="Navegação">
+  <div class="nav-group">
+    <a class="nav" href="#home" data-nav="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Início</a>
+  </div>
+
+  <div class="nav-group">
+    <div class="label-caps nav-sec">Operação</div>
+    <a class="nav" href="#transactions" data-nav="transactions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></svg>Transações</a>
+    <a class="nav" href="#review" data-nav="review"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></svg>Revisão<span class="nav-count tnum" aria-label="12 pendentes">12</span></a>
+    <a class="nav" href="#bills" data-nav="bills"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 14v2.2l1.6 1"/><path d="M16 2v4"/><path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5"/><path d="M3 10h5"/><path d="M8 2v4"/><circle cx="16" cy="16" r="6"/></svg>Contas a pagar</a>
+    <a class="nav" href="#accounts" data-nav="accounts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 18v-7"/><path d="M11.12 2.198a2 2 0 0 1 1.76.006l7.866 3.847c.476.233.31.949-.22.949H3.474c-.53 0-.695-.716-.22-.949z"/><path d="M14 18v-7"/><path d="M18 18v-7"/><path d="M3 22h18"/><path d="M6 18v-7"/></svg>Contas</a>
+    <a class="nav" href="#import" data-nav="import"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg>Importar</a>
+  </div>
+
+  <div class="nav-group">
+    <div class="label-caps nav-sec">Análise</div>
+    <a class="nav" href="#insights" data-nav="insights"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12c.552 0 1.005-.449.95-.998a10 10 0 0 0-8.953-8.951c-.55-.055-.998.398-.998.95v8a1 1 0 0 0 1 1z"/><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/></svg>Análises</a>
+    <a class="nav" href="#networth" data-nav="networth"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/></svg>Património líquido</a>
+    <a class="nav" href="#investments" data-nav="investments"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg>Investimentos</a>
+    <a class="nav" href="#forecast" data-nav="forecast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m19 9-5 5-4-4-3 3"/></svg>Previsão</a>
+    <a class="nav" href="#debt" data-nav="debt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>Dívida</a>
+  </div>
+
+  <div class="nav-group">
+    <div class="label-caps nav-sec">Planeamento</div>
+    <a class="nav nav-locked" href="#budget" data-nav="budget"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>Orçamento<svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Bloqueado"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span class="nav-hint">Desbloqueia após 2 meses completos (1/2)</span></a>
+    <a class="nav nav-locked" href="#goals" data-nav="goals"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>Objetivos<svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Bloqueado"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span class="nav-hint">Desbloqueia após 2 meses completos (1/2)</span></a>
+    <a class="nav" href="#weekly" data-nav="weekly"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg>Revisão semanal<span id="weekly-dot" role="img" aria-label="Revisão pendente" style="margin-left: auto; width: 8px; height: 8px; border-radius: 999px; background: var(--accent)"></span></a>
+  </div>
+
+  <div class="nav-group">
+    <div class="label-caps nav-sec">Sistema</div>
+    <a class="nav" href="#settings" data-nav="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>Definições</a>
+  </div>
+  </nav>
+</aside></div>
+
+<div class="main">
+  <div class="topbar">
+    <button class="icon-btn" type="button" data-menu-open aria-label="Abrir menu" aria-controls="sidebar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h16"/><path d="M4 6h16"/><path d="M4 18h16"/></svg></button>
+    <span style="font-weight: 600">Kivo</span>
+    <button class="icon-btn" type="button" data-kv-cmdk aria-label="Pesquisar" style="margin-left: auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button>
+  </div>
+
+  <!-- ============ INÍCIO ============ -->
+  <main class="view" data-view="home" hidden><div class="main-in">
+    <div class="head">
+      <div><h1 class="h1">Início</h1><p class="cap sub">Domingo, 05 out 2026 · dados até 02 out 2026</p></div>
+      <a class="btn btn-outline" href="#import"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg>Importar extrato</a>
+    </div>
+    <div class="g12">
+      <div class="card c8" style="display: flex; align-items: center; gap: 24px">
+        <div style="flex: 1; min-width: 0">
+          <h2 class="hl">O orçamento desbloqueia após 2 meses completos de dados (1/2)</h2>
+          <p class="cap sub">Importa mais um mês de extratos para ativar o valor seguro para gastar.</p>
+          <div class="bar" style="max-width: 360px; margin-top: 12px" role="img" aria-label="1 de 2 meses completos"><span style="width: 50%; background: var(--accent)"></span></div>
+        </div>
+        <a class="link" href="#budget">Saber mais</a>
+      </div>
+      <div class="card c4">
+        <h2 class="hl">Revisão semanal</h2>
+        <p class="cap" style="margin: 4px 0 12px">A última revisão foi há 9 dias.</p>
+        <a class="btn" href="#weekly">Começar revisão</a>
+      </div>
+
+      <div class="card c4">
+        <div class="kpi-label">Gasto este mês</div>
+        <div class="display">€ 1 842,30</div>
+        <div class="cap" style="margin-top: 4px"><span class="neg" style="font-weight: 500">↑ 6% desfavorável</span> face a agosto até esta data</div>
+      </div>
+      <div class="card c4">
+        <div class="kpi-label">Por rever</div>
+        <div class="display">12</div>
+        <a class="link" href="#review">Abrir revisão</a>
+      </div>
+      <div class="card c4">
+        <div class="kpi-label">Contas a pagar em 7 dias</div>
+        <div class="display" id="home-bills-n">3</div>
+        <div class="between"><span class="cap tnum" id="home-bills-v">€ 214,90</span><a class="link" href="#bills">Abrir contas a pagar</a></div>
+      </div>
+
+      <div class="card c12">
+        <div class="card-head">
+          <h2 class="hl">Vale a pena ver</h2>
+          <a class="link" href="#weekly">Ver todos (2)</a>
+        </div>
+        <div class="stack">
+          <div class="alert alert-warn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+            <span style="flex: 1">Duas cobranças idênticas com um mês de intervalo; uma terceira confirma</span>
+            <a class="btn btn-ghost btn-sm" href="#bills">Criar conta a pagar</a>
+            <button class="btn btn-ghost btn-sm" type="button" data-dismiss>Dispensar</button>
+          </div>
+          <div class="alert alert-warn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+            <span style="flex: 1">Supermercado: € 312,40 este mês, 38% acima da tua média de 3 meses</span>
+            <a class="btn btn-ghost btn-sm" href="#transactions">Ver transações</a>
+            <button class="btn btn-ghost btn-sm" type="button" data-dismiss>Dispensar</button>
+          </div>
+          <p class="cap" data-empty-alerts hidden style="margin: 0">Nada para ver de momento.</p>
+        </div>
+      </div>
+
+      <div class="card c6">
+        <div class="card-head">
+          <h2 class="hl">Contas a pagar nos próximos 7 dias</h2>
+          <a class="link" href="#bills">Ver tudo</a>
+        </div>
+        <table class="table">
+          <tbody id="home-bills">
+                      </tbody>
+        </table>
+      </div>
+
+      <div class="card c6">
+        <div class="card-head">
+          <h2 class="hl">Principais categorias</h2>
+          <a class="link" href="#insights">Ver análises</a>
+        </div>
+        <div class="stack" style="gap: 14px">
+          <div>
+            <div class="between"><span class="inline"><span class="dot" style="background: var(--cat-food)"></span>Alimentação</span><span class="tnum">€ 612,80</span></div>
+            <div class="bar"><span style="width: 100%; background: var(--cat-food)"></span></div>
+          </div>
+          <div>
+            <div class="between"><span class="inline"><span class="dot" style="background: var(--cat-home)"></span>Casa</span><span class="tnum">€ 480,00</span></div>
+            <div class="bar"><span style="width: 78%; background: var(--cat-home)"></span></div>
+          </div>
+          <div>
+            <div class="between"><span class="inline"><span class="dot" style="background: var(--cat-transport)"></span>Carro e transportes</span><span class="tnum">€ 284,10</span></div>
+            <div class="bar"><span style="width: 46%; background: var(--cat-transport)"></span></div>
+          </div>
+          <div>
+            <div class="between"><span class="inline"><span class="dot" style="background: var(--cat-bills)"></span>Faturas e subscrições</span><span class="tnum">€ 221,40</span></div>
+            <div class="bar"><span style="width: 36%; background: var(--cat-bills)"></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div></main>
+
+  <!-- ============ TRANSAÇÕES ============ -->
+  <main class="view" data-view="transactions" hidden><div class="main-in">
+    <div class="head"><h1 class="h1">Transações</h1><a class="btn btn-outline" href="#review" id="tx-review-btn">Rever 12 por categorizar</a></div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 16px">
+      <div class="field" style="flex: 1 1 240px"><label for="q">Pesquisar</label><input id="q" class="input" placeholder="Comerciante ou descrição"></div>
+      <div class="field" style="width: 180px"><label for="a">Conta</label><select id="a" class="input"><option value="">Todas</option><option>ActivoBank</option><option>XTB</option><option>Conta conjunta</option></select></div>
+      <div class="field" style="width: 240px"><label for="c">Categoria</label><select id="c" class="input">
+        <option value="">Todas</option>
+        <option value="none">Sem categoria</option>
+        <optgroup label="Rendimentos"><option value="income">Rendimentos (tudo)</option></optgroup>
+        <optgroup label="Despesas fixas"><option value="home">Casa (tudo)</option><option value="bills">Faturas e subscrições (tudo)</option><option value="taxes">Impostos e comissões (tudo)</option><option value="debt">Dívida (tudo)</option></optgroup>
+        <optgroup label="Despesas variáveis"><option value="food">Alimentação (tudo)</option><option value="transport">Carro e transportes (tudo)</option><option value="health">Saúde (tudo)</option><option value="personal">Cuidado pessoal (tudo)</option><option value="shopping">Compras (tudo)</option><option value="fun">Lazer (tudo)</option><option value="travel">Viagens (tudo)</option><option value="education">Educação (tudo)</option><option value="family">Família e animais (tudo)</option><option value="gifts">Ofertas e donativos (tudo)</option></optgroup>
+        <optgroup label="Outros"><option value="savings">Poupança e investimento (tudo)</option><option value="transfer">Transferências (tudo)</option></optgroup>
+      </select></div>
+      <div class="field" style="width: 160px"><label for="m">Mês</label><select id="m" class="input"><option value="">Todos</option><option value="out">outubro 2026</option><option value="set">setembro 2026</option><option value="ago">agosto 2026</option></select></div>
+    </div>
+
+    <div class="summary">
+      <span class="cap"><span class="tnum" id="tx-total">87</span> transações</span>
+      <span class="cap" data-tx-shown hidden>A mostrar <span class="tnum strong" data-n></span> com os filtros</span>
+      <span class="cap">Gasto <span class="tnum strong" id="tx-spent">€ 0,00</span></span>
+      <span class="cap">Recebido <span class="tnum pos" style="font-weight: 500" id="tx-recv">€ 0,00</span></span>
+      <span class="cap">Por categorizar <span class="tnum warn" style="font-weight: 500" id="tx-unc">0</span></span>
+    </div>
+
+    <div class="rows" role="table" aria-label="Transações">
+      <div class="row row-head tx" style="height: 40px; cursor: default" role="row"><span role="columnheader"><button class="sort" type="button" data-kv-sort="date">Data<span data-arrow aria-hidden="true"></span></button></span><span role="columnheader"><button class="sort" type="button" data-kv-sort="merchant">Comerciante<span data-arrow aria-hidden="true"></span></button></span><span role="columnheader"><button class="sort" type="button" data-kv-sort="cat">Categoria<span data-arrow aria-hidden="true"></span></button></span><span role="columnheader"><button class="sort" type="button" data-kv-sort="account">Conta<span data-arrow aria-hidden="true"></span></button></span><span role="columnheader" style="text-align: right"><button class="sort" type="button" data-kv-sort="amount">Valor<span data-arrow aria-hidden="true"></span></button></span><span role="columnheader"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Ações</span></span></div>
+      <div id="tx-body"></div>
+      <div class="row-sec cap" data-tx-empty hidden style="height: 56px; justify-content: center; background: var(--card)">Nenhuma transação corresponde aos filtros.</div>
+    </div>
+    <div class="pager" id="tx-pager"></div>
+  </div></main>
+
+  <!-- ============ REVISÃO ============ -->
+  <main class="view" data-view="review" hidden><div class="main-in">
+    <div class="head" style="align-items: flex-start">
+      <div><h1 class="h1">Revisão</h1><p class="cap sub tnum"><span data-rv-pos>1</span> de 12 · cerca de 2 min</p></div>
+      <span class="kbd-row" style="max-width: 640px">
+        <span><span class="kbd">1–9</span> escolher</span>
+        <span><span class="kbd">/</span> pesquisar</span>
+        <span><span class="kbd">Enter</span> aceitar a primeira</span>
+        <span><span class="kbd">→</span> mais tarde</span>
+        <span><span class="kbd">S</span> dividir</span>
+        <span><span class="kbd">T</span> transferência</span>
+        <span><span class="kbd">A</span> sempre</span>
+        <span><span class="kbd">B</span> conta a pagar</span>
+        <span><span class="kbd">N</span> renomear comerciante</span>
+        <span><span class="kbd">Z</span> desfazer</span>
+      </span>
+    </div>
+    <div style="display: grid; gap: 16px; max-width: 1100px">
+      <div class="bar" style="margin: 0" role="progressbar" aria-label="Progresso da revisão" aria-valuemin="0" aria-valuemax="12" aria-valuenow="0"><span data-rv-bar style="width: 2%; background: var(--accent)"></span></div>
+
+      <div style="position: relative; z-index: 0">
+        <div class="card">
+          <div data-rv-item data-merchant="Restaurante O Quintal" data-amount="27.50">
+          <div class="cap warn inline" style="margin-bottom: 8px; font-weight: 500"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>Sem categoria</div>
+          <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 24px">
+            <div style="min-width: 0">
+              <div data-rv-title style="font-size: 24px; line-height: 32px; font-weight: 600; letter-spacing: -0.01em">Restaurante O Quintal</div>
+              <div class="micro">COMPRA REST O QUINTAL LOUSADA</div>
+              <div class="cap" style="display: flex; align-items: center; gap: 8px; margin-top: 8px">
+                <span class="tnum">27 set 2026</span>
+                <span class="badge">pendente</span>
+                <span class="dot" style="width: 8px; height: 8px; background: var(--accent)"></span>ActivoBank
+              </div>
+            </div>
+            <div class="display" style="flex-shrink: 0">−€ 27,50</div>
+          </div>
+          <div style="margin-top: 24px" class="stack">
+            <div class="cap">Sugestões</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px">
+              <button type="button" class="btn btn-outline" style="gap: 8px" data-rv-pick="Restaurantes"><span class="kbd">1</span><span class="dot" style="width: 8px; height: 8px; background: var(--cat-food)"></span>Restaurantes<span class="cap">Alimentação</span></button>
+              <button type="button" class="btn btn-outline" style="gap: 8px" data-rv-pick="Café e snacks"><span class="kbd">2</span><span class="dot" style="width: 8px; height: 8px; background: var(--cat-food)"></span>Café e snacks<span class="cap">Alimentação</span></button>
+              <button type="button" class="btn btn-outline" style="gap: 8px" data-rv-pick="Entregas ao domicílio"><span class="kbd">3</span><span class="dot" style="width: 8px; height: 8px; background: var(--cat-food)"></span>Entregas ao domicílio<span class="cap">Alimentação</span></button>
+              <button type="button" class="btn btn-outline" style="gap: 8px" data-rv-pick="Saídas à noite"><span class="kbd">4</span><span class="dot" style="width: 8px; height: 8px; background: var(--cat-fun)"></span>Saídas à noite<span class="cap">Lazer</span></button>
+            </div>
+            <p class="cap" style="margin: 0">A primeira sugestão vem de 3 compras anteriores em restaurantes de Lousada.</p>
+          </div>
+        </div>
+        <div data-rv-item data-merchant="Uber Eats" data-amount="18.90" hidden>
+          <div class="cap warn inline" style="margin-bottom: 8px; font-weight: 500"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>Sem categoria</div>
+          <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 24px">
+            <div style="min-width: 0">
+              <div data-rv-title style="font-size: 24px; line-height: 32px; font-weight: 600; letter-spacing: -0.01em">Uber Eats</div>
+              <div class="micro">UBER *EATS HELP.UBER.COM</div>
+              <div class="cap" style="display: flex; align-items: center; gap: 8px; margin-top: 8px">
+                <span class="tnum">26 set 2026</span>
+                <span class="dot" style="width: 8px; height: 8px; background: var(--accent)"></span>ActivoBank
+              </div>
+            </div>
+            <div class="display" style="flex-shrink: 0">−€ 18,90</div>
+          </div>
+          <div style="margin-top: 24px" class="stack">
+            <div class="cap">Sugestões</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px">
+              <button type="button" class="btn btn-outline" style="gap: 8px" data-rv-pick="Entregas ao domicílio"><span class="kbd">1</span><span class="dot" style="width: 8px; height: 8px; background: var(--cat-food)"></span>Entregas ao domicílio<span class="cap">Alimentação</span></button>
+              <button type="button" class="btn btn-outline" style="gap: 8px" data-rv-pick="Restaurantes"><span class="kbd">2</span><span class="dot" style="width: 8px; height: 8px; background: var(--cat-food)"></span>Restaurantes<span class="cap">Alimentação</span></button>
+              <button type="button" class="btn btn-outline" style="gap: 8px" data-rv-pick="TVDE e táxi"><span class="kbd">3</span><span class="dot" style="width: 8px; height: 8px; background: var(--cat-transport)"></span>TVDE e táxi<span class="cap">Carro e transportes</span></button>
+            </div>
+            <p class="cap" style="margin: 0">Já categorizaste 2 compras na Uber Eats como Entregas ao domicílio.</p>
+          </div>
+        </div>
+        <div data-rv-item data-merchant="MB WAY Joana Silva" data-amount="25.00" hidden>
+          <div class="cap warn inline" style="margin-bottom: 8px; font-weight: 500"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>Sem categoria</div>
+          <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 24px">
+            <div style="min-width: 0">
+              <div data-rv-title style="font-size: 24px; line-height: 32px; font-weight: 600; letter-spacing: -0.01em">MB WAY Joana Silva</div>
+              <div class="micro">MBWAY TRF P/ JOANA SILVA</div>
+              <div class="cap" style="display: flex; align-items: center; gap: 8px; margin-top: 8px">
+                <span class="tnum">24 set 2026</span>
+                <span class="dot" style="width: 8px; height: 8px; background: var(--accent)"></span>ActivoBank
+              </div>
+            </div>
+            <div class="display" style="flex-shrink: 0">−€ 25,00</div>
+          </div>
+          <div style="margin-top: 24px" class="stack">
+            <div class="cap">Sugestões</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px">
+              <button type="button" class="btn btn-outline" style="gap: 8px" data-rv-pick="Presentes"><span class="kbd">1</span><span class="dot" style="width: 8px; height: 8px; background: var(--cat-gifts)"></span>Presentes<span class="cap">Ofertas e donativos</span></button>
+              <button type="button" class="btn btn-outline" style="gap: 8px" data-rv-pick="Restaurantes"><span class="kbd">2</span><span class="dot" style="width: 8px; height: 8px; background: var(--cat-food)"></span>Restaurantes<span class="cap">Alimentação</span></button>
+              <button type="button" class="btn btn-outline" style="gap: 8px" data-rv-pick="Saídas à noite"><span class="kbd">3</span><span class="dot" style="width: 8px; height: 8px; background: var(--cat-fun)"></span>Saídas à noite<span class="cap">Lazer</span></button>
+            </div>
+            <p class="cap" style="margin: 0">Primeira transferência MB WAY para esta pessoa. Se a conta for tua, marca como transferência.</p>
+          </div>
+        </div>
+        <div data-rv-done hidden style="display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 32px 0; text-align: center">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--pos)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+          <h2 class="hl">Revisão concluída</h2>
+          <p class="cap" style="margin: 0">Não há mais transações por rever nesta sessão.</p>
+          <div style="display: flex; gap: 8px; margin-top: 8px"><button class="btn btn-ghost" type="button" data-rv-undo>Desfazer a última</button><a class="btn btn-outline" href="#transactions">Ver transações</a></div>
+        </div>
+
+          <div id="picker" hidden style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--line)">
+            <div class="between">
+              <div class="field" style="flex: 1; max-width: 420px"><label for="pick-q">Pesquisar categoria</label><input id="pick-q" class="input" placeholder="Ex.: farmácia, portagens, presentes"></div>
+              <button class="icon-btn" type="button" data-picker-close aria-label="Fechar lista de categorias"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+            </div>
+            <div class="picker">
+              <div><h3><span class="dot" style="width: 8px; height: 8px; background: var(--cat-food)"></span>Alimentação</h3><div class="picker-list"><button class="pick" type="button">Supermercado</button><button class="pick" type="button">Restaurantes</button><button class="pick" type="button">Café e snacks</button><button class="pick" type="button">Entregas ao domicílio</button></div></div>
+              <div><h3><span class="dot" style="width: 8px; height: 8px; background: var(--cat-home)"></span>Casa</h3><div class="picker-list"><button class="pick" type="button">Renda ou prestação</button><button class="pick" type="button">Condomínio</button><button class="pick" type="button">Seguro de habitação</button><button class="pick" type="button">IMI</button><button class="pick" type="button">Manutenção e reparações</button><button class="pick" type="button">Mobiliário e decoração</button><button class="pick" type="button">Artigos para a casa</button></div></div>
+              <div><h3><span class="dot" style="width: 8px; height: 8px; background: var(--cat-bills)"></span>Faturas e subscrições</h3><div class="picker-list"><button class="pick" type="button">Eletricidade</button><button class="pick" type="button">Água</button><button class="pick" type="button">Gás</button><button class="pick" type="button">Telecomunicações</button><button class="pick" type="button">Streaming e música</button><button class="pick" type="button">Software e apps</button></div></div>
+              <div><h3><span class="dot" style="width: 8px; height: 8px; background: var(--cat-transport)"></span>Carro e transportes</h3><div class="picker-list"><button class="pick" type="button">Combustível</button><button class="pick" type="button">Portagens e Via Verde</button><button class="pick" type="button">Estacionamento</button><button class="pick" type="button">Manutenção do carro</button><button class="pick" type="button">Seguro automóvel</button><button class="pick" type="button">IUC</button><button class="pick" type="button">Transportes públicos</button><button class="pick" type="button">TVDE e táxi</button></div></div>
+              <div><h3><span class="dot" style="width: 8px; height: 8px; background: var(--cat-health)"></span>Saúde</h3><div class="picker-list"><button class="pick" type="button">Farmácia</button><button class="pick" type="button">Consultas e exames</button><button class="pick" type="button">Dentista</button><button class="pick" type="button">Ótica</button><button class="pick" type="button">Seguro de saúde</button></div></div>
+              <div><h3><span class="dot" style="width: 8px; height: 8px; background: var(--cat-personal)"></span>Cuidado pessoal</h3><div class="picker-list"><button class="pick" type="button">Cabeleireiro e estética</button><button class="pick" type="button">Higiene e cosmética</button><button class="pick" type="button">Ginásio e desporto</button></div></div>
+              <div><h3><span class="dot" style="width: 8px; height: 8px; background: var(--cat-shopping)"></span>Compras</h3><div class="picker-list"><button class="pick" type="button">Roupa e calçado</button><button class="pick" type="button">Eletrónica</button><button class="pick" type="button">Livros</button><button class="pick" type="button">Compras online</button><button class="pick" type="button">Outras compras</button></div></div>
+              <div><h3><span class="dot" style="width: 8px; height: 8px; background: var(--cat-fun)"></span>Lazer</h3><div class="picker-list"><button class="pick" type="button">Cinema e espetáculos</button><button class="pick" type="button">Hobbies</button><button class="pick" type="button">Saídas à noite</button><button class="pick" type="button">Jogos</button></div></div>
+              <div><h3><span class="dot" style="width: 8px; height: 8px; background: var(--cat-travel)"></span>Viagens</h3><div class="picker-list"><button class="pick" type="button">Alojamento</button><button class="pick" type="button">Voos e comboios</button><button class="pick" type="button">Aluguer de carro</button><button class="pick" type="button">Atividades</button></div></div>
+              <div><h3><span class="dot" style="width: 8px; height: 8px; background: var(--cat-education)"></span>Educação</h3><div class="picker-list"><button class="pick" type="button">Propinas</button><button class="pick" type="button">Cursos e formação</button><button class="pick" type="button">Material escolar</button></div></div>
+              <div><h3><span class="dot" style="width: 8px; height: 8px; background: var(--cat-family)"></span>Família e animais</h3><div class="picker-list"><button class="pick" type="button">Filhos</button><button class="pick" type="button">Animais de estimação</button><button class="pick" type="button">Mesada</button></div></div>
+              <div><h3><span class="dot" style="width: 8px; height: 8px; background: var(--cat-gifts)"></span>Ofertas e donativos</h3><div class="picker-list"><button class="pick" type="button">Presentes</button><button class="pick" type="button">Donativos</button></div></div>
+              <div><h3><span class="dot" style="width: 8px; height: 8px; background: var(--cat-taxes)"></span>Impostos e comissões</h3><div class="picker-list"><button class="pick" type="button">IRS</button><button class="pick" type="button">Segurança Social</button><button class="pick" type="button">Comissões bancárias</button><button class="pick" type="button">Coimas e multas</button></div></div>
+              <div><h3><span class="dot" style="width: 8px; height: 8px; background: var(--cat-debt)"></span>Dívida</h3><div class="picker-list"><button class="pick" type="button">Crédito automóvel</button><button class="pick" type="button">Crédito pessoal</button><button class="pick" type="button">Cartão de crédito</button></div></div>
+              <div><h3><span class="dot" style="width: 8px; height: 8px; background: var(--cat-income)"></span>Rendimentos</h3><div class="picker-list"><button class="pick" type="button">Vencimento</button><button class="pick" type="button">Subsídio de férias e de Natal</button><button class="pick" type="button">Rendimento extra</button><button class="pick" type="button">Reembolsos</button><button class="pick" type="button">Juros e dividendos</button><button class="pick" type="button">Outros rendimentos</button></div></div>
+              <div><h3><span class="dot" style="width: 8px; height: 8px; background: var(--cat-savings)"></span>Poupança e investimento</h3><div class="picker-list"><button class="pick" type="button">Poupança</button><button class="pick" type="button">Investimento</button></div></div>
+            </div>
+          </div>
+        </div>
+        <div aria-hidden="true" style="position: absolute; left: 16px; right: 16px; bottom: -10px; height: 24px; z-index: -1; border: 1px solid var(--line); border-radius: 8px; background: var(--card)"></div>
+      </div>
+
+      <div data-rv-actions style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px">
+        <button class="btn btn-outline" type="button" data-picker-open aria-controls="picker" aria-expanded="false">Escolher categoria…</button>
+        <button class="btn btn-ghost" type="button" data-rv-later>Mais tarde</button>
+        <button class="btn btn-ghost" type="button" data-rv-undo>Desfazer</button>
+        <button class="btn btn-ghost" type="button" data-rv-split>Dividir</button>
+        <button class="btn btn-ghost" type="button" data-rv-transfer>Marcar como transferência</button>
+        <button class="btn btn-ghost" type="button" data-rv-bill>Marcar como conta a pagar</button>
+        <button class="btn btn-ghost" type="button" data-rv-rename>Renomear comerciante</button>
+        <label class="check" style="margin-left: auto"><input type="checkbox" id="rv-always"> Categorizar sempre “<span data-rv-merchant>Restaurante O Quintal</span>” assim</label>
+      </div>
+    </div>
+  </div></main>
+
+  <!-- ============ IMPORTAR ============ -->
+  <main class="view" data-view="import" hidden><div class="main-in">
+    <div class="head"><h1 class="h1">Importar</h1></div>
+    <div style="display: grid; gap: 24px; max-width: 880px">
+      <div class="alert alert-info" data-imp="bank" role="status">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+        <span style="flex: 1">Importaste <span class="tnum" data-imp-n>38</span> transações novas de <span data-imp-acc>ActivoBank</span> (<span data-imp-file>setembro 2026</span>). <span class="tnum" data-imp-pend>12</span> ficaram por categorizar.</span>
+        <a class="btn btn-ghost btn-sm" href="#review" style="color: var(--info)">Rever agora</a>
+        <button class="btn btn-outline btn-sm" type="button" data-undo-import>Desfazer</button>
+      </div>
+      <div class="alert alert-info" data-imp="xtb" role="status" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+        <span style="flex: 1">Relatório da XTB importado (<span data-imp-file></span>): <span class="tnum" data-imp-n>3</span> movimentos novos, <span class="tnum" data-imp-dup>14</span> já existiam e não foram duplicados.</span>
+        <a class="btn btn-ghost btn-sm" href="#investments" style="color: var(--info)">Ver investimentos</a>
+        <button class="btn btn-outline btn-sm" type="button" data-undo-import>Desfazer</button>
+      </div>
+      <div class="alert alert-info" data-imp="dup" role="status" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        <span style="flex: 1"><span data-imp-file></span> já tinha sido importado. Nenhuma transação nova.</span>
+      </div>
+      <div class="alert alert-warn" data-imp="error" role="alert" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+        <span style="flex: 1">Não foi possível ler <span data-imp-file></span>. Usa um ficheiro <span data-imp-formats></span>.</span>
+      </div>
+
+      <div class="card">
+        <h2 class="hl">Extrato bancário</h2>
+        <p class="cap" style="margin: 4px 0 16px">PDF do ActivoBank, ou CSV, Excel e OFX. O ficheiro é lido neste computador.</p>
+        <div class="field" style="max-width: 320px; margin-bottom: 16px"><label for="conta">Conta</label><select id="conta" class="input"><option>ActivoBank</option><option>Conta conjunta</option></select></div>
+        <input type="file" id="file-bank" accept=".pdf,.xlsx,.csv,.ofx" hidden>
+        <button type="button" id="dz" data-file="file-bank" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 160px; border: 1px dashed var(--linestrong); border-radius: 8px; background: var(--surface-subtle); color: var(--ink2); font-family: inherit; font-size: 14px; cursor: pointer">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg>
+          <span style="font-weight: 500; color: var(--ink)">Arrasta um ficheiro para aqui, ou clica para escolher</span>
+          <span class="cap">.pdf · .xlsx · .csv · .ofx</span>
+        </button>
+        <div id="dz-reading" hidden role="status" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 160px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-subtle)">
+          <span class="spinner" aria-hidden="true"></span>
+          <span style="font-weight: 500">A ler <span data-reading-file></span>…</span>
+          <span class="cap">O ficheiro é lido neste computador.</span>
+        </div>
+        <p class="cap" style="margin: 12px 0 0">Último extrato importado: setembro 2026. Falta outubro 2026 para completar o segundo mês.</p>
+      </div>
+
+      <div class="card">
+        <h2 class="hl">Relatório da XTB</h2>
+        <p class="cap" style="margin: 4px 0 16px">Excel exportado da XTB. Cria a carteira, os dividendos, os juros e os impostos. Importar duas vezes o mesmo relatório não duplica.</p>
+        <div style="display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap">
+          <div class="field" style="width: 320px"><label for="xtb">Conta de investimento</label><select id="xtb" class="input"><option>XTB</option></select></div>
+          <input type="file" id="file-xtb" accept=".xlsx" hidden>
+          <button class="btn btn-outline" type="button" data-file="file-xtb" id="xtb-btn"><span>Escolher ficheiro Excel…</span><span hidden>A ler…</span></button>
+        </div>
+      </div>
+
+      <div>
+        <h2 class="hl" style="margin-bottom: 12px">Histórico de importações</h2>
+        <div class="rows" role="table" aria-label="Histórico de importações" id="imp-list">
+          <div class="row row-head imp" style="height: 40px" role="row"><span role="columnheader">Ficheiro</span><span role="columnheader">Conta</span><span role="columnheader">Data</span><span role="columnheader" style="text-align: right">Transações</span><span role="columnheader"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Ações</span></span></div>
+          <div class="row imp" role="row" data-n="38" data-pend="12"><span class="inline" style="min-width: 0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg><span class="ellipsis">extrato_setembro_2026.pdf</span></span><span class="cap">ActivoBank</span><span class="cap tnum">03 out 2026</span><span class="tnum" style="text-align: right">38</span><span style="text-align: right"><button class="btn btn-ghost btn-sm" type="button" data-undo-row>Desfazer</button></span></div>
+          <div class="row imp" role="row"><span class="inline" style="min-width: 0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg><span class="ellipsis">xtb_relatorio_2026-10-01.xlsx</span></span><span class="cap">XTB</span><span class="cap tnum">01 out 2026</span><span class="tnum" style="text-align: right">14</span><span style="text-align: right"><button class="btn btn-ghost btn-sm" type="button" data-undo-row>Desfazer</button></span></div>
+          <div class="row imp" role="row"><span class="inline" style="min-width: 0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg><span class="ellipsis">extrato_agosto_2026.pdf</span></span><span class="cap">ActivoBank</span><span class="cap tnum">02 set 2026</span><span class="tnum" style="text-align: right">49</span><span style="text-align: right"><button class="btn btn-ghost btn-sm" type="button" data-undo-row>Desfazer</button></span></div>
+        </div>
+      </div>
+    </div>
+  </div></main>
+
+  <!-- ============ CONTAS ============ -->
+  <main class="view" data-view="accounts" hidden><div class="main-in">
+    <div class="head"><h1 class="h1">Contas</h1><a class="cap" href="#networth">Património líquido <span class="tnum strong">€ 1 861,07</span></a></div>
+    <div style="display: grid; gap: 24px; max-width: 880px">
+      <div class="rows" id="acc-list">
+        <div class="row" style="grid-template-columns: 40px minmax(0, 1fr) 120px 130px auto; height: 72px">
+          <span style="width: 40px; height: 40px; border-radius: 999px; background: var(--accent)" aria-hidden="true"></span>
+          <span><span class="hl" style="display: block">ActivoBank</span><span class="cap">Conta à ordem · último extrato 30 set 2026</span></span>
+          <span class="cap tnum" style="text-align: right">87 transações</span>
+          <span class="tnum strong" style="text-align: right">€ 3 418,62</span>
+          <span style="display: flex; gap: 4px; justify-content: flex-end"><button class="icon-btn" type="button" aria-label="Editar ActivoBank" data-edit-account><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg></button><button class="icon-btn" type="button" aria-label="Eliminar ActivoBank" data-delete-account="ActivoBank" style="color: var(--neg)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button></span>
+        </div>
+        <div class="row" style="grid-template-columns: 40px minmax(0, 1fr) 120px 130px auto; height: 72px">
+          <span style="width: 40px; height: 40px; border-radius: 999px; background: var(--pos)" aria-hidden="true"></span>
+          <span><span class="hl" style="display: block">XTB</span><span class="cap">Investimento · relatório de 01 out 2026</span></span>
+          <span class="cap tnum" style="text-align: right">14 transações</span>
+          <span class="tnum strong" style="text-align: right">€ 5 284,60</span>
+          <span style="display: flex; gap: 4px; justify-content: flex-end"><button class="icon-btn" type="button" aria-label="Editar XTB" data-edit-account><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg></button><button class="icon-btn" type="button" aria-label="Eliminar XTB" data-delete-account="XTB" style="color: var(--neg)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button></span>
+        </div>
+        <div class="row" style="grid-template-columns: 40px minmax(0, 1fr) 120px 130px auto; height: 72px">
+          <span style="width: 40px; height: 40px; border-radius: 999px; background: var(--cat-debt)" aria-hidden="true"></span>
+          <span><span class="hl" style="display: block">Crédito automóvel</span><span class="cap">Crédito · saldo atualizado à mão</span></span>
+          <span class="cap tnum" style="text-align: right">1 transação</span>
+          <span class="tnum strong" style="text-align: right">−€ 6 842,15</span>
+          <span style="display: flex; gap: 4px; justify-content: flex-end"><button class="icon-btn" type="button" aria-label="Editar Crédito automóvel" data-edit-account><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg></button><button class="icon-btn" type="button" aria-label="Eliminar Crédito automóvel" data-delete-account="Crédito automóvel" style="color: var(--neg)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button></span>
+        </div>
+        <div class="row" style="grid-template-columns: 40px minmax(0, 1fr) 120px 130px auto; height: 72px">
+          <span style="width: 40px; height: 40px; border-radius: 999px; background: var(--warnfill)" aria-hidden="true"></span>
+          <span><span class="hl" style="display: block">Conta conjunta</span><span class="cap">Conta à ordem · sem extratos importados</span></span>
+          <span class="cap tnum" style="text-align: right">0 transações</span>
+          <a class="link" href="#import" style="text-align: right">Importar extrato</a>
+          <span style="display: flex; gap: 4px; justify-content: flex-end"><button class="icon-btn" type="button" aria-label="Editar Conta conjunta" data-edit-account><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg></button><button class="icon-btn" type="button" aria-label="Eliminar Conta conjunta" data-delete-account="Conta conjunta" style="color: var(--neg)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button></span>
+        </div>
+      </div>
+
+      <dialog id="del-dialog" class="dialog" aria-labelledby="del-title" style="width: 440px">
+        <h2 class="hl" id="del-title">Eliminar a conta <span data-del-name></span>?</h2>
+        <p class="cap" style="margin: 8px 0 0">Também são eliminadas as <span data-del-count></span> desta conta, as importações e as regras associadas. Esta ação não pode ser desfeita. Se quiseres guardar os dados, descarrega primeiro uma cópia de segurança em Definições.</p>
+        <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 24px">
+          <button class="btn btn-outline" type="button" data-del-cancel>Cancelar</button>
+          <button class="btn btn-danger" type="button" data-del-confirm>Eliminar conta</button>
+        </div>
+      </dialog>
+      <div class="alert alert-info" id="del-done" hidden role="status">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+        <span style="flex: 1">Eliminaste a conta <span data-del-done-name></span>.</span>
+      </div>
+
+      <div class="card">
+        <h2 class="hl" style="margin-bottom: 16px">Adicionar conta</h2>
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; max-width: 640px">
+          <div class="field"><label for="n">Nome</label><input id="n" class="input" placeholder="Ex.: ActivoBank" aria-describedby="n-err"><span class="err" id="n-err" hidden>Indica um nome para a conta.</span></div>
+          <div class="field"><label for="t">Tipo</label><select id="t" class="input"><option>Conta à ordem</option><option>Poupança</option><option>Cartão de crédito</option><option>Crédito</option><option>Investimento</option></select></div>
+          <div class="field"><label for="i">Instituição</label><input id="i" class="input" placeholder="Opcional"></div>
+          <div class="field" role="group" aria-labelledby="cor-l"><span class="flabel" id="cor-l">Cor</span>
+            <div style="display: flex; gap: 8px; height: 32px; align-items: center">
+              <button class="swatch" type="button" aria-label="Azul" aria-pressed="true" style="background: var(--accent)"></button>
+              <button class="swatch" type="button" aria-label="Verde" aria-pressed="false" style="background: var(--pos)"></button>
+              <button class="swatch" type="button" aria-label="Laranja" aria-pressed="false" style="background: var(--warnfill)"></button>
+              <button class="swatch" type="button" aria-label="Verde-azulado" aria-pressed="false" style="background: var(--cat-bills)"></button>
+              <button class="swatch" type="button" aria-label="Bordô" aria-pressed="false" style="background: var(--cat-shopping)"></button>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top: 16px"><button class="btn" type="button" data-add-account>Adicionar conta</button></div>
+      </div>
+    </div>
+  </div></main>
+
+  <!-- ============ CONTAS A PAGAR ============ -->
+  <main class="view" data-view="bills" hidden><div class="main-in">
+    <div class="head"><h1 class="h1">Contas a pagar</h1><button class="btn" type="button" data-open-bill>Adicionar conta a pagar</button></div>
+
+    <div class="summary">
+      <span class="cap">Próximos 7 dias <span class="tnum strong" id="bills-7d">€ 0,00</span></span>
+      <span class="cap">Total mensal estimado <span class="tnum strong" id="bills-month">€ 0,00</span></span>
+      <span class="cap" id="bills-n">0 contas ativas</span>
+    </div>
+
+    <div class="rows" role="table" aria-label="Contas a pagar" id="bills-list">
+      <div class="row row-head bl" style="height: 40px" role="row"><span role="columnheader">Conta</span><span role="columnheader">Próximo vencimento</span><span role="columnheader">Frequência</span><span role="columnheader" style="text-align: right">Valor médio</span><span role="columnheader"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Ações</span></span></div>
+      <div id="bills-body"></div>
+    </div>
+  </div></main>
+
+  <!-- ============ ANÁLISES ============ -->
+  <main class="view" data-view="insights" hidden><div class="main-in">
+    <div class="head" style="align-items: flex-end">
+      <div><h1 class="h1">Análises</h1><p class="cap sub" id="in-range">setembro 2026 · comparado com agosto 2026</p></div>
+      <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px">
+        <div class="field" style="width: 220px"><label for="in-period">Período</label><select id="in-period" class="input"><option value="2026-10">outubro 2026 (até 02 out)</option><option value="2026-09" selected>setembro 2026</option><option value="2026-08">agosto 2026</option><option value="last3">Últimos 3 meses</option><option value="custom">Personalizado…</option></select></div>
+        <div id="in-custom" hidden style="display: flex; gap: 8px">
+          <div class="field" style="width: 150px"><label for="in-from">De</label><input id="in-from" type="date" class="input tnum" value="2026-08-01" min="2026-08-01" max="2026-10-02"></div>
+          <div class="field" style="width: 150px"><label for="in-to">Até</label><input id="in-to" type="date" class="input tnum" value="2026-10-02" min="2026-08-01" max="2026-10-02"></div>
+        </div>
+        <div class="field" style="width: 140px"><label for="avg">Média de</label><select id="avg" class="input"><option value="3">3 meses</option><option value="6">6 meses</option></select></div>
+      </div>
+    </div>
+
+    <div class="g12">
+      <div class="card c4"><div class="kpi-label">Gasto</div><div class="display" id="in-spend">€ 0,00</div><div class="cap" style="margin-top: 4px" id="in-spend-d"></div></div>
+      <div class="card c4"><div class="kpi-label">Rendimento</div><div class="display" id="in-inc">€ 0,00</div><div class="cap" style="margin-top: 4px" id="in-inc-d"></div></div>
+      <div class="card c4"><div class="kpi-label">Restante</div><div class="display" id="in-left">€ 0,00</div><div class="cap" style="margin-top: 4px" id="in-left-d"></div></div>
+
+      <div class="card c7">
+        <h2 class="hl" style="margin-bottom: 4px">Para onde foi o rendimento</h2>
+        <p class="cap" style="margin: 0 0 16px">Fixas, variáveis e o que sobrou, em percentagem do rendimento.</p>
+        <div id="in-bar" style="display: flex; gap: 2px; height: 16px; overflow: hidden; border-radius: var(--radius-sm); background: var(--subtle)" role="img" aria-label="Distribuição do rendimento"></div>
+        <div class="legend cap" id="in-legend"></div>
+      </div>
+
+      <div class="card c5" style="display: flex; align-items: center; gap: 24px">
+        <div id="in-donut" role="img" aria-label="Distribuição do gasto por categoria" style="position: relative; width: 140px; height: 140px; flex-shrink: 0; border-radius: 999px; background: var(--subtle)">
+          <div style="position: absolute; inset: 24px; border-radius: 999px; background: var(--card); display: flex; flex-direction: column; align-items: center; justify-content: center"><span class="cap">Gasto</span><span class="tnum" style="font-weight: 600" id="in-donut-v"></span></div>
+        </div>
+        <div class="cap" id="in-donut-leg" style="display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0"></div>
+      </div>
+
+      <div class="card c12">
+        <div class="card-head"><h2 class="hl">Por categoria</h2><span class="cap" id="in-avg-note"></span></div>
+        <table class="table">
+          <thead><tr><th>Categoria</th><th class="r">Gasto</th><th class="r">Quota</th><th class="r" id="in-avg-th">Média de 3 meses</th><th class="r">Variação</th></tr></thead>
+          <tbody id="in-cat"></tbody>
+        </table>
+      </div>
+    </div>
+  </div></main>
+
+  <!-- ============ INVESTIMENTOS ============ -->
+  <main class="view" data-view="investments" hidden><div class="main-in">
+    <div class="head"><div><h1 class="h1">Investimentos</h1><p class="cap sub">XTB · relatório de 01 out 2026</p></div><a class="btn btn-outline" href="#import">Importar relatório da XTB</a></div>
+    <div style="display: grid; gap: 24px">
+      <div class="g12">
+        <div class="card c3"><div class="kpi-label">Valor total</div><div class="display">€ 5 284,60</div><div class="cap" style="margin-top: 4px">Carteira € 4 902,10 · caixa € 382,50</div></div>
+        <div class="card c3"><div class="kpi-label">Capital depositado (líq.)</div><div class="display">€ 4 800,00</div><div class="cap" style="margin-top: 4px">Depósitos menos levantamentos</div></div>
+        <div class="card c3"><div class="kpi-label">Mais-valia latente</div><div class="display pos">€ 412,35</div><div class="cap" style="margin-top: 4px"><span class="pos" style="font-weight: 500">↑ 9,2% favorável</span> sobre o custo</div></div>
+        <div class="card c3"><div class="kpi-label">Rendimento recebido</div><div class="display">€ 115,72</div><div class="cap" style="margin-top: 4px">Realizado € 96,80 · dividendos e juros (líq.) € 18,92</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h2 class="hl">Posições</h2><span class="cap">3 instrumentos · seleciona uma linha para ver o detalhe</span></div>
+        <table class="table">
+          <thead><tr><th>Instrumento</th><th>Produto</th><th class="r">Quantidade</th><th class="r">Preço médio</th><th class="r">Valor</th><th class="r">Peso</th><th class="r">Mais-valia latente</th><th><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Ações</span></th></tr></thead>
+          <tbody id="inv-pos"></tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h2 class="hl">Dividendos e juros</h2><span class="cap" id="inv-div-sum"></span></div>
+        <table class="table">
+          <thead><tr><th>Data</th><th>Origem</th><th>Tipo</th><th class="r">Bruto</th><th class="r">Retenção na fonte</th><th class="r">Líquido</th></tr></thead>
+          <tbody id="inv-div"></tbody>
+        </table>
+      </div>
+    </div>
+  </div></main>
+
+  <!-- ============ DEFINIÇÕES ============ -->
+  <main class="view" data-view="settings" hidden><div class="main-in">
+    <div class="head"><h1 class="h1">Definições</h1></div>
+    <div style="display: grid; gap: 24px; max-width: 960px">
+      <div class="card">
+        <h2 class="hl">Dia do vencimento</h2>
+        <p class="cap" style="margin: 4px 0 16px">Usado para o valor seguro para gastar no Início.</p>
+        <div style="display: flex; align-items: flex-end; gap: 12px">
+          <div class="field" style="width: 120px"><label for="d">Dia do mês</label><input id="d" class="input tnum" value="25" inputmode="numeric" aria-describedby="d-err"></div>
+          <button class="btn" type="button" data-save-payday>Guardar alterações</button>
+        </div>
+        <span class="err" id="d-err" hidden style="display: block; margin-top: 4px">Indica um dia entre 1 e 31.</span>
+      </div>
+
+      <div class="card">
+        <h2 class="hl">Contas e pessoas minhas</h2>
+        <p class="cap" style="margin: 4px 0 16px">Movimentos cuja descrição contenha estes nomes (o teu, o da conta conjunta, a parceira…) são tratados como transferências e não contam como despesa. Ficam só nesta máquina. XTB e Trade Republic já são reconhecidas automaticamente.</p>
+        <div id="people" style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px">
+          <span class="chip" style="padding-right: 2px">Rui Freitas<button class="icon-btn" type="button" data-remove-chip aria-label="Remover Rui Freitas" style="width: 20px; height: 20px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></span>
+          <span class="chip" style="padding-right: 2px">Conta conjunta<button class="icon-btn" type="button" data-remove-chip aria-label="Remover Conta conjunta" style="width: 20px; height: 20px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></span>
+        </div>
+        <div style="display: flex; gap: 8px; max-width: 420px"><label for="pessoa" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Nome a adicionar</label><input id="pessoa" class="input" placeholder="Adicionar nome"><button class="btn btn-outline" type="button" data-add-person>Adicionar</button></div>
+      </div>
+
+      <div class="card" style="padding: 0">
+        <div class="between" style="padding: 24px 24px 16px; align-items: flex-start">
+          <div><h2 class="hl">Regras automáticas</h2><p class="cap sub"><span data-rules-n id="rules-n">12</span> regras. Ao importar, a primeira regra ativa que corresponder define a categoria. As categorias que escolheste à mão nunca são alteradas.</p></div>
+          <button class="btn btn-outline btn-sm" type="button" data-kv-rule-add>Adicionar regra</button>
+        </div>
+        <div id="rules" style="border-top: 1px solid var(--line)"></div>
+      </div>
+
+      <div class="card" style="padding: 0">
+        <div class="between" style="padding: 24px 24px 16px; align-items: flex-start">
+          <div><h2 class="hl">Categorias</h2><p class="cap sub"><span data-groups-n>17</span> grupos e <span data-subs-n>74</span> subcategorias. O tipo define onde o gasto conta nas análises: fixas, variáveis, rendimento, poupança ou fora das contas.</p></div>
+          <button class="btn btn-outline btn-sm" type="button" data-add-group>Adicionar grupo</button>
+        </div>
+        <div id="groups" style="border-top: 1px solid var(--line)">
+          <div class="row" style="grid-template-columns: 200px 96px minmax(0, 1fr) 32px; min-height: 56px; padding-top: 8px; padding-bottom: 8px"><span class="inline" style="gap: 10px; font-weight: 500"><span class="dot" style="background: var(--cat-income)"></span>Rendimentos</span><span><span class="badge badge-pos">Rendimento</span></span><span class="cap">Vencimento · Subsídio de férias e de Natal · Rendimento extra · Reembolsos · Juros e dividendos · Outros rendimentos</span><button class="icon-btn" type="button" data-edit-group aria-label="Editar Rendimentos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg></button></div>
+          <div class="row" style="grid-template-columns: 200px 96px minmax(0, 1fr) 32px; min-height: 56px; padding-top: 8px; padding-bottom: 8px"><span class="inline" style="gap: 10px; font-weight: 500"><span class="dot" style="background: var(--cat-home)"></span>Casa</span><span><span class="badge">Fixa</span></span><span class="cap">Renda ou prestação · Condomínio · Seguro de habitação · IMI · Manutenção e reparações · Mobiliário e decoração · Artigos para a casa</span><button class="icon-btn" type="button" data-edit-group aria-label="Editar Casa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg></button></div>
+          <div class="row" style="grid-template-columns: 200px 96px minmax(0, 1fr) 32px; min-height: 56px; padding-top: 8px; padding-bottom: 8px"><span class="inline" style="gap: 10px; font-weight: 500"><span class="dot" style="background: var(--cat-bills)"></span>Faturas e subscrições</span><span><span class="badge">Fixa</span></span><span class="cap">Eletricidade · Água · Gás · Telecomunicações · Streaming e música · Software e apps</span><button class="icon-btn" type="button" data-edit-group aria-label="Editar Faturas e subscrições"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg></button></div>
+          <div class="row" style="grid-template-columns: 200px 96px minmax(0, 1fr) 32px; min-height: 56px; padding-top: 8px; padding-bottom: 8px"><span class="inline" style="gap: 10px; font-weight: 500"><span class="dot" style="background: var(--cat-food)"></span>Alimentação</span><span><span class="badge">Variável</span></span><span class="cap">Supermercado · Restaurantes · Café e snacks · Entregas ao domicílio</span><button class="icon-btn" type="button" data-edit-group aria-label="Editar Alimentação"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg></button></div>
+          <div class="row" style="grid-template-columns: 200px 96px minmax(0, 1fr) 32px; min-height: 56px; padding-top: 8px; padding-bottom: 8px"><span class="inline" style="gap: 10px; font-weight: 500"><span class="dot" style="background: var(--cat-transport)"></span>Carro e transportes</span><span><span class="badge">Variável</span></span><span class="cap">Combustível · Portagens e Via Verde · Estacionamento · Manutenção do carro · Seguro automóvel · IUC · Transportes públicos · TVDE e táxi</span><button class="icon-btn" type="button" data-edit-group aria-label="Editar Carro e transportes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg></button></div>
+          <div class="row" style="grid-template-columns: 200px 96px minmax(0, 1fr) 32px; min-height: 56px; padding-top: 8px; padding-bottom: 8px"><span class="inline" style="gap: 10px; font-weight: 500"><span class="dot" style="background: var(--cat-health)"></span>Saúde</span><span><span class="badge">Variável</span></span><span class="cap">Farmácia · Consultas e exames · Dentista · Ótica · Seguro de saúde</span><button class="icon-btn" type="button" data-edit-group aria-label="Editar Saúde"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg></button></div>
+          <div class="row" style="grid-template-columns: 200px 96px minmax(0, 1fr) 32px; min-height: 56px; padding-top: 8px; padding-bottom: 8px"><span class="inline" style="gap: 10px; font-weight: 500"><span class="dot" style="background: var(--cat-personal)"></span>Cuidado pessoal</span><span><span class="badge">Variável</span></span><span class="cap">Cabeleireiro e estética · Higiene e cosmética · Ginásio e desporto</span><button class="icon-btn" type="button" data-edit-group aria-label="Editar Cuidado pessoal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg></button></div>
+          <div class="row" style="grid-template-columns: 200px 96px minmax(0, 1fr) 32px; min-height: 56px; padding-top: 8px; padding-bottom: 8px"><span class="inline" style="gap: 10px; font-weight: 500"><span class="dot" style="background: var(--cat-shopping)"></span>Compras</span><span><span class="badge">Variável</span></span><span class="cap">Roupa e calçado · Eletrónica · Livros · Compras online · Outras compras</span><button class="icon-btn" type="button" data-edit-group aria-label="Editar Compras"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg></button></div>
+          <div class="row" style="grid-template-columns: 200px 96px minmax(0, 1fr) 32px; min-height: 56px; padding-top: 8px; padding-bottom: 8px"><span class="inline" style="gap: 10px; font-weight: 500"><span class="dot" style="background: var(--cat-fun)"></span>Lazer</span><span><span class="badge">Variável</span></span><span class="cap">Cinema e espetáculos · Hobbies · Saídas à noite · Jogos</span><button class="icon-btn" type="button" data-edit-group aria-label="Editar Lazer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg></button></div>
+          <div class="row" style="grid-template-columns: 200px 96px minmax(0, 1fr) 32px; min-height: 56px; padding-top: 8px; padding-bottom: 8px"><span class="inline" style="gap: 10px; font-weight: 500"><span class="dot" style="background: var(--cat-travel)"></span>Viagens</span><span><span class="badge">Variável</span></span><span class="cap">Alojamento · Voos e comboios · Aluguer de carro · Atividades</span><button class="icon-btn" type="button" data-edit-group aria-label="Editar Viagens"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg></button></div>
+          <div class="row" style="grid-template-columns: 200px 96px minmax(0, 1fr) 32px; min-height: 56px; padding-top: 8px; padding-bottom: 8px"><span class="inline" style="gap: 10px; font-weight: 500"><span class="dot" style="background: var(--cat-education)"></span>Educação</span><span><span class="badge">Variável</span></span><span class="cap">Propinas · Cursos e formação · Material escolar</span><button class="icon-btn" type="button" data-edit-group aria-label="Editar Educação"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg></button></div>
+          <div class="row" style="grid-template-columns: 200px 96px minmax(0, 1fr) 32px; min-height: 56px; padding-top: 8px; padding-bottom: 8px"><span class="inline" style="gap: 10px; font-weight: 500"><span class="dot" style="background: var(--cat-family)"></span>Família e animais</span><span><span class="badge">Variável</span></span><span class="cap">Filhos · Animais de estimação · Mesada</span><button class="icon-btn" type="button" data-edit-group aria-label="Editar Família e animais"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg></button></div>
+          <div class="row" style="grid-template-columns: 200px 96px minmax(0, 1fr) 32px; min-height: 56px; padding-top: 8px; padding-bottom: 8px"><span class="inline" style="gap: 10px; font-weight: 500"><span class="dot" style="background: var(--cat-gifts)"></span>Ofertas e donativos</span><span><span class="badge">Variável</span></span><span class="cap">Presentes · Donativos</span><button class="icon-btn" type="button" data-edit-group aria-label="Editar Ofertas e donativos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg></button></div>
+          <div class="row" style="grid-template-columns: 200px 96px minmax(0, 1fr) 32px; min-height: 56px; padding-top: 8px; padding-bottom: 8px"><span class="inline" style="gap: 10px; font-weight: 500"><span class="dot" style="background: var(--cat-taxes)"></span>Impostos e comissões</span><span><span class="badge">Fixa</span></span><span class="cap">IRS · Segurança Social · Comissões bancárias · Coimas e multas</span><button class="icon-btn" type="button" data-edit-group aria-label="Editar Impostos e comissões"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg></button></div>
+          <div class="row" style="grid-template-columns: 200px 96px minmax(0, 1fr) 32px; min-height: 56px; padding-top: 8px; padding-bottom: 8px"><span class="inline" style="gap: 10px; font-weight: 500"><span class="dot" style="background: var(--cat-debt)"></span>Dívida</span><span><span class="badge">Fixa</span></span><span class="cap">Crédito automóvel · Crédito pessoal · Cartão de crédito</span><button class="icon-btn" type="button" data-edit-group aria-label="Editar Dívida"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg></button></div>
+          <div class="row" style="grid-template-columns: 200px 96px minmax(0, 1fr) 32px; min-height: 56px; padding-top: 8px; padding-bottom: 8px"><span class="inline" style="gap: 10px; font-weight: 500"><span class="dot" style="background: var(--cat-savings)"></span>Poupança e investimento</span><span><span class="badge badge-info">Poupança</span></span><span class="cap">Poupança · Investimento</span><button class="icon-btn" type="button" data-edit-group aria-label="Editar Poupança e investimento"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg></button></div>
+          <div class="row" style="grid-template-columns: 200px 96px minmax(0, 1fr) 32px; min-height: 56px; padding-top: 8px; padding-bottom: 8px"><span class="inline" style="gap: 10px; font-weight: 500"><span class="dot" style="background: var(--cat-transfer)"></span>Transferências</span><span><span class="badge">Fora das contas</span></span><span class="cap">Entre contas minhas · Conta conjunta</span><button class="icon-btn" type="button" data-edit-group aria-label="Editar Transferências"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg></button></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="hl">Dados</h2>
+        <p class="cap" style="margin: 4px 0 16px">Volta a aplicar a limpeza de comerciantes, a deteção de transferências, as regras e a associação de reembolsos a todas as transações. As tuas categorias manuais são mantidas.</p>
+        <button class="btn btn-outline btn-sm" type="button" data-kv-apply-rules>Voltar a aplicar regras</button>
+        <hr class="hr">
+        <p class="cap" style="margin: 0 0 16px">Copia a base de dados com tudo o que tem. Guarda-a num local seguro. Para restaurar, escolhe uma cópia <code>.db</code>: substitui todos os dados atuais pelos da cópia.</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px">
+          <button class="btn btn-outline btn-sm" type="button" data-toast="Cópia de segurança descarregada: finance-2026-10-05.db">Descarregar cópia de segurança</button>
+          <input type="file" id="file-backup" accept=".db,.sqlite" hidden>
+          <button class="btn btn-outline btn-sm" type="button" data-file="file-backup" id="restore-btn"><span>Restaurar cópia de segurança…</span><span hidden>A restaurar…</span></button>
+        </div>
+        <div class="alert alert-info" data-restore="ok" role="status" hidden style="margin-top: 12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span style="flex: 1">Cópia restaurada a partir de <span data-restore-file></span>. Os dados anteriores foram guardados em <code>finance-antes-de-restaurar-2026-10-05.db</code>.</span></div>
+        <div class="alert alert-warn" data-restore="error" role="alert" hidden style="margin-top: 12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg><span style="flex: 1">Não foi possível restaurar <span data-restore-file></span>. Escolhe uma cópia de segurança <code>.db</code> criada pela aplicação.</span></div>
+        <hr class="hr">
+        <p class="cap" style="margin: 0 0 16px">Exportação em JSON (contas, categorias, transações e investimentos) para usar no Duetto.</p>
+        <button class="btn btn-outline btn-sm" type="button" data-toast="Exportação criada: duetto-2026-10-05.json">Exportar para o Duetto</button>
+        <hr class="hr">
+        <p class="cap" style="margin: 0 0 16px">Apaga contas, transações, regras, contas a pagar, investimentos e o histórico de importações. As categorias voltam às predefinidas. Descarrega antes uma cópia de segurança se quiseres recuperar os dados.</p>
+        <button class="btn btn-danger-ghost btn-sm" type="button" data-wipe-open>Apagar todos os dados…</button>
+      </div>
+    </div>
+  </div></main>
+
+  <!-- ============ PATRIMÓNIO LÍQUIDO ============ -->
+  <main class="view" data-view="networth" hidden><div class="main-in">
+    <div class="head"><div><h1 class="h1">Património líquido</h1><p class="cap sub">Ativos menos dívidas, a 05 out 2026</p></div></div>
+    <div class="g12">
+      <div class="card c4">
+        <div class="kpi-label">Património líquido</div>
+        <div class="display">€ 1 861,07</div>
+        <div class="cap" style="margin-top: 4px"><span class="pos" style="font-weight: 500">↑ € 741,07 favorável</span> desde 07 set 2026</div>
+      </div>
+      <div class="card c4">
+        <div class="kpi-label">Ativos</div>
+        <div class="display">€ 8 703,22</div>
+        <div class="cap" style="margin-top: 4px">Contas à ordem e investimentos</div>
+      </div>
+      <div class="card c4">
+        <div class="kpi-label">Dívidas</div>
+        <div class="display">€ 6 842,15</div>
+        <div class="cap" style="margin-top: 4px"><span class="pos" style="font-weight: 500">↓ € 168,90 favorável</span> desde 07 set 2026</div>
+      </div>
+
+      <div class="card c12">
+        <div class="card-head"><h2 class="hl">Evolução semanal</h2><span class="cap">Desde o primeiro extrato importado</span></div>
+        <svg class="chart" viewBox="0 0 800 200" role="img" aria-label="Património líquido de € 1 120 a 07 set 2026 para € 1 861,07 a 05 out 2026">
+          <g stroke="var(--line)" stroke-width="1"><line x1="40" y1="20" x2="800" y2="20"/><line x1="40" y1="80" x2="800" y2="80"/><line x1="40" y1="140" x2="800" y2="140"/><line x1="40" y1="180" x2="800" y2="180"/></g>
+          <g font-family="Inter, sans-serif" font-size="12" fill="var(--ink2)"><text x="0" y="24">€ 2 k</text><text x="0" y="84">€ 1,5 k</text><text x="0" y="144">€ 1 k</text></g>
+          <polyline fill="none" stroke="var(--accent)" stroke-width="2" points="60,126 245,82 430,103 615,58 780,37"/>
+          <g fill="var(--card)" stroke="var(--accent)" stroke-width="2"><circle cx="60" cy="126" r="4"/><circle cx="245" cy="82" r="4"/><circle cx="430" cy="103" r="4"/><circle cx="615" cy="58" r="4"/><circle cx="780" cy="37" r="4"/></g>
+          <g font-family="Inter, sans-serif" font-size="12" fill="var(--ink2)" text-anchor="middle"><text x="60" y="198">07 set</text><text x="245" y="198">14 set</text><text x="430" y="198">21 set</text><text x="615" y="198">28 set</text><text x="760" y="198">05 out</text></g>
+        </svg>
+      </div>
+
+      <div class="card c6">
+        <div class="card-head"><h2 class="hl">Ativos</h2><span class="tnum strong">€ 8 703,22</span></div>
+        <table class="table">
+          <tbody>
+            <tr><td><span class="inline" style="gap: 10px"><span class="dot" style="background: var(--pos)"></span><span><span style="display: block; font-weight: 500">XTB</span><span class="cap">Investimento · 01 out 2026</span></span></span></td><td class="r tnum">€ 5 284,60</td><td class="r tnum cap" style="width: 64px">60,7%</td></tr>
+            <tr><td><span class="inline" style="gap: 10px"><span class="dot" style="background: var(--accent)"></span><span><span style="display: block; font-weight: 500">ActivoBank</span><span class="cap">Conta à ordem · 30 set 2026</span></span></span></td><td class="r tnum">€ 3 418,62</td><td class="r tnum cap">39,3%</td></tr>
+            <tr><td><span class="inline" style="gap: 10px"><span class="dot" style="background: var(--warnfill)"></span><span><span style="display: block; font-weight: 500">Conta conjunta</span><span class="cap">Sem extratos importados</span></span></span></td><td class="r tnum cap">€ 0,00</td><td class="r tnum cap">0%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card c6">
+        <div class="card-head"><h2 class="hl">Dívidas</h2><span class="tnum strong">€ 6 842,15</span></div>
+        <table class="table">
+          <tbody>
+            <tr><td><span class="inline" style="gap: 10px"><span class="dot" style="background: var(--cat-debt)"></span><span><span style="display: block; font-weight: 500">Crédito automóvel</span><span class="cap">Crédito · atualizado a 15 set 2026</span></span></span></td><td class="r tnum">€ 6 842,15</td><td class="r"><a class="link" href="#debt">Ver dívida</a></td></tr>
+          </tbody>
+        </table>
+        <p class="cap" style="margin: 16px 0 0">O saldo do crédito não vem dos extratos. Atualiza-o em Contas quando receberes a nota do credor.</p>
+      </div>
+    </div>
+  </div></main>
+
+  <!-- ============ PREVISÃO ============ -->
+  <main class="view" data-view="forecast" hidden><div class="main-in">
+    <div class="head" style="align-items: flex-end">
+      <div><h1 class="h1">Previsão</h1><p class="cap sub">Saldo do ActivoBank nos próximos 30 dias, com base nas contas a pagar e na tua média de gasto variável</p></div>
+      <div class="field" style="width: 180px"><label for="fc-h">Horizonte</label><select id="fc-h" class="input"><option>30 dias</option><option>60 dias</option><option>90 dias</option></select></div>
+    </div>
+    <div class="g12">
+      <div class="card c4">
+        <div class="kpi-label">Saldo hoje</div>
+        <div class="display">€ 3 418,62</div>
+        <div class="cap" style="margin-top: 4px">ActivoBank, último extrato 30 set 2026</div>
+      </div>
+      <div class="card c4">
+        <div class="kpi-label">Ponto mais baixo</div>
+        <div class="display">€ 2 031,32</div>
+        <div class="cap" style="margin-top: 4px">A 31 out 2026, antes do vencimento</div>
+      </div>
+      <div class="card c4">
+        <div class="kpi-label">Saldo a 04 nov 2026</div>
+        <div class="display">€ 4 091,92</div>
+        <div class="cap" style="margin-top: 4px"><span class="pos" style="font-weight: 500">↑ € 673,30 favorável</span> face a hoje</div>
+      </div>
+
+      <div class="card c12">
+        <div class="card-head">
+          <h2 class="hl">Saldo previsto</h2>
+          <div class="legend cap" style="margin: 0">
+            <span class="inline"><span style="width: 16px; height: 2px; background: var(--accent)"></span>Previsto</span>
+            <span class="inline"><span class="dot" style="width: 8px; height: 8px; background: var(--card); border: 2px solid var(--ink)"></span>Movimento previsto</span>
+          </div>
+        </div>
+        <svg class="chart" viewBox="0 0 840 230" role="img" aria-label="Saldo previsto desce de € 3 418,62 para € 2 031,32 a 31 out e sobe para € 4 091,92 a 04 nov com o vencimento">
+          <g stroke="var(--line)" stroke-width="1"><line x1="40" y1="10" x2="840" y2="10"/><line x1="40" y1="76.7" x2="840" y2="76.7"/><line x1="40" y1="143.3" x2="840" y2="143.3"/><line x1="40" y1="210" x2="840" y2="210"/></g>
+          <g font-family="Inter, sans-serif" font-size="12" fill="var(--ink2)"><text x="0" y="14">€ 4,5 k</text><text x="0" y="81">€ 3,5 k</text><text x="0" y="147">€ 2,5 k</text><text x="0" y="214">€ 1,5 k</text></g>
+          <polyline fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round" points="40,82.1 66.7,87.2 120,97.1 173.3,108.7 306.7,135.3 733.3,174.6 760,20.4 813.3,34.7 840,37.2"/>
+          <g fill="var(--card)" stroke="var(--ink)" stroke-width="2"><circle cx="66.7" cy="87.2" r="4"/><circle cx="120" cy="97.1" r="4"/><circle cx="173.3" cy="108.7" r="4"/><circle cx="306.7" cy="135.3" r="4"/><circle cx="760" cy="20.4" r="4"/><circle cx="813.3" cy="34.7" r="4"/></g>
+          <g font-family="Inter, sans-serif" font-size="12" fill="var(--ink2)" text-anchor="middle"><text x="60" y="228">05 out</text><text x="306.7" y="228">15 out</text><text x="573" y="228">25 out</text><text x="810" y="228">04 nov</text></g>
+        </svg>
+      </div>
+
+      <div class="card c8">
+        <div class="card-head"><h2 class="hl">Movimentos previstos</h2><a class="link" href="#bills">Gerir contas a pagar</a></div>
+        <table class="table">
+          <thead><tr><th>Data</th><th>Movimento</th><th>Origem</th><th class="r">Valor</th><th class="r">Saldo depois</th></tr></thead>
+          <tbody>
+            <tr><td class="cap tnum">06 out 2026</td><td>Vodafone</td><td class="cap">Conta a pagar</td><td class="r tnum">−€ 39,99</td><td class="r tnum">€ 3 341,78</td></tr>
+            <tr><td class="cap tnum">08 out 2026</td><td>EDP Comercial</td><td class="cap">Conta a pagar</td><td class="r tnum">−€ 74,91</td><td class="r tnum">€ 3 193,17</td></tr>
+            <tr><td class="cap tnum">10 out 2026</td><td>Ginásio Fit</td><td class="cap">Conta a pagar</td><td class="r tnum">−€ 100,00</td><td class="r tnum">€ 3 019,47</td></tr>
+            <tr><td class="cap tnum">15 out 2026</td><td>Crédito automóvel</td><td class="cap">Conta a pagar</td><td class="r tnum">−€ 214,30</td><td class="r tnum">€ 2 620,92</td></tr>
+            <tr><td class="cap tnum">01 nov 2026</td><td>Vencimento</td><td class="cap">Repetição de 01 out</td><td class="r tnum pos">€ 2 350,00</td><td class="r tnum">€ 4 344,47</td></tr>
+            <tr><td class="cap tnum">03 nov 2026</td><td>Seguro automóvel</td><td class="cap">Conta a pagar</td><td class="r tnum">−€ 142,00</td><td class="r tnum">€ 4 128,77</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card c4">
+        <h2 class="hl">Como é calculada</h2>
+        <ul class="cap" style="margin: 8px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 8px">
+          <li>Parte do saldo do último extrato do ActivoBank.</li>
+          <li>Desconta as contas a pagar na data do próximo vencimento.</li>
+          <li>Desconta o gasto variável médio de 3 meses, € 36,85 por dia.</li>
+          <li>Soma o vencimento na mesma data do último recebido.</li>
+          <li>Transferências entre contas minhas não entram.</li>
+        </ul>
+      </div>
+    </div>
+  </div></main>
+
+  <!-- ============ DÍVIDA ============ -->
+  <main class="view" data-view="debt" hidden><div class="main-in">
+    <div class="head"><div><h1 class="h1">Dívida</h1><p class="cap sub">1 crédito ativo</p></div><a class="btn btn-outline" href="#accounts">Atualizar saldo</a></div>
+    <div class="g12">
+      <div class="card c3"><div class="kpi-label">Em dívida</div><div class="display">€ 6 842,15</div><div class="cap" style="margin-top: 4px"><span class="pos" style="font-weight: 500">↓ € 168,90 favorável</span> no último mês</div></div>
+      <div class="card c3"><div class="kpi-label">Prestação mensal</div><div class="display">€ 214,30</div><div class="cap" style="margin-top: 4px">11,6% do gasto do mês</div></div>
+      <div class="card c3"><div class="kpi-label">Juros por pagar</div><div class="display">€ 864,23</div><div class="cap" style="margin-top: 4px">Até ao fim do contrato, TAN 7,9%</div></div>
+      <div class="card c3"><div class="kpi-label">Fim previsto</div><div class="display">out 2029</div><div class="cap" style="margin-top: 4px">36 prestações em falta</div></div>
+
+      <div class="card c7">
+        <div class="card-head"><h2 class="hl">Crédito automóvel</h2><span class="badge badge-pos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Em dia</span></div>
+        <div class="between cap"><span>Pago <span class="tnum strong">€ 3 157,85</span></span><span>Montante inicial <span class="tnum strong">€ 10 000,00</span></span></div>
+        <div class="bar" style="height: 12px; margin-top: 8px" role="img" aria-label="31,6% do crédito pago"><span style="width: 31.6%; height: 12px; background: var(--pos)"></span></div>
+        <p class="cap" style="margin: 8px 0 20px">31,6% pago</p>
+        <table class="table">
+          <thead><tr><th>Data</th><th>Prestação</th><th class="r">Valor</th><th class="r">Capital em dívida</th></tr></thead>
+          <tbody>
+            <tr><td class="cap tnum">15 out 2026</td><td><span class="badge">prevista</span></td><td class="r tnum">−€ 214,30</td><td class="r tnum">€ 6 673,10</td></tr>
+            <tr><td class="cap tnum">15 set 2026</td><td><span class="badge badge-pos">paga</span></td><td class="r tnum">−€ 214,30</td><td class="r tnum">€ 6 842,15</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card c5">
+        <h2 class="hl">E se amortizares mais?</h2>
+        <p class="cap" style="margin: 4px 0 16px">Simulação. Não altera dados.</p>
+        <div class="field" style="max-width: 200px"><label for="extra">Valor extra por mês</label><input id="extra" class="input tnum" value="€ 50,00" inputmode="decimal" data-base-interest="864.23"></div>
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 20px">
+          <div><div class="cap">Terminas em</div><div class="hl tnum" data-sim-end>mar 2029</div><div class="cap pos" style="font-weight: 500" data-sim-sooner-wrap>↓ <span data-sim-sooner>7</span> meses mais cedo</div><div class="cap" data-sim-same hidden>Igual ao plano atual</div></div>
+          <div><div class="cap">Poupas em juros</div><div class="hl tnum" data-sim-save>€ 180,46</div><div class="cap">Juros totais <span class="tnum" data-sim-total>€ 683,77</span></div></div>
+        </div>
+        <p class="cap" style="margin: 16px 0 0">Confirma com o credor se há comissão de amortização antecipada.</p>
+      </div>
+    </div>
+  </div></main>
+
+  <!-- ============ REVISÃO SEMANAL ============ -->
+  <main class="view" data-view="weekly" hidden><div class="main-in">
+    <div class="head"><div><h1 class="h1">Revisão semanal</h1><p class="cap sub">Semana de 28 set a 04 out 2026 · a última revisão foi há 9 dias</p></div></div>
+    <div class="alert alert-info" data-weekly-done hidden role="status" style="margin-bottom: 24px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span style="flex: 1">Revisão semanal concluída. A próxima fica marcada para 12 out 2026.</span></div>
+    <div class="g12">
+      <div class="card c8">
+        <div class="step">
+          <svg class="step-ic" data-step="review" viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Por fazer"><circle cx="12" cy="12" r="10"/></svg>
+          <div><h2 class="hl">1. Categorizar transações</h2><p class="cap sub">12 transações por categorizar, 5 desta semana.</p></div>
+          <a class="btn btn-outline btn-sm" href="#review">Abrir revisão</a>
+        </div>
+        <div class="step">
+          <svg class="step-ic" data-step="bills" viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Por fazer"><circle cx="12" cy="12" r="10"/></svg>
+          <div>
+            <h2 class="hl">2. Confirmar contas a pagar</h2>
+            <p class="cap sub">3 vencem nos próximos 7 dias, € 214,90.</p>
+            <div class="stack" style="margin-top: 12px; gap: 6px">
+              <label class="check"><input type="checkbox" data-week-bill> Vodafone · 06 out · € 39,99</label>
+              <label class="check"><input type="checkbox" data-week-bill> EDP Comercial · 08 out · € 74,91</label>
+              <label class="check"><input type="checkbox" data-week-bill> Ginásio Fit · 10 out · € 100,00</label>
+            </div>
+          </div>
+          <a class="btn btn-ghost btn-sm" href="#bills">Ver contas</a>
+        </div>
+        <div class="step">
+          <svg class="step-ic" viewBox="0 0 24 24" fill="none" stroke="var(--pos)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Feito"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+          <div><h2 class="hl">3. Importar extratos</h2><p class="cap sub">ActivoBank até 30 set 2026 e XTB até 01 out 2026. Nada em falta.</p></div>
+          <span class="badge badge-pos">Feito</span>
+        </div>
+        <div class="step">
+          <svg class="step-ic" data-step="alerts" viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Por fazer"><circle cx="12" cy="12" r="10"/></svg>
+          <div>
+            <h2 class="hl">4. Ver o que merece atenção</h2>
+            <div class="stack" style="margin-top: 12px">
+              <div class="alert alert-warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg><span style="flex: 1">Duas cobranças idênticas com um mês de intervalo; uma terceira confirma</span><button class="btn btn-ghost btn-sm" type="button" data-dismiss>Dispensar</button></div>
+              <div class="alert alert-warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg><span style="flex: 1">Supermercado: € 312,40 este mês, 38% acima da tua média de 3 meses</span><button class="btn btn-ghost btn-sm" type="button" data-dismiss>Dispensar</button></div>
+            </div>
+          </div>
+          <span></span>
+        </div>
+        <div class="between" style="margin-top: 8px; padding-top: 16px; border-top: 1px solid var(--line)">
+          <span class="cap"><span data-steps>1</span> de 4 passos feitos</span>
+          <button class="btn" type="button" data-finish-weekly>Concluir revisão</button>
+        </div>
+      </div>
+
+      <div class="c4" style="display: grid; gap: 24px; align-content: start">
+        <div class="card">
+          <div class="kpi-label">Gasto desta semana</div>
+          <div class="display">€ 412,60</div>
+          <div class="cap" style="margin-top: 4px"><span class="pos" style="font-weight: 500">↓ 3% favorável</span> face à média semanal de € 425,10</div>
+        </div>
+        <div class="card">
+          <h2 class="hl" style="margin-bottom: 12px">Onde gastaste esta semana</h2>
+          <div class="stack" style="gap: 10px">
+            <div class="between"><span class="inline"><span class="dot" style="width: 8px; height: 8px; background: var(--cat-food)"></span>Alimentação</span><span class="tnum">€ 176,22</span></div>
+            <div class="between"><span class="inline"><span class="dot" style="width: 8px; height: 8px; background: var(--cat-transport)"></span>Carro e transportes</span><span class="tnum">€ 80,75</span></div>
+            <div class="between"><span class="inline"><span class="dot" style="width: 8px; height: 8px; background: var(--cat-bills)"></span>Faturas e subscrições</span><span class="tnum">€ 39,99</span></div>
+            <div class="between"><span class="inline"><span class="dot" style="width: 8px; height: 8px; background: var(--cat-health)"></span>Saúde</span><span class="tnum">€ 14,80</span></div>
+            <div class="between"><span class="inline"><span class="dot" style="width: 8px; height: 8px; background: var(--ink3)"></span>Sem categoria</span><span class="tnum">€ 100,84</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div></main>
+
+  <!-- ============ ORÇAMENTO (bloqueado) ============ -->
+  <main class="view" data-view="budget" hidden><div class="main-in">
+    <div class="head"><h1 class="h1">Orçamento</h1><span class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Bloqueado</span></div>
+    <div class="locked-hero" style="max-width: 1100px">
+      <div class="card">
+        <h2 class="hl">Desbloqueia após 2 meses completos de dados (1/2)</h2>
+        <p class="cap" style="margin: 4px 0 20px">O orçamento propõe um limite por categoria a partir do teu gasto real. Com menos de 2 meses completos, a proposta seria pouco fiável.</p>
+        <div class="stack" style="gap: 12px; margin-bottom: 24px">
+          <div class="between"><span class="inline"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--pos)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>setembro 2026</span><span class="cap">Completo</span></div>
+          <div class="between"><span class="inline"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>outubro 2026</span><span class="cap">Em curso · completa a 31 out</span></div>
+          <div class="between"><span class="inline cap"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/></svg>agosto 2026</span><span class="cap">Incompleto · dados desde 12 ago</span></div>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center">
+          <a class="btn" href="#import">Importar extrato</a>
+          <span class="cap">Disponível a partir de 01 nov 2026, se importares o extrato de outubro.</span>
+        </div>
+      </div>
+      <div class="card" aria-hidden="true">
+        <div class="cap" style="margin-bottom: 16px">O que vais ver aqui</div>
+        <div class="stack" style="gap: 16px">
+          <div><div class="between"><span class="inline"><span class="dot" style="width: 8px; height: 8px; background: var(--cat-food)"></span>Alimentação</span><span class="cap tnum">€ 612,80 de € 600,00</span></div><div class="bar"><span style="width: 100%; background: var(--line)"></span></div></div>
+          <div><div class="between"><span class="inline"><span class="dot" style="width: 8px; height: 8px; background: var(--cat-transport)"></span>Carro e transportes</span><span class="cap tnum">€ 284,10 de € 320,00</span></div><div class="bar"><span style="width: 89%; background: var(--line)"></span></div></div>
+          <div><div class="between"><span class="inline"><span class="dot" style="width: 8px; height: 8px; background: var(--cat-shopping)"></span>Compras</span><span class="cap tnum">€ 148,00 de € 150,00</span></div><div class="bar"><span style="width: 98%; background: var(--line)"></span></div></div>
+          <div class="ghost-row" style="width: 70%"></div>
+          <div class="ghost-row" style="width: 50%"></div>
+        </div>
+        <p class="cap" style="margin: 16px 0 0">Exemplo com valores de setembro. Inclui o valor seguro para gastar até ao próximo vencimento.</p>
+      </div>
+    </div>
+  </div></main>
+
+  <!-- ============ OBJETIVOS (bloqueado) ============ -->
+  <main class="view" data-view="goals" hidden><div class="main-in">
+    <div class="head"><h1 class="h1">Objetivos</h1><span class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Bloqueado</span></div>
+    <div class="locked-hero" style="max-width: 1100px">
+      <div class="card">
+        <h2 class="hl">Desbloqueia após 2 meses completos de dados (1/2)</h2>
+        <p class="cap" style="margin: 4px 0 20px">Os objetivos usam a tua poupança média mensal para estimar quando chegas a cada meta. Com 2 meses completos, a estimativa passa a ter base.</p>
+        <div style="margin-bottom: 24px">
+          <div class="between cap"><span>Meses completos</span><span class="tnum strong">1 de 2</span></div>
+          <div class="bar" role="img" aria-label="1 de 2 meses completos"><span style="width: 50%; background: var(--accent)"></span></div>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center">
+          <a class="btn" href="#import">Importar extrato</a>
+          <span class="cap">Disponível a partir de 01 nov 2026, se importares o extrato de outubro.</span>
+        </div>
+      </div>
+      <div class="card" aria-hidden="true">
+        <div class="cap" style="margin-bottom: 16px">O que vais ver aqui</div>
+        <div class="stack" style="gap: 20px">
+          <div><div class="between"><span style="font-weight: 500">Fundo de emergência</span><span class="cap tnum">€ 3 418 de € 6 000</span></div><div class="bar"><span style="width: 57%; background: var(--line)"></span></div><div class="cap" style="margin-top: 4px">Estimativa a partir da poupança média</div></div>
+          <div><div class="between"><span style="font-weight: 500">Viagem</span><span class="cap tnum">€ 0 de € 1 500</span></div><div class="bar"><span style="width: 0%; background: var(--line)"></span></div><div class="cap" style="margin-top: 4px">Estimativa a partir da poupança média</div></div>
+        </div>
+        <p class="cap" style="margin: 16px 0 0">Exemplo ilustrativo.</p>
+      </div>
+    </div>
+  </div></main>
+</div>
+</div>
+<dialog id="acc-dialog" class="dialog" aria-labelledby="acc-title">
+  <form data-form="account" novalidate>
+    <h2 class="hl" id="acc-title">Editar conta</h2>
+    <div class="dialog-grid">
+      <div class="field"><label for="acc-nome">Nome</label><input id="acc-nome" name="nome" class="input" aria-describedby="acc-nome-err"><span class="err" id="acc-nome-err" hidden>Indica um nome para a conta.</span></div>
+      <div class="field"><label for="acc-tipo">Tipo</label><select id="acc-tipo" name="tipo" class="input"><option>Conta à ordem</option><option>Poupança</option><option>Cartão de crédito</option><option>Crédito</option><option>Investimento</option></select></div>
+      <div class="field"><label for="acc-inst">Instituição</label><input id="acc-inst" name="inst" class="input" placeholder="Opcional"></div>
+      <div class="field"><label for="acc-saldo">Saldo atual</label><input id="acc-saldo" name="saldo" class="input tnum" inputmode="decimal" placeholder="€ 0,00"><span class="cap">Só para contas sem extratos, como créditos.</span></div>
+    </div>
+    <div class="dialog-actions"><button class="btn btn-outline" type="button" data-close>Cancelar</button><button class="btn" type="submit">Guardar alterações</button></div>
+  </form>
+</dialog>
+
+<dialog id="bill-dialog" class="dialog" aria-labelledby="bill-title">
+  <form data-form="bill" novalidate>
+    <h2 class="hl" id="bill-title"><span data-bmode="add">Adicionar conta a pagar</span><span data-bmode="edit" hidden>Editar conta a pagar</span></h2>
+    <div class="dialog-grid">
+      <div class="field"><label for="bill-nome">Nome</label><input id="bill-nome" name="nome" class="input" placeholder="Ex.: Vodafone" aria-describedby="bill-nome-err"><span class="err" id="bill-nome-err" hidden>Indica um nome.</span></div>
+      <div class="field"><label for="bill-cat">Categoria</label><select id="bill-cat" name="cat" class="input"><option data-color="var(--cat-bills)">Telecomunicações</option><option data-color="var(--cat-bills)">Eletricidade</option><option data-color="var(--cat-bills)">Água</option><option data-color="var(--cat-bills)">Gás</option><option data-color="var(--cat-bills)">Streaming e música</option><option data-color="var(--cat-bills)">Software e apps</option><option data-color="var(--cat-home)">Renda ou prestação</option><option data-color="var(--cat-home)">Condomínio</option><option data-color="var(--cat-home)">Seguro de habitação</option><option data-color="var(--cat-transport)">Seguro automóvel</option><option data-color="var(--cat-health)">Seguro de saúde</option><option data-color="var(--cat-personal)">Ginásio e desporto</option><option data-color="var(--cat-debt)">Crédito automóvel</option><option data-color="var(--cat-debt)">Crédito pessoal</option><option data-color="var(--cat-shopping)">Outras compras</option></select></div>
+      <div class="field"><label for="bill-valor">Valor médio</label><input id="bill-valor" name="valor" class="input tnum" inputmode="decimal" placeholder="€ 0,00" aria-describedby="bill-valor-err"><span class="err" id="bill-valor-err" hidden>Indica um valor maior que zero.</span></div>
+      <div class="field"><label for="bill-data">Próximo vencimento</label><input id="bill-data" name="data" type="date" class="input tnum" value="2026-10-15"></div>
+      <div class="field"><label for="bill-freq">Frequência</label><select id="bill-freq" name="freq" class="input"><option>Mensal</option><option>Bimestral</option><option>Trimestral</option><option>Semestral</option><option>Anual</option></select></div>
+    </div>
+    <div class="dialog-actions"><button class="btn btn-outline" type="button" data-close>Cancelar</button><button class="btn" type="submit"><span data-bmode="add">Adicionar conta a pagar</span><span data-bmode="edit" hidden>Guardar alterações</span></button></div>
+  </form>
+</dialog>
+
+<dialog id="grp-dialog" class="dialog" aria-labelledby="grp-title">
+  <form data-form="group" novalidate>
+    <h2 class="hl" id="grp-title"><span data-mode="edit">Editar grupo</span><span data-mode="add" hidden>Adicionar grupo</span></h2>
+    <div class="dialog-grid">
+      <div class="field"><label for="grp-nome">Nome</label><input id="grp-nome" name="nome" class="input" aria-describedby="grp-nome-err"><span class="err" id="grp-nome-err" hidden>Indica um nome para o grupo.</span></div>
+      <div class="field"><label for="grp-tipo">Tipo</label><select id="grp-tipo" name="tipo" class="input"><option>Rendimento</option><option>Fixa</option><option>Variável</option><option>Poupança</option><option>Fora das contas</option></select></div>
+      <div class="field" style="grid-column: 1 / -1"><label for="grp-subs">Subcategorias</label><textarea id="grp-subs" name="subs" class="input" rows="3" aria-describedby="grp-subs-help"></textarea><span class="cap" id="grp-subs-help">Separa as subcategorias com vírgulas.</span></div>
+    </div>
+    <div class="dialog-actions"><button class="btn btn-outline" type="button" data-close>Cancelar</button><button class="btn" type="submit"><span data-mode="edit">Guardar alterações</span><span data-mode="add" hidden>Adicionar grupo</span></button></div>
+  </form>
+</dialog>
+
+<dialog id="split-dialog" class="dialog" aria-labelledby="split-title">
+  <form data-form="split" novalidate>
+    <h2 class="hl" id="split-title">Dividir transação</h2>
+    <p class="cap" style="margin: 4px 0 0">Divide <span class="tnum strong" data-split-total></span> por duas categorias.</p>
+    <div class="dialog-grid">
+      <div class="field"><label for="split-c1">Parte 1</label><select id="split-c1" name="c1" class="input"><option>Restaurantes</option><option>Supermercado</option><option>Café e snacks</option><option>Entregas ao domicílio</option><option>Saídas à noite</option><option>Presentes</option><option>Artigos para a casa</option><option>Outras compras</option></select></div>
+      <div class="field"><label for="split-v1">Valor da parte 1</label><input id="split-v1" name="v1" class="input tnum" inputmode="decimal" placeholder="€ 0,00"></div>
+      <div class="field"><label for="split-c2">Parte 2</label><select id="split-c2" name="c2" class="input"><option>Restaurantes</option><option>Supermercado</option><option>Café e snacks</option><option>Entregas ao domicílio</option><option>Saídas à noite</option><option>Presentes</option><option>Artigos para a casa</option><option>Outras compras</option></select></div>
+      <div class="field"><label for="split-v2">Valor da parte 2</label><input id="split-v2" name="v2" class="input tnum" inputmode="decimal" placeholder="€ 0,00"></div>
+    </div>
+    <span class="err" id="split-err" hidden style="display: block; margin-top: 12px">A soma das partes tem de ser igual ao valor da transação.</span>
+    <div class="dialog-actions"><button class="btn btn-outline" type="button" data-close>Cancelar</button><button class="btn" type="submit">Guardar divisão</button></div>
+  </form>
+</dialog>
+
+<dialog id="rename-dialog" class="dialog" aria-labelledby="rename-title" style="width: 440px">
+  <form data-form="rename" novalidate>
+    <h2 class="hl" id="rename-title">Renomear comerciante</h2>
+    <p class="cap" style="margin: 4px 0 16px">O novo nome aplica-se a todas as transações com esta descrição.</p>
+    <div class="field"><label for="rename-nome">Nome do comerciante</label><input id="rename-nome" name="nome" class="input" aria-describedby="rename-err"><span class="err" id="rename-err" hidden>Indica um nome.</span></div>
+    <div class="dialog-actions"><button class="btn btn-outline" type="button" data-close>Cancelar</button><button class="btn" type="submit">Guardar alterações</button></div>
+  </form>
+</dialog>
+
+<dialog id="wipe-dialog" class="dialog" aria-labelledby="wipe-title" style="width: 480px">
+  <h2 class="hl" id="wipe-title">Apagar todos os dados?</h2>
+  <p class="cap" style="margin: 8px 0 16px">Contas, transações, regras, contas a pagar, investimentos e importações são eliminados, e as categorias voltam às predefinidas. Esta ação não pode ser desfeita.</p>
+  <div class="field"><label for="wipe-input">Escreve APAGAR para confirmar</label><input id="wipe-input" class="input" autocomplete="off"></div>
+  <div class="dialog-actions"><button class="btn btn-outline" type="button" data-close>Cancelar</button><button class="btn btn-danger" type="button" data-wipe-confirm disabled>Apagar todos os dados</button></div>
+</dialog>
+
+<dialog id="restore-dialog" class="dialog" aria-labelledby="restore-title" style="width: 480px">
+  <h2 class="hl" id="restore-title">Restaurar a cópia <span data-restore-file></span>?</h2>
+  <p class="cap" style="margin: 8px 0 0">Todos os dados atuais (contas, transações, categorias, regras, contas a pagar e investimentos) são substituídos pelos da cópia. Antes de restaurar, a aplicação guarda uma cópia do estado atual para poderes voltar atrás.</p>
+  <div class="dialog-actions"><button class="btn btn-outline" type="button" data-close>Cancelar</button><button class="btn btn-danger" type="button" data-restore-confirm>Restaurar e substituir dados</button></div>
+</dialog>
+
+<dialog id="tx-dialog" class="dialog" aria-labelledby="tx-title" style="width: 560px">
+  <form data-kvform="tx" novalidate>
+    <h2 class="hl" id="tx-title">Editar transação</h2>
+    <p class="cap" style="margin: 4px 0 0"><span data-tx-desc></span> · <span data-tx-acc></span> · <span class="tnum strong" data-tx-amt></span></p>
+    <div class="dialog-grid">
+      <div class="field"><label for="tx-merchant">Comerciante</label><input id="tx-merchant" name="merchant" class="input" aria-describedby="tx-merchant-err"><span class="err" id="tx-merchant-err" hidden>Indica um nome.</span></div>
+      <div class="field"><label for="tx-date">Data</label><input id="tx-date" name="date" type="date" class="input tnum"></div>
+      <div class="field" style="grid-column: 1 / -1" data-tx-catfield><label for="tx-cat">Categoria</label><select id="tx-cat" name="cat" class="input"></select></div>
+      <p class="cap" data-tx-splitnote hidden style="grid-column: 1 / -1; margin: 0">Esta transação está dividida em <span data-n></span> categorias. <button type="button" class="link" data-kv-unsplit style="border: 0; background: none; padding: 0; cursor: pointer; font: inherit; color: var(--accent)">Remover divisão</button></p>
+      <div class="field" style="grid-column: 1 / -1"><label for="tx-note">Nota</label><textarea id="tx-note" name="note" class="input" rows="2" placeholder="Opcional"></textarea></div>
+      <label class="check" style="grid-column: 1 / -1" data-tx-allrow><input type="checkbox" name="applyall"><span>Aplicar a todas as transações de <span data-tx-m></span> e criar regra</span></label>
+    </div>
+    <div class="dialog-actions"><button class="btn btn-outline" type="button" data-close>Cancelar</button><button class="btn" type="submit">Guardar alterações</button></div>
+  </form>
+</dialog>
+
+<dialog id="rule-dialog" class="dialog" aria-labelledby="rule-title">
+  <form data-kvform="rule" novalidate>
+    <h2 class="hl" id="rule-title"><span data-rmode="add">Adicionar regra</span><span data-rmode="edit" hidden>Editar regra</span></h2>
+    <div class="dialog-grid">
+      <div class="field"><label for="rule-match">Texto a procurar</label><input id="rule-match" name="match" class="input" placeholder="Ex.: PINGO DOCE" aria-describedby="rule-match-err"><span class="err" id="rule-match-err" hidden>Indica o texto a procurar.</span></div>
+      <div class="field"><label for="rule-field">Procurar em</label><select id="rule-field" name="field" class="input"><option value="desc">Descrição do banco</option><option value="merchant">Nome do comerciante</option></select></div>
+      <div class="field"><label for="rule-acc">Conta</label><select id="rule-acc" name="account" class="input"><option value="">Todas</option><option>ActivoBank</option><option>XTB</option><option>Conta conjunta</option></select></div>
+      <div class="field"><label for="rule-cat">Categoria</label><select id="rule-cat" name="cat" class="input"></select></div>
+    </div>
+    <p class="cap" style="margin: 12px 0 0" data-rule-hits></p>
+    <label class="check" style="margin-top: 12px"><input type="checkbox" name="apply" checked>Aplicar já às transações existentes (exceto categorias manuais)</label>
+    <div class="dialog-actions"><button class="btn btn-outline" type="button" data-close>Cancelar</button><button class="btn" type="submit"><span data-rmode="add">Adicionar regra</span><span data-rmode="edit" hidden>Guardar alterações</span></button></div>
+  </form>
+</dialog>
+
+<dialog id="pos-dialog" class="dialog" aria-labelledby="pos-title" style="width: 760px">
+  <div data-pos-body></div>
+  <div class="dialog-actions"><button class="btn btn-outline" type="button" data-close>Fechar</button></div>
+</dialog>
+
+<dialog id="kv-confirm" class="dialog" aria-labelledby="kv-confirm-title" style="width: 440px">
+  <h2 class="hl" id="kv-confirm-title"></h2>
+  <p class="cap" style="margin: 8px 0 0" data-kv-confirm-text></p>
+  <div class="dialog-actions"><button class="btn btn-outline" type="button" data-close>Cancelar</button><button class="btn btn-danger" type="button" data-kv-confirm-ok></button></div>
+</dialog>
+
+<dialog id="cmdk" class="dialog cmdk" aria-label="Pesquisa global">
+  <input class="cmdk-input" id="cmdk-q" placeholder="Pesquisar páginas, transações, contas a pagar, categorias…" autocomplete="off" role="combobox" aria-expanded="true" aria-controls="cmdk-list" aria-label="Pesquisar">
+  <div class="cmdk-list" id="cmdk-list" role="listbox" aria-label="Resultados"></div>
+  <div class="kbd-row" style="justify-content: flex-start; padding: 8px 16px; border-top: 1px solid var(--line)"><span><span class="kbd">↑</span> <span class="kbd">↓</span> navegar</span><span><span class="kbd">Enter</span> abrir</span><span><span class="kbd">Esc</span> fechar</span></div>
+</dialog>
+
+<template id="tpl-account"><div class="row" style="grid-template-columns: 40px minmax(0, 1fr) 120px 130px auto; height: 72px">
+  <span data-f="color" style="width: 40px; height: 40px; border-radius: 999px" aria-hidden="true"></span>
+  <span><span class="hl" style="display: block" data-f="name"></span><span class="cap" data-f="cap">Conta à ordem · sem extratos importados</span></span>
+  <span class="cap tnum" style="text-align: right">0 transações</span>
+  <a class="link" href="#import" style="text-align: right">Importar extrato</a>
+  <span style="display: flex; gap: 4px; justify-content: flex-end"><button class="icon-btn" type="button" data-edit-account aria-label="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg></button><button class="icon-btn" type="button" data-delete-account="" aria-label="Eliminar" style="color: var(--neg)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button></span>
+</div></template>
+
+<template id="tpl-bill"><div class="row bl" role="row">
+  <span class="inline" style="gap: 10px"><span class="dot" data-f="dot"></span><span><span style="display: block; font-weight: 500" data-f="name"></span><span class="micro" data-f="cat"></span></span></span>
+  <span class="tnum" data-f="date"></span><span class="cap" data-f="freq"></span><span class="tnum" style="text-align: right" data-f="value"></span>
+  <span style="display: flex; gap: 8px; justify-content: flex-end; align-items: center"><span class="badge badge-pos" data-paid hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Paga</span><button class="btn btn-ghost btn-sm" type="button" data-paid-toggle><span>Marcar como paga</span><span hidden>Desfazer</span></button></span>
+</div></template>
+
+<template id="tpl-group"><div class="row" style="grid-template-columns: 200px 96px minmax(0, 1fr) 32px; min-height: 56px; padding-top: 8px; padding-bottom: 8px"><span class="inline" style="gap: 10px; font-weight: 500"><span class="dot" style="background: var(--accent)"></span><span data-f="name"></span></span><span><span class="badge" data-f="type"></span></span><span class="cap" data-f="subs"></span><button class="icon-btn" type="button" data-edit-group aria-label="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg></button></div></template>
+
+<template id="tpl-import"><div class="row imp" role="row"><span class="inline" style="min-width: 0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg><span class="ellipsis" data-f="file"></span></span><span class="cap" data-f="acc"></span><span class="cap tnum">05 out 2026</span><span class="tnum" style="text-align: right" data-f="n"></span><span style="text-align: right"><button class="btn btn-ghost btn-sm" type="button" data-undo-row>Desfazer</button></span></div></template>
+
+<template id="tpl-person"><span class="chip" style="padding-right: 2px"><span data-f="name"></span><button class="icon-btn" type="button" data-remove-chip aria-label="Remover" style="width: 20px; height: 20px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></span></template>
+
+<div id="toast" class="toast" role="status" aria-live="polite" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span data-toast-msg></span><button class="icon-btn" type="button" data-toast-close aria-label="Fechar aviso"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
+<script src="kivo-v3.js"></script>
+<script>
+(function () {
+  function $(s, r) { return (r || document).querySelector(s); }
+  function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  var MESES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+  function eur(v) { var p = Math.abs(v).toFixed(2).split('.'); return (v < 0 ? '−' : '') + '€ ' + p[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ',' + p[1]; }
+  function parseEur(s) { s = String(s || '').replace(/[^\d,.]/g, ''); if (s.indexOf(',') > -1) s = s.replace(/\./g, '').replace(',', '.'); var n = parseFloat(s); return isNaN(n) ? null : n; }
+  function fmtDate(iso) { var d = iso.split('-'); return d[2] + ' ' + MESES[+d[1] - 1] + ' ' + d[0]; }
+  function fill(tpl, map) { var node = $(tpl).content.firstElementChild.cloneNode(true); Object.keys(map).forEach(function (k) { var el = $('[data-f="' + k + '"]', node); if (el) el.textContent = map[k]; }); return node; }
+  function setErr(input, errId, bad) { $('#' + errId).hidden = !bad; if (bad) { input.setAttribute('aria-invalid', 'true'); input.focus(); } else input.removeAttribute('aria-invalid'); return bad; }
+
+  /* Aviso */
+  var toastEl = $('#toast'), toastT;
+  function toast(msg) { $('[data-toast-msg]', toastEl).textContent = msg; toastEl.hidden = false; clearTimeout(toastT); toastT = setTimeout(function () { toastEl.hidden = true; }, 4500); }
+
+  /* Rotas */
+  var views = $$('.view'), navs = $$('[data-nav]');
+  function show() {
+    var key = (location.hash || '#home').slice(1);
+    if (!$('.view[data-view="' + key + '"]')) key = 'home';
+    views.forEach(function (v) { v.hidden = v.getAttribute('data-view') !== key; });
+    navs.forEach(function (n) { if (n.getAttribute('data-nav') === key) n.setAttribute('aria-current', 'page'); else n.removeAttribute('aria-current'); });
+    document.body.classList.remove('menu-open');
+    window.scrollTo(0, 0);
+  }
+  window.addEventListener('hashchange', show);
+  show();
+
+  /* Diálogos */
+  function openDialog(id, opener) { var d = $('#' + id); d._opener = opener; $$('.err', d).forEach(function (e) { e.hidden = true; }); $$('[aria-invalid]', d).forEach(function (e) { e.removeAttribute('aria-invalid'); }); d.showModal(); var f = $('input:not([type=hidden]), select', d); if (f) f.focus(); }
+  $$('dialog').forEach(function (d) { d.addEventListener('close', function () { if (d._opener && document.contains(d._opener)) d._opener.focus(); }); });
+
+  /* Revisão */
+  var items = $$('[data-rv-item]'), cur = 0, hist = [], pending = 12;
+  var picker = $('#picker'), pickerBtn = $('[data-picker-open]');
+  function setPicker(open) { picker.hidden = !open; pickerBtn.setAttribute('aria-expanded', String(open)); if (open) { $('#pick-q').value = ''; filterPicks(); $('#pick-q').focus(); } }
+  function rvShow(i) {
+    cur = i;
+    var done = i >= items.length;
+    items.forEach(function (it, k) { it.hidden = k !== i; });
+    $('[data-rv-done]').hidden = !done;
+    $('[data-rv-actions]').hidden = done;
+    setPicker(false);
+    $('#rv-always').checked = false;
+    if (!done) $('[data-rv-merchant]').textContent = items[i].getAttribute('data-merchant');
+    $('[data-rv-pos]').textContent = Math.min(i + 1, 12);
+    $('[data-rv-bar]').style.width = Math.max(2, (12 - pending) / 12 * 100) + '%';
+    var nc = $('.nav-count'); nc.textContent = pending; nc.setAttribute('aria-label', pending + ' pendentes'); nc.hidden = pending === 0;
+    if (window.KV) KV.saveReview(cur, pending);
+    updateSteps();
+  }
+  function rvCategorize(label, parts) {
+    if (cur >= items.length) return;
+    var m = items[cur].getAttribute('data-merchant'), always = $('#rv-always').checked;
+    if (window.KV) KV.categorize(m, label, always, parts);
+    hist.push({ i: cur, cat: true }); pending--;
+    toast(m + ': ' + label + '.' + (always ? ' Regra criada para as próximas.' : ''));
+    rvShow(cur + 1);
+  }
+  function rvLater() { if (cur >= items.length) return; hist.push({ i: cur, cat: false }); toast('Fica para mais tarde.'); rvShow(cur + 1); }
+  function rvUndo() { if (!hist.length) { toast('Não há nada para desfazer.'); return; } var x = hist.pop(); if (x.cat) { pending++; if (window.KV) KV.uncategorize(items[x.i].getAttribute('data-merchant')); } rvShow(x.i); toast('Desfeito.'); }
+  function filterPicks() {
+    var q = $('#pick-q').value.trim().toLowerCase();
+    $$('.picker > div').forEach(function (g) {
+      var any = false;
+      $$('.pick', g).forEach(function (p) { var ok = !q || p.textContent.toLowerCase().indexOf(q) > -1 || $('h3', g).textContent.toLowerCase().indexOf(q) > -1; p.hidden = !ok; if (ok) any = true; });
+      g.hidden = !any;
+    });
+  }
+  $('#pick-q').addEventListener('input', filterPicks);
+  function rvOpenSplit(opener) { var it = items[cur]; if (!it) return; var f = $('#split-dialog form'); f.reset(); $('[data-split-total]').textContent = eur(-parseFloat(it.getAttribute('data-amount'))); openDialog('split-dialog', opener); }
+  function rvOpenRename(opener) { var it = items[cur]; if (!it) return; $('#rename-nome').value = it.getAttribute('data-merchant'); openDialog('rename-dialog', opener); }
+  function openBill(opener, name, value) { var f = $('#bill-dialog form'); f.reset(); f._editId = null; if (window.KV) KV.billMode(false); f.elements.nome.value = name || ''; f.elements.valor.value = value ? eur(value) : ''; openDialog('bill-dialog', opener); }
+
+  /* Revisão semanal */
+  function setStep(name, done) {
+    var s = $('[data-step="' + name + '"]'); if (!s) return;
+    s.setAttribute('stroke', done ? 'var(--pos)' : 'var(--warn)');
+    s.setAttribute('aria-label', done ? 'Feito' : 'Por fazer');
+    s.innerHTML = done ? '<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>' : '<circle cx="12" cy="12" r="10"/>';
+    return done;
+  }
+  function updateSteps() {
+    var n = 1;
+    if (setStep('review', cur >= items.length)) n++;
+    if (setStep('bills', $$('[data-week-bill]').every(function (c) { return c.checked; }))) n++;
+    if (setStep('alerts', !$('[data-view="weekly"] .alert-warn'))) n++;
+    $('[data-steps]').textContent = n;
+  }
+
+  /* Dívida: simulação */
+  function sim() {
+    var input = $('#extra'), x = parseEur(input.value) || 0, P = 6842.15, r = 0.079 / 12, A = 214.30 + x;
+    var n = -Math.log(1 - r * P / A) / Math.log(1 + r), N = Math.ceil(n - 1e-9), m = 10 + N - 1;
+    var interest = n * A - P, base = parseFloat(input.getAttribute('data-base-interest'));
+    $('[data-sim-end]').textContent = MESES[m % 12] + ' ' + (2026 + Math.floor(m / 12));
+    $('[data-sim-sooner]').textContent = 36 - N;
+    $('[data-sim-sooner-wrap]').hidden = 36 - N <= 0;
+    $('[data-sim-same]').hidden = 36 - N > 0;
+    $('[data-sim-save]').textContent = eur(Math.max(0, base - interest));
+    $('[data-sim-total]').textContent = eur(interest);
+  }
+  $('#extra').addEventListener('input', sim);
+
+  /* Importar */
+  var FORMATS = { bank: ['pdf', 'xlsx', 'csv', 'ofx'], xtb: ['xlsx', 'xls'] };
+  function setPending(delta) { pending = Math.max(0, pending + delta); if (window.KV) KV.saveReview(cur, pending); var nc = $('.nav-count'); nc.textContent = pending; nc.setAttribute('aria-label', pending + ' pendentes'); nc.hidden = pending === 0; }
+  window.KVmain = { setPending: setPending, resetReview: function () { hist = []; pending = 12; rvShow(0); } };
+  function showImp(kind) { $$('[data-imp]').forEach(function (a) { a.hidden = a.getAttribute('data-imp') !== kind; }); return $('[data-imp="' + kind + '"]'); }
+  function runImport(kind, file) {
+    if (!file) return;
+    var ext = file.name.split('.').pop().toLowerCase();
+    if (FORMATS[kind].indexOf(ext) < 0) {
+      var er = showImp('error'); $('[data-imp-file]', er).textContent = file.name;
+      $('[data-imp-formats]', er).textContent = FORMATS[kind].map(function (x) { return '.' + x; }).join(', ');
+      return;
+    }
+    var dup = $$('#imp-list [data-f="file"], #imp-list .row.imp .ellipsis').some(function (s) { return s.textContent === file.name; });
+    var acc = kind === 'bank' ? $('#conta').value : $('#xtb').value;
+    if (kind === 'bank') { $('#dz').hidden = true; $('#dz-reading').hidden = false; $('[data-reading-file]').textContent = file.name; }
+    else { var b = $('#xtb-btn'); b.disabled = true; b.children[0].hidden = true; b.children[1].hidden = false; }
+    setTimeout(function () {
+      if (kind === 'bank') { $('#dz').hidden = false; $('#dz-reading').hidden = true; }
+      else { var b = $('#xtb-btn'); b.disabled = false; b.children[0].hidden = false; b.children[1].hidden = true; }
+      if (dup) { var d = showImp('dup'); $('[data-imp-file]', d).textContent = file.name; return; }
+      var n = kind === 'bank' ? 41 : 3, pend = kind === 'bank' ? 9 : 0;
+      var a = showImp(kind);
+      $('[data-imp-file]', a).textContent = file.name;
+      $('[data-imp-n]', a).textContent = n;
+      if (kind === 'bank') { $('[data-imp-acc]', a).textContent = acc; $('[data-imp-pend]', a).textContent = pend; }
+      var row = fill('#tpl-import', { file: file.name, acc: acc, n: n });
+      row.setAttribute('data-n', n); row.setAttribute('data-pend', pend);
+      $('#imp-list .row-head').after(row);
+      a._row = row;
+      setPending(pend);
+      if (window.KV) KV.onImport(kind, file.name);
+    }, 1200);
+  }
+  var restoreFile = null;
+  function showRestore(kind, name) { $$('[data-restore]').forEach(function (a) { a.hidden = a.getAttribute('data-restore') !== kind; }); if (kind) $('[data-restore="' + kind + '"] [data-restore-file]').textContent = name; }
+  $('#file-backup').addEventListener('change', function () {
+    var f = this.files[0]; this.value = ''; if (!f) return;
+    if (!/\.(db|sqlite)$/i.test(f.name)) { showRestore('error', f.name); return; }
+    restoreFile = f; showRestore(null);
+    $('#restore-dialog [data-restore-file]').textContent = f.name;
+    openDialog('restore-dialog', $('#restore-btn'));
+  });
+  $('[data-restore-confirm]').addEventListener('click', function () {
+    $('#restore-dialog').close();
+    var b = $('#restore-btn'); b.disabled = true; b.children[0].hidden = true; b.children[1].hidden = false;
+    setTimeout(function () { b.disabled = false; b.children[0].hidden = false; b.children[1].hidden = true; showRestore('ok', restoreFile.name); }, 1200);
+  });
+  $$('input[type=file]:not(#file-backup)').forEach(function (inp) { inp.addEventListener('change', function () { runImport(inp.id === 'file-xtb' ? 'xtb' : 'bank', inp.files[0]); inp.value = ''; }); });
+  var dz = $('#dz');
+  ['dragenter', 'dragover'].forEach(function (ev) { dz.addEventListener(ev, function (e) { e.preventDefault(); dz.classList.add('drag'); }); });
+  ['dragleave', 'drop'].forEach(function (ev) { dz.addEventListener(ev, function (e) { e.preventDefault(); dz.classList.remove('drag'); }); });
+  dz.addEventListener('drop', function (e) { runImport('bank', e.dataTransfer.files[0]); });
+  function undoImportRow(row) {
+    var n = row ? +(row.getAttribute('data-n') || row.children[3].textContent) : 38;
+    if (row) { setPending(-(+(row.getAttribute('data-pend') || 0))); row.remove(); }
+    toast('Importação desfeita. ' + n + ' transações removidas.');
+  }
+
+  $('#wipe-input').addEventListener('input', function () { $('[data-wipe-confirm]').disabled = this.value.trim().toUpperCase() !== 'APAGAR'; });
+  /* Cliques */
+  var editingRow = null, editingGroup = null, pendingDelete = null, billOrigin = null;
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest('button, a'); if (!t) return;
+    if (t.hasAttribute('data-menu-open')) document.body.classList.add('menu-open');
+    if (t.hasAttribute('data-menu-close')) document.body.classList.remove('menu-open');
+    if (t.hasAttribute('data-toast')) toast(t.getAttribute('data-toast'));
+    if (t.hasAttribute('data-toast-close')) toastEl.hidden = true;
+    if (t.hasAttribute('data-close')) t.closest('dialog').close();
+    if (t.hasAttribute('data-wipe-open')) { $('#wipe-input').value = ''; $('[data-wipe-confirm]').disabled = true; openDialog('wipe-dialog', t); $('#wipe-input').focus(); }
+    if (t.hasAttribute('data-wipe-confirm')) {
+      $('#wipe-dialog').close();
+      $$('[data-imp]').forEach(function (al) { al.hidden = true; al._row = null; });
+      hist = []; pending = 0; rvShow(items.length);
+      KV.wipe();
+      toast('Todos os dados foram apagados.');
+    }
+
+    if (t.hasAttribute('data-dismiss')) {
+      var txt = $('span', t.closest('.alert')).textContent;
+      $$('.alert-warn').forEach(function (a) { if ($('span', a).textContent === txt) a.remove(); });
+      $('[data-empty-alerts]').hidden = !!$('[data-view="home"] .alert-warn');
+      updateSteps();
+    }
+
+    if (t.hasAttribute('data-split-toggle')) {
+      var open = t.getAttribute('aria-expanded') !== 'true';
+      t.setAttribute('aria-expanded', String(open));
+      t.closest('.row').nextElementSibling.hidden = !open;
+    }
+    if (t.hasAttribute('data-bill-from-tx')) { var row = t.closest('.row'); openBill(t, $('span > span', row.children[1]).textContent.trim(), parseEur(row.children[4].textContent)); billOrigin = null; }
+
+    if (t.hasAttribute('data-picker-open')) setPicker(picker.hidden);
+    if (t.hasAttribute('data-picker-close')) { setPicker(false); pickerBtn.focus(); }
+    if (t.hasAttribute('data-rv-pick')) rvCategorize(t.getAttribute('data-rv-pick'));
+    if (t.classList.contains('pick')) rvCategorize(t.textContent);
+    if (t.hasAttribute('data-rv-later')) rvLater();
+    if (t.hasAttribute('data-rv-undo')) rvUndo();
+    if (t.hasAttribute('data-rv-transfer')) rvCategorize('Entre contas minhas');
+    if (t.hasAttribute('data-rv-split')) rvOpenSplit(t);
+    if (t.hasAttribute('data-rv-rename')) rvOpenRename(t);
+    if (t.hasAttribute('data-rv-bill') && items[cur]) { openBill(t, items[cur].getAttribute('data-merchant'), parseFloat(items[cur].getAttribute('data-amount'))); }
+
+    if (t.hasAttribute('data-file')) $('#' + t.getAttribute('data-file')).click();
+    if (t.hasAttribute('data-undo-import')) {
+      var al = t.closest('.alert'); al.hidden = true;
+      var r0 = al._row || (al.getAttribute('data-imp') === 'bank' ? $('#imp-list .row.imp:not(.row-head)') : null);
+      undoImportRow(r0); al._row = null;
+    }
+    if (t.hasAttribute('data-undo-row')) {
+      var rr = t.closest('.row');
+      $$('[data-imp]').forEach(function (a) { if (a._row === rr || (!a._row && a.getAttribute('data-imp') === 'bank' && rr === $('#imp-list .row.imp:not(.row-head)'))) a.hidden = true; });
+      undoImportRow(rr);
+    }
+
+    if (t.classList.contains('swatch')) $$('.swatch').forEach(function (o) { o.setAttribute('aria-pressed', String(o === t)); });
+    if (t.hasAttribute('data-edit-account')) {
+      editingRow = t.closest('.row');
+      var f = $('#acc-dialog form'), name = $('.hl', editingRow).textContent, cap = $('.hl', editingRow).nextElementSibling.textContent, sal = editingRow.children[3];
+      f.reset(); f.elements.nome.value = name;
+      var tipo = cap.split(' · ')[0]; if ($$('option', f.elements.tipo).some(function (o) { return o.textContent === tipo; })) f.elements.tipo.value = tipo;
+      f.elements.saldo.value = sal.classList.contains('tnum') ? sal.textContent.replace('−', '') : '';
+      openDialog('acc-dialog', t);
+    }
+    if (t.hasAttribute('data-delete-account')) {
+      pendingDelete = t.closest('.row');
+      var dlg = $('#del-dialog');
+      $('[data-del-name]', dlg).textContent = $('.hl', pendingDelete).textContent;
+      $('[data-del-count]', dlg).textContent = pendingDelete.children[2].textContent;
+      dlg._opener = t; dlg.showModal(); $('[data-del-cancel]', dlg).focus();
+    }
+    if (t.hasAttribute('data-del-cancel')) $('#del-dialog').close();
+    if (t.hasAttribute('data-del-confirm') && pendingDelete) {
+      var nm = $('.hl', pendingDelete).textContent; pendingDelete.remove(); pendingDelete = null;
+      var dlg2 = $('#del-dialog'); dlg2._opener = null; dlg2.close();
+      var done = $('#del-done'); $('[data-del-done-name]', done).textContent = nm; done.hidden = false;
+    }
+    if (t.hasAttribute('data-add-account')) {
+      var n = $('#n'); if (setErr(n, 'n-err', !n.value.trim())) return;
+      var sw = $('.swatch[aria-pressed="true"]');
+      var node = fill('#tpl-account', { name: n.value.trim(), cap: $('#t').value + ' · sem extratos importados' });
+      $('[data-f="color"]', node).style.background = sw ? sw.style.background : 'var(--accent)';
+      $('[data-edit-account]', node).setAttribute('aria-label', 'Editar ' + n.value.trim());
+      var del = $('[data-delete-account]', node); del.setAttribute('aria-label', 'Eliminar ' + n.value.trim()); del.setAttribute('data-delete-account', n.value.trim());
+      $('#acc-list').appendChild(node);
+      n.value = ''; $('#i').value = ''; $('#del-done').hidden = true;
+      toast('Conta adicionada.');
+    }
+
+    if (t.hasAttribute('data-open-bill')) { openBill(t); billOrigin = null; }
+    if (t.hasAttribute('data-paid-toggle')) {
+      var cell = t.parentElement, paid = $('[data-paid]', cell).hidden;
+      $('[data-paid]', cell).hidden = !paid;
+      t.children[0].hidden = paid; t.children[1].hidden = !paid;
+      toast(paid ? 'Marcada como paga.' : 'Pagamento desfeito.');
+    }
+
+    if (t.hasAttribute('data-sub-toggle')) {
+      var o2 = t.getAttribute('aria-expanded') !== 'true';
+      t.setAttribute('aria-expanded', String(o2));
+      $('[data-chev]', t).style.transform = o2 ? 'rotate(90deg)' : '';
+      $$('tr[data-sub="' + t.getAttribute('data-sub-toggle') + '"]').forEach(function (r) { r.hidden = !o2; });
+    }
+
+    if (t.hasAttribute('data-save-payday')) { var d = $('#d'), v = +d.value; if (!setErr(d, 'd-err', !(v >= 1 && v <= 31 && Math.floor(v) === v))) toast('Dia do vencimento guardado.'); }
+    if (t.hasAttribute('data-remove-chip')) { var chip = t.closest('.chip'); var nmx = chip.textContent.trim(); chip.remove(); toast('Removido: ' + nmx + '.'); }
+    if (t.hasAttribute('data-add-person')) {
+      var p = $('#pessoa'), val = p.value.trim(); if (!val) { p.focus(); return; }
+      var c = fill('#tpl-person', { name: val }); $('[data-remove-chip]', c).setAttribute('aria-label', 'Remover ' + val);
+      $('#people').appendChild(c); p.value = ''; p.focus();
+    }
+    if (t.hasAttribute('data-edit-group') || t.hasAttribute('data-add-group')) {
+      var adding = t.hasAttribute('data-add-group'), gf = $('#grp-dialog form');
+      editingGroup = adding ? null : t.closest('.row');
+      gf.reset();
+      $$('[data-mode]', $('#grp-dialog')).forEach(function (s) { s.hidden = s.getAttribute('data-mode') !== (adding ? 'add' : 'edit'); });
+      if (!adding) {
+        gf.elements.nome.value = editingGroup.children[0].textContent.trim();
+        gf.elements.tipo.value = editingGroup.children[1].textContent.trim();
+        gf.elements.subs.value = editingGroup.children[2].textContent.split(' · ').join(', ');
+      }
+      openDialog('grp-dialog', t);
+    }
+    if (t.hasAttribute('data-finish-weekly')) { $('[data-weekly-done]').hidden = false; var dot = $('#weekly-dot'); if (dot) dot.remove(); window.scrollTo(0, 0); }
+  });
+
+  document.addEventListener('change', function (e) { if (e.target.hasAttribute('data-week-bill')) updateSteps(); });
+
+  /* Formulários */
+  function updateGroupCounts() {
+    var rows = $$('#groups > .row');
+    $('[data-groups-n]').textContent = rows.length;
+    $('[data-subs-n]').textContent = rows.reduce(function (s, r) { var x = r.children[2].textContent.trim(); return s + (x ? x.split(' · ').length : 0); }, 0);
+  }
+  function badgeClass(tipo) { return 'badge' + (tipo === 'Rendimento' ? ' badge-pos' : tipo === 'Poupança' ? ' badge-info' : ''); }
+  document.addEventListener('submit', function (e) {
+    var f = e.target, kind = f.getAttribute('data-form'); if (!kind) return;
+    e.preventDefault();
+    var dlg = f.closest('dialog');
+    if (kind === 'account') {
+      var nome = f.elements.nome.value.trim(); if (setErr(f.elements.nome, 'acc-nome-err', !nome)) return;
+      var tipo = f.elements.tipo.value, capEl = $('.hl', editingRow).nextElementSibling, rest = capEl.textContent.split(' · ').slice(1).join(' · ');
+      $('.hl', editingRow).textContent = nome;
+      capEl.textContent = tipo + (rest ? ' · ' + rest : '');
+      var sv = parseEur(f.elements.saldo.value), cell = editingRow.children[3];
+      if (sv !== null && cell.classList.contains('tnum')) cell.textContent = eur(/Crédito|Cartão/.test(tipo) ? -sv : sv);
+      $('[data-edit-account]', editingRow).setAttribute('aria-label', 'Editar ' + nome);
+      var del = $('[data-delete-account]', editingRow); del.setAttribute('aria-label', 'Eliminar ' + nome); del.setAttribute('data-delete-account', nome);
+      dlg.close(); toast('Alterações guardadas.');
+    }
+    if (kind === 'bill') {
+      var bn = f.elements.nome.value.trim(), bv = parseEur(f.elements.valor.value);
+      if (setErr(f.elements.nome, 'bill-nome-err', !bn)) return;
+      if (setErr(f.elements.valor, 'bill-valor-err', !(bv > 0))) return;
+      dlg.close(); KV.saveBill(f, bn, bv);
+    }
+    if (kind === 'group') {
+      var gn = f.elements.nome.value.trim(); if (setErr(f.elements.nome, 'grp-nome-err', !gn)) return;
+      var gt = f.elements.tipo.value, subs = f.elements.subs.value.split(',').map(function (s) { return s.trim(); }).filter(Boolean).join(' · ');
+      var row = editingGroup;
+      if (!row) { row = fill('#tpl-group', {}); $('#groups').appendChild(row); }
+      var nameEl = row.children[0], dotEl = $('.dot', nameEl);
+      nameEl.textContent = ''; nameEl.appendChild(dotEl); nameEl.appendChild(document.createTextNode(gn));
+      var b = $('.badge', row.children[1]); b.className = badgeClass(gt); b.textContent = gt;
+      row.children[2].textContent = subs;
+      $('[data-edit-group]', row).setAttribute('aria-label', 'Editar ' + gn);
+      updateGroupCounts();
+      dlg.close(); toast(editingGroup ? 'Grupo atualizado.' : 'Grupo adicionado.');
+    }
+    if (kind === 'split') {
+      var total = parseFloat(items[cur].getAttribute('data-amount')), v1 = parseEur(f.elements.v1.value) || 0, v2 = parseEur(f.elements.v2.value) || 0;
+      var bad = Math.abs(v1 + v2 - total) > 0.005 || v1 <= 0 || v2 <= 0;
+      $('#split-err').hidden = !bad; if (bad) { f.elements.v1.focus(); return; }
+      dlg._opener = null; dlg.close(); rvCategorize('Divisão · ' + f.elements.c1.value + ' e ' + f.elements.c2.value, [{ cat: f.elements.c1.value, amt: -v1 }, { cat: f.elements.c2.value, amt: -v2 }]);
+    }
+    if (kind === 'rename') {
+      var rn = f.elements.nome.value.trim(); if (setErr(f.elements.nome, 'rename-err', !rn)) return;
+      var it = items[cur]; it.setAttribute('data-merchant', rn); $('[data-rv-title]', it).textContent = rn; $('[data-rv-merchant]').textContent = rn;
+      dlg.close(); toast('Comerciante renomeado para ' + rn + '.');
+    }
+  });
+
+  /* Teclado */
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { if (!picker.hidden) setPicker(false); document.body.classList.remove('menu-open'); }
+    if (location.hash !== '#review' || $('dialog[open]') || e.ctrlKey || e.metaKey || e.altKey) return;
+    var ae = document.activeElement, typing = /INPUT|SELECT|TEXTAREA/.test(ae.tagName);
+    if (typing) return;
+    var k = e.key.toLowerCase(), it = items[cur];
+    if (k === '/') { e.preventDefault(); setPicker(true); return; }
+    if (k === 'z') { rvUndo(); return; }
+    if (!it) return;
+    var picks = $$('[data-rv-pick]', it);
+    if (/^[1-9]$/.test(k) && picks[+k - 1]) { picks[+k - 1].click(); return; }
+    if (k === 'enter' && ae.tagName !== 'BUTTON' && ae.tagName !== 'A' && picks[0]) { e.preventDefault(); picks[0].click(); return; }
+    if (k === 'arrowright') { rvLater(); return; }
+    if (k === 's') { rvOpenSplit($('[data-rv-split]')); return; }
+    if (k === 't') { rvCategorize('Entre contas minhas'); return; }
+    if (k === 'a') { var cb = $('#rv-always'); cb.checked = !cb.checked; return; }
+    if (k === 'b') { openBill($('[data-rv-bill]'), it.getAttribute('data-merchant'), parseFloat(it.getAttribute('data-amount'))); return; }
+    if (k === 'n') { rvOpenRename($('[data-rv-rename]')); return; }
+  });
+
+  var rs = window.KV ? KV.loadReview() : null;
+  if (rs) pending = rs.pending;
+  rvShow(rs ? Math.min(rs.cur, items.length) : 0);
+})();
+</script>
+</body>
+</html>

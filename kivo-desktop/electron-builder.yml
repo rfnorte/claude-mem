@@ -1,0 +1,45 @@
+# Configuração do electron-builder — Kivo para Windows
+appId: pt.kivo.desktop
+productName: Kivo
+copyright: Copyright © 2026 Kivo
+directories:
+  output: dist
+  buildResources: build
+files:
+  - package.json
+  - electron/**
+  - app/**
+  - build/icon.png
+  - "!**/*.map"
+asar: true
+electronLanguages:
+  - pt-PT
+  - en-US
+win:
+  icon: build/icon.ico
+  executableName: Kivo
+  target:
+    - target: nsis
+      arch: [x64]
+    - target: portable
+      arch: [x64]
+nsis:
+  oneClick: false
+  perMachine: false
+  allowElevation: true
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: always
+  createStartMenuShortcut: true
+  shortcutName: Kivo
+  menuCategory: false
+  runAfterFinish: true
+  deleteAppDataOnUninstall: false
+  installerIcon: build/icon.ico
+  uninstallerIcon: build/icon.ico
+  uninstallDisplayName: Kivo
+  installerLanguages: [pt_PT]
+  language: "2070"
+  artifactName: Kivo-Setup-${version}.exe
+portable:
+  artifactName: Kivo-Portable-${version}.exe
+publish: null
