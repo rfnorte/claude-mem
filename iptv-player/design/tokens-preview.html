@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Design Tokens — IPTV Player</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    /* Página de pré-visualização (ferramenta interna). Usa apenas tokens. */
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--color-bg); color: var(--color-text);
+      font-family: var(--font-sans); font-size: var(--text-md); line-height: var(--leading-normal);
+      padding: calc(var(--safe-top) + var(--space-6)) calc(var(--safe-right) + var(--gutter))
+               calc(var(--safe-bottom) + var(--space-12)) calc(var(--safe-left) + var(--gutter));
+      -webkit-font-smoothing: antialiased;
+    }
+    main { max-width: var(--content-max); margin: 0 auto; }
+    h1 { font-size: var(--text-3xl); font-weight: var(--weight-bold); letter-spacing: var(--tracking-tight); line-height: var(--leading-tight); margin: 0 0 var(--space-2); }
+    h2 { font-size: var(--text-xl); font-weight: var(--weight-semibold); margin: var(--section-gap) 0 var(--space-4); }
+    .lead { color: var(--color-text-secondary); margin: 0; }
+    .grid { display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+    .swatch { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; }
+    .swatch__chip { height: 64px; display: grid; place-items: center; font-weight: var(--weight-semibold); font-size: var(--text-sm); }
+    .swatch__meta { padding: var(--space-2) var(--space-3); font-size: var(--text-xs); color: var(--color-text-secondary); }
+    .swatch__meta b { display: block; color: var(--color-text); font-weight: var(--weight-medium); font-family: var(--font-mono); font-size: var(--text-2xs); }
+    .ok { color: var(--color-success); } .ko { color: var(--color-danger); }
+    .type-row { display: flex; align-items: baseline; gap: var(--space-4); padding: var(--space-2) 0; border-bottom: 1px solid var(--color-divider); }
+    .type-row code { flex: 0 0 90px; font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--color-text-tertiary); }
+    .space-row { display: flex; align-items: center; gap: var(--space-3); margin: var(--space-1) 0; font-family: var(--font-mono); font-size: var(--text-xs); color: var(--color-text-secondary); }
+    .space-row span { display: block; height: 12px; background: var(--color-accent); border-radius: var(--radius-xs); }
+    .radii { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+    .radii div { width: 72px; height: 72px; background: var(--color-surface-active); border: 1px solid var(--color-border-strong); display: grid; place-items: center; font-size: var(--text-2xs); color: var(--color-text-secondary); }
+    .row { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+    .btn { min-height: var(--touch-min); padding: 0 var(--space-5); border-radius: var(--radius-full); border: 0; font: inherit; font-weight: var(--weight-semibold); cursor: pointer; transition: transform var(--duration-fast) var(--ease-spring), background var(--duration-fast) var(--ease-standard); }
+    .btn:active { transform: scale(var(--press-scale)); }
+    .btn:focus-visible { outline: 3px solid var(--color-accent-ring); outline-offset: 2px; }
+    .btn--primary { background: var(--color-accent-fill); color: var(--color-text-on-accent); box-shadow: var(--shadow-glow); }
+    .btn--gradient { background: var(--gradient-accent); color: var(--color-text-on-accent); }
+    .btn--secondary { background: var(--color-surface-active); color: var(--color-text); border: 1px solid var(--color-border-strong); }
+    .btn--danger { background: var(--color-danger-soft); color: var(--color-danger); }
+    .badge { font-size: var(--text-2xs); font-weight: var(--weight-bold); letter-spacing: var(--tracking-wide); text-transform: uppercase; padding: 2px var(--space-2); border-radius: var(--radius-xs); }
+    .badge--live { background: var(--color-live); color: var(--color-text-on-status); }
+    .badge--hd { background: var(--color-surface-active); color: var(--color-text-secondary); border: 1px solid var(--color-border-strong); }
+    .channel { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3); min-height: 72px; background: var(--color-surface); border-radius: var(--radius-md); border: 1px solid var(--color-border); box-shadow: var(--shadow-inset-top); max-width: 420px; min-width: 0; }
+    .channel--active { background: var(--color-surface-active); border-color: var(--color-accent-ring); }
+    .channel__logo { width: 48px; height: 48px; border-radius: var(--radius-sm); background: var(--color-bg-elevated); display: grid; place-items: center; color: var(--color-accent); font-weight: var(--weight-bold); flex: none; }
+    .channel__body { flex: 1; min-width: 0; }
+    .channel__name { font-weight: var(--weight-semibold); }
+    .channel__now { font-size: var(--text-sm); color: var(--color-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .progress { height: 3px; border-radius: var(--radius-full); background: var(--color-surface-hover); margin-top: var(--space-2); overflow: hidden; }
+    .progress i { display: block; height: 100%; width: 62%; background: var(--color-accent); }
+    .poster { width: 132px; }
+    .poster__art { aspect-ratio: var(--ratio-poster); border-radius: var(--radius-md); background: var(--gradient-accent); box-shadow: var(--shadow-md); position: relative; overflow: hidden; }
+    .poster__art::after { content: ""; position: absolute; inset: 0; background: var(--gradient-hero-fade); }
+    .poster__title { font-size: var(--text-sm); font-weight: var(--weight-semibold); margin-top: var(--space-2); }
+    .poster__meta { font-size: var(--text-xs); color: var(--color-text-tertiary); }
+    .note { font-size: var(--text-sm); color: var(--color-text-tertiary); margin-top: var(--space-2); }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Design Tokens</h1>
+  <p class="lead">IPTV Player — pré-visualização do design system (Fase 1).</p>
+
+  <h2>Cores e contraste</h2>
+  <div class="grid" id="swatches"></div>
+  <p class="note">Contraste calculado em tempo real a partir dos tokens (WCAG 2.1; AA texto normal ≥ 4.5).</p>
+
+  <h2>Tipografia</h2>
+  <div class="type-row"><code>3xl / bold</code><span style="font-size:var(--text-3xl);font-weight:var(--weight-bold);letter-spacing:var(--tracking-tight)">Início</span></div>
+  <div class="type-row"><code>2xl / bold</code><span style="font-size:var(--text-2xl);font-weight:var(--weight-bold)">Televisão</span></div>
+  <div class="type-row"><code>xl / semibold</code><span style="font-size:var(--text-xl);font-weight:var(--weight-semibold)">Continuar a ver</span></div>
+  <div class="type-row"><code>lg / semibold</code><span style="font-size:var(--text-lg);font-weight:var(--weight-semibold)">Nome do canal</span></div>
+  <div class="type-row"><code>md / regular</code><span>Texto de corpo para descrições e formulários.</span></div>
+  <div class="type-row"><code>sm / secondary</code><span style="font-size:var(--text-sm);color:var(--color-text-secondary)">20:30 – 21:45 · Programa atual</span></div>
+  <div class="type-row"><code>xs / tertiary</code><span style="font-size:var(--text-xs);color:var(--color-text-tertiary)">Atualizado há 2 horas</span></div>
+
+  <h2>Espaçamento</h2>
+  <div id="spaces"></div>
+
+  <h2>Raios</h2>
+  <div class="radii">
+    <div style="border-radius:var(--radius-xs)">xs</div>
+    <div style="border-radius:var(--radius-sm)">sm</div>
+    <div style="border-radius:var(--radius-md)">md</div>
+    <div style="border-radius:var(--radius-lg)">lg</div>
+    <div style="border-radius:var(--radius-xl)">xl</div>
+    <div style="border-radius:var(--radius-full)">full</div>
+  </div>
+
+  <h2>Amostras de componentes</h2>
+  <div class="row">
+    <button class="btn btn--primary" type="button">Reproduzir</button>
+    <button class="btn btn--gradient" type="button">Adicionar lista</button>
+    <button class="btn btn--secondary" type="button">Editar</button>
+    <button class="btn btn--danger" type="button">Eliminar</button>
+    <span class="badge badge--live">Ao vivo</span>
+    <span class="badge badge--hd">HD</span>
+  </div>
+  <div style="display:grid;gap:var(--space-2);margin-top:var(--space-6)">
+    <div class="channel channel--active">
+      <div class="channel__logo">C1</div>
+      <div class="channel__body">
+        <div class="channel__name">Canal de exemplo 1</div>
+        <div class="channel__now">20:30 · Programa em exibição com título longo para truncar</div>
+        <div class="progress"><i></i></div>
+      </div>
+      <span class="badge badge--live">Ao vivo</span>
+    </div>
+    <div class="channel">
+      <div class="channel__logo">C2</div>
+      <div class="channel__body">
+        <div class="channel__name">Canal de exemplo 2</div>
+        <div class="channel__now">Sem informação de programação</div>
+      </div>
+      <span class="badge badge--hd">HD</span>
+    </div>
+  </div>
+  <div class="row" style="margin-top:var(--space-6);align-items:flex-start">
+    <div class="poster"><div class="poster__art"></div><div class="poster__title">Filme de exemplo</div><div class="poster__meta">2024 · Drama</div></div>
+    <div class="poster"><div class="poster__art" style="background:var(--color-surface-active)"></div><div class="poster__title">Série de exemplo</div><div class="poster__meta">3 temporadas</div></div>
+  </div>
+</main>
+<script>
+  // Dados fictícios/visuais apenas. Calcula contraste a partir dos valores reais dos tokens.
+  const css = getComputedStyle(document.documentElement);
+  const v = n => css.getPropertyValue(n).trim();
+  const lum = hex => { const c = [1,3,5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255)
+    .map(x => x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4);
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; };
+  const ratio = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+  const pairs = [
+    ['--color-bg', '--color-text', 'Fundo'], ['--color-bg-elevated', '--color-text', 'Fundo secundário'],
+    ['--color-surface', '--color-text-secondary', 'Card'], ['--color-surface-active', '--color-text-secondary', 'Card selecionado'],
+    ['--color-accent-fill', '--color-text-on-accent', 'Accent (fill)'], ['--color-accent', '--color-text-on-status', 'Accent'],
+    ['--color-accent-2', '--color-text-on-status', 'Accent secundário'], ['--color-success', '--color-text-on-status', 'Sucesso'],
+    ['--color-danger', '--color-text-on-status', 'Erro'], ['--color-warning', '--color-text-on-status', 'Aviso'],
+    ['--color-bg', '--color-text-tertiary', 'Texto terciário'], ['--color-bg', '--color-accent', 'Accent como texto'],
+  ];
+  const root = document.getElementById('swatches');
+  for (const [bg, fg, label] of pairs) {
+    const r = ratio(v(bg), v(fg));
+    const el = document.createElement('div'); el.className = 'swatch';
+    const chip = document.createElement('div'); chip.className = 'swatch__chip';
+    chip.style.background = `var(${bg})`; chip.style.color = `var(${fg})`; chip.textContent = 'Aa 123';
+    const meta = document.createElement('div'); meta.className = 'swatch__meta';
+    const name = document.createElement('b'); name.textContent = `${bg}`;
+    const res = document.createElement('span'); res.className = r >= 4.5 ? 'ok' : 'ko';
+    res.textContent = `${r.toFixed(2)}:1 ${r >= 4.5 ? 'AA ✓' : 'AA ✗'}`;
+    meta.append(name, `${label} · ${v(bg)} · `, res);
+    el.append(chip, meta); root.append(el);
+  }
+  const sp = document.getElementById('spaces');
+  for (const n of [1,2,3,4,5,6,8,10,12,16]) {
+    const row = document.createElement('div'); row.className = 'space-row';
+    const bar = document.createElement('span'); bar.style.width = `var(--space-${n})`;
+    row.append(bar, `--space-${n} · ${v('--space-' + n)}`); sp.append(row);
+  }
+</script>
+</body>
+</html>

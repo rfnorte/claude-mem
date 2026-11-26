@@ -1,0 +1,18 @@
+# Dados pessoais — nunca publicar
+*.m3u
+*.m3u8
+*.xmltv
+*.xml.gz
+*.env
+.env*
+*backup*.json
+iptv-backup-*
+credentials*
+secrets*
+
+# Sistema
+.DS_Store
+node_modules/
+
+# Fixtures sintéticas de teste (sem dados reais) são permitidas
+!tests/fixtures/**

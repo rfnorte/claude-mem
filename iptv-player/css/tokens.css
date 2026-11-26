@@ -1,0 +1,222 @@
+/* ==========================================================================
+   IPTV Player — Design Tokens
+   Única fonte de valores de design. Os componentes NUNCA usam valores
+   literais (cores, tamanhos, durações): referenciam sempre estes tokens.
+
+   Camadas:
+   1. Primitivos  (--p-*)   paleta crua; não usar diretamente nos componentes
+   2. Semânticos  (--color-*, --space-*, ...) o que os componentes consomem
+   ========================================================================== */
+
+:root {
+  color-scheme: dark;
+
+  /* ------------------------------------------------------------------
+     1. PRIMITIVOS — cor
+     ------------------------------------------------------------------ */
+  --p-ink-950: #090B10;
+  --p-ink-900: #11151D;
+  --p-ink-850: #181E29;
+  --p-ink-800: #202A39;
+  --p-ink-700: #2A3546;
+  --p-ink-600: #3A465A;
+
+  --p-fog-50:  #F5F7FA;
+  --p-fog-300: #B4BCCB;
+  --p-fog-400: #929BAC;
+  --p-fog-500: #7D8698;
+  --p-fog-600: #5E6778;
+
+  --p-blue-400:   #657CFF;  /* accent de marca */
+  --p-blue-500:   #5468F0;  /* accent para preenchimentos com texto branco (AA) */
+  --p-violet-400: #8C73FF;
+  --p-violet-500: #6E56E8;
+
+  --p-green-400: #36C98F;
+  --p-red-400:   #FF626D;
+  --p-amber-400: #F5B84B;
+
+  /* ------------------------------------------------------------------
+     2. SEMÂNTICOS — cor
+     Contrastes medidos (WCAG 2.1) indicados entre parênteses.
+     ------------------------------------------------------------------ */
+
+  /* Superfícies (profundidade crescente) */
+  --color-bg:              var(--p-ink-950);
+  --color-bg-elevated:     var(--p-ink-900);
+  --color-surface:         var(--p-ink-850);
+  --color-surface-active:  var(--p-ink-800);
+  --color-surface-hover:   var(--p-ink-700);
+  --color-overlay:         rgb(9 11 16 / 0.72);
+  --color-scrim:           rgb(0 0 0 / 0.55);
+  --color-glass:           rgb(17 21 29 / 0.72);   /* tab bar / headers com blur */
+
+  /* Texto */
+  --color-text:            var(--p-fog-50);   /* 18.3:1 sobre bg */
+  --color-text-secondary:  var(--p-fog-400);  /* 7.0:1 bg · 6.0:1 surface */
+  --color-text-tertiary:   var(--p-fog-500);  /* 5.4:1 bg — metadados, timestamps */
+  --color-text-disabled:   var(--p-fog-600);  /* apenas estados desativados */
+  --color-text-on-accent:  #FFFFFF;           /* sobre --color-accent-fill: 4.55:1 */
+
+  /* Accent */
+  --color-accent:          var(--p-blue-400);   /* ícones, texto de destaque, indicadores (5.5:1 bg) */
+  --color-accent-fill:     var(--p-blue-500);   /* fundo de botões primários */
+  --color-accent-2:        var(--p-violet-400);
+  --color-accent-soft:     rgb(101 124 255 / 0.14);
+  --color-accent-ring:     rgb(101 124 255 / 0.55);
+  --gradient-accent:       linear-gradient(135deg, var(--p-blue-500) 0%, var(--p-violet-500) 100%);
+  --gradient-hero-fade:    linear-gradient(180deg, rgb(9 11 16 / 0) 0%, rgb(9 11 16 / 0.6) 55%, var(--p-ink-950) 100%);
+
+  /* Estados */
+  --color-success:         var(--p-green-400);
+  --color-success-soft:    rgb(54 201 143 / 0.14);
+  --color-danger:          var(--p-red-400);
+  --color-danger-soft:     rgb(255 98 109 / 0.14);
+  --color-warning:         var(--p-amber-400);
+  --color-warning-soft:    rgb(245 184 75 / 0.14);
+  --color-live:            var(--p-red-400);      /* badge "AO VIVO" */
+  --color-text-on-status:  var(--p-ink-950);      /* texto escuro sobre fills de estado */
+
+  /* Linhas */
+  --color-border:          rgb(255 255 255 / 0.06);
+  --color-border-strong:   rgb(255 255 255 / 0.12);
+  --color-divider:         rgb(255 255 255 / 0.05);
+
+  /* ------------------------------------------------------------------
+     Tipografia
+     Fonte do sistema (SF Pro no iPhone): zero download, renderização
+     nativa, suporte a Dynamic Type e excelente legibilidade.
+     ------------------------------------------------------------------ */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+               "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* Escala (rem; 1rem = 16px) */
+  --text-2xs: 0.6875rem;  /* 11 — badges */
+  --text-xs:  0.75rem;    /* 12 — metadados */
+  --text-sm:  0.8125rem;  /* 13 — legendas */
+  --text-md:  0.9375rem;  /* 15 — corpo (iOS body) */
+  --text-lg:  1.0625rem;  /* 17 — corpo destacado / headline iOS */
+  --text-xl:  1.25rem;    /* 20 — títulos de secção */
+  --text-2xl: 1.5rem;     /* 24 — títulos de ecrã */
+  --text-3xl: 2rem;       /* 32 — large title */
+  --text-4xl: 2.5rem;     /* 40 — hero */
+
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+
+  --leading-tight:   1.15;
+  --leading-snug:    1.3;
+  --leading-normal:  1.45;
+
+  --tracking-tight:  -0.02em;
+  --tracking-normal: 0;
+  --tracking-wide:   0.06em;   /* labels em maiúsculas */
+
+  /* ------------------------------------------------------------------
+     Espaçamento — grelha de 4px
+     ------------------------------------------------------------------ */
+  --space-0:  0;
+  --space-1:  0.25rem;  /*  4 */
+  --space-2:  0.5rem;   /*  8 */
+  --space-3:  0.75rem;  /* 12 */
+  --space-4:  1rem;     /* 16 */
+  --space-5:  1.25rem;  /* 20 */
+  --space-6:  1.5rem;   /* 24 */
+  --space-8:  2rem;     /* 32 */
+  --space-10: 2.5rem;   /* 40 */
+  --space-12: 3rem;     /* 48 */
+  --space-16: 4rem;     /* 64 */
+
+  --gutter:   var(--space-4);   /* margem lateral dos ecrãs */
+  --section-gap: var(--space-8);
+
+  /* ------------------------------------------------------------------
+     Raios
+     ------------------------------------------------------------------ */
+  --radius-xs:   6px;
+  --radius-sm:   10px;
+  --radius-md:   14px;   /* cards */
+  --radius-lg:   20px;   /* sheets, hero */
+  --radius-xl:   28px;
+  --radius-full: 999px;
+
+  /* ------------------------------------------------------------------
+     Sombras (subtis — em dark mode a profundidade vem sobretudo da cor)
+     ------------------------------------------------------------------ */
+  --shadow-sm:  0 1px 2px rgb(0 0 0 / 0.30);
+  --shadow-md:  0 6px 16px rgb(0 0 0 / 0.35), 0 1px 3px rgb(0 0 0 / 0.25);
+  --shadow-lg:  0 18px 40px rgb(0 0 0 / 0.45), 0 4px 10px rgb(0 0 0 / 0.30);
+  --shadow-glow: 0 8px 28px rgb(101 124 255 / 0.30);
+  --shadow-inset-top: inset 0 1px 0 rgb(255 255 255 / 0.05);
+
+  /* ------------------------------------------------------------------
+     Movimento
+     ------------------------------------------------------------------ */
+  --duration-instant: 80ms;
+  --duration-fast:    160ms;
+  --duration-base:    240ms;
+  --duration-slow:    360ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-out:      cubic-bezier(0.16, 1, 0.3, 1);     /* entradas */
+  --ease-in:       cubic-bezier(0.4, 0, 1, 1);        /* saídas */
+  --ease-spring:   cubic-bezier(0.34, 1.36, 0.64, 1); /* feedback de toque */
+  --press-scale:   0.97;
+
+  /* ------------------------------------------------------------------
+     Layout, toque e safe areas
+     ------------------------------------------------------------------ */
+  --touch-min:      44px;   /* Apple HIG */
+  --tabbar-height:  56px;
+  --header-height:  52px;
+  --player-controls-height: 64px;
+
+  --safe-top:    env(safe-area-inset-top, 0px);
+  --safe-right:  env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left:   env(safe-area-inset-left, 0px);
+
+  --content-max: 1200px;
+
+  /* Media: proporções */
+  --ratio-poster:  2 / 3;   /* filmes/séries */
+  --ratio-landscape: 16 / 9;
+  --ratio-logo:    1 / 1;
+
+  /* Blur do vidro (tab bar, headers) */
+  --blur-glass: saturate(180%) blur(20px);
+
+  /* ------------------------------------------------------------------
+     Camadas (z-index)
+     ------------------------------------------------------------------ */
+  --z-base:    0;
+  --z-sticky:  10;
+  --z-tabbar:  20;
+  --z-player:  30;
+  --z-sheet:   40;
+  --z-modal:   50;
+  --z-toast:   60;
+}
+
+/* Acessibilidade: movimento reduzido → transições praticamente instantâneas */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-instant: 0ms;
+    --duration-fast:    1ms;
+    --duration-base:    1ms;
+    --duration-slow:    1ms;
+    --press-scale:      1;
+  }
+}
+
+/* Acessibilidade: contraste aumentado → texto secundário mais claro, bordas visíveis */
+@media (prefers-contrast: more) {
+  :root {
+    --color-text-secondary: var(--p-fog-300);
+    --color-text-tertiary:  var(--p-fog-400);
+    --color-border:         rgb(255 255 255 / 0.18);
+    --color-border-strong:  rgb(255 255 255 / 0.28);
+  }
+}
