@@ -63,7 +63,7 @@ async function renderMovie(ctx) {
     ${screenHeader({ title: movie.name, large: false, back: { fallback: '/movies', label: 'Voltar aos filmes' } })}
     ${hero(movie)}
     <div class="detail-body stack stack--sm">
-      ${movie.rating ? html`<div class="detail-badges"><span class="badge badge--neutral">★ ${movie.rating.toFixed(1)}</span>${movie.genres.map((g) => html`<span class="badge badge--accent">${g}</span>`)}</div>` : ''}
+      ${movie.rating || movie.genres?.length ? html`<div class="detail-badges">${movie.rating ? html`<span class="badge badge--neutral">★ ${Number(movie.rating).toFixed(1)}</span>` : ''}${(movie.genres ?? []).filter(Boolean).map((g) => html`<span class="badge badge--accent">${g}</span>`)}</div>` : ''}
       ${Number.isFinite(percent) ? html`
         <div class="detail-progress">
           <span class="progress" data-vars="${vars({ progress: percent })}"></span>
@@ -129,17 +129,28 @@ async function renderSeries(ctx) {
     </div>`);
   outlet.querySelector('[data-meta]').textContent = metaText([
     series.year,
-    `${series.seasons.length} ${series.seasons.length === 1 ? 'temporada' : 'temporadas'}`,
+    series.seasons.length ? `${series.seasons.length} ${series.seasons.length === 1 ? 'temporada' : 'temporadas'}` : null,
     series.genres?.[0],
   ]);
 
   const epEl = outlet.querySelector('[data-episodes]');
-  const showSeason = () => render(epEl, episodeList(series.seasons.find((s) => s.number === season), lw));
+  const showSeason = () => {
+    const data = series.seasons.find((s) => s.number === season);
+    if (data) { render(epEl, episodeList(data, lw)); return; }
+    render(epEl, emptyState({
+      compact: true,
+      iconName: series.episodesError ? 'alert' : 'series',
+      title: series.episodesError ? 'Não foi possível obter os episódios' : 'Sem episódios',
+      text: series.episodesError ?? 'Esta série não tem episódios disponíveis na lista.',
+      actions: series.episodesError ? html`<button class="btn btn--secondary btn--block" type="button" data-action="retry-episodes">Tentar novamente</button>` : null,
+    }));
+  };
   showSeason();
 
   const offs = [
     bindCommonActions(outlet, ctx),
     mountHeader(outlet),
+    on(outlet, 'click', '[data-action="retry-episodes"]', () => ctx.router.refresh()),
     on(outlet, 'click', '[data-chip="season"]', (e, b) => {
       season = Number(b.dataset.value);
       setChips(outlet, 'season', b.dataset.value);

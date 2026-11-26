@@ -1,196 +1,287 @@
 /**
- * Gestão de listas IPTV.
- * Fase 2: interface completa do formulário com validação real dos campos.
- * A gravação/importação é ligada na Fase 3 (motor de importação + IndexedDB);
- * até lá o botão Guardar está desativado com a razão indicada.
+ * Gestão de listas IPTV: lista de fontes e página de detalhe de cada fonte
+ * (estado, atualizar, editar, ativar/desativar, corrigir categorias, eliminar).
  */
 import { html, render, on } from '../../core/dom.js';
-import { validateSourceUrl, validateRequired } from '../../core/validate.js';
+import { formatRelative, formatCount, formatBytes } from '../../core/format.js';
+import { listSources, getSource, updateSource, deleteSource, SOURCE_TYPES } from '../../data/sources.js';
+import { syncEvents, isImporting, reclassifySource } from '../../iptv/source-sync.js';
 import { screenHeader, mountHeader } from '../components/header.js';
-import { segmented, setSegmented } from '../components/controls.js';
 import { emptyState } from '../components/cards.js';
+import { switchControl } from '../components/controls.js';
 import { icon } from '../components/icons.js';
-import { openSheet } from '../components/overlay.js';
+import { openSheet, confirmDialog } from '../components/overlay.js';
+import { toast } from '../components/toast.js';
 import { bindCommonActions } from '../shared.js';
+import { openSourceForm } from '../source-form.js';
+import { openImportSheet } from '../import-sheet.js';
 
-const MAX_FILE_MB = 200;
+const TYPE_ICON = { 'm3u-url': 'link', 'm3u-file': 'file', xtream: 'server' };
+const KIND_LABEL = { live: 'TV', movie: 'Filmes', episode: 'Séries' };
 
-function field({ id, label, type = 'text', placeholder = '', inputmode, autocomplete = 'off', hint, action }) {
+function statusBadge(source) {
+  if (source.status === 'importing' || isImporting(source.id)) return html`<span class="badge badge--accent">A importar</span>`;
+  if (source.status === 'error') return html`<span class="badge badge--danger">Erro</span>`;
+  if (!source.enabled) return html`<span class="badge badge--neutral">Desativada</span>`;
+  if (source.status === 'ok') return html`<span class="badge badge--success">OK</span>`;
+  return html`<span class="badge badge--neutral">Por importar</span>`;
+}
+
+function countsLine(c) {
+  return [
+    c?.live ? formatCount(c.live, 'canal', 'canais') : null,
+    c?.movie ? formatCount(c.movie, 'filme', 'filmes') : null,
+    c?.series ? formatCount(c.series, 'série', 'séries') : null,
+  ].filter(Boolean).join(' · ') || 'Sem conteúdos';
+}
+
+function sourceCard(s) {
   return html`
-    <div class="field">
-      <label class="field__label" for="${id}">${label}</label>
-      <div class="field__control">
-        <input class="input ${action ? 'input--with-action' : ''}" id="${id}" name="${id}" type="${type}" placeholder="${placeholder}"
-          ${inputmode ? html`inputmode="${inputmode}"` : ''} autocomplete="${autocomplete}" autocapitalize="off" autocorrect="off" spellcheck="false"
-          aria-describedby="${id}-msg">
-        ${action ?? ''}
-      </div>
-      <p class="field__msg" id="${id}-msg" data-msg-for="${id}"></p>
-      ${hint ? html`<p class="field__hint">${hint}</p>` : ''}
-    </div>`;
+    <a class="source-card" href="#/settings/sources/${encodeURIComponent(s.id)}">
+      <span class="cell__icon">${icon(TYPE_ICON[s.type] ?? 'layers', { size: 'sm' })}</span>
+      <span class="source-card__body">
+        <span class="source-card__title"><span class="truncate">${s.name}</span>${statusBadge(s)}</span>
+        <span class="source-card__meta truncate">${countsLine(s.counts)}</span>
+        <span class="source-card__meta truncate">${SOURCE_TYPES[s.type]}${s.host ? html` · ${s.host}` : ''} · atualizada ${formatRelative(s.lastUpdated)}</span>
+      </span>
+      <span class="cell__chevron">${icon('chevronRight', { size: 'sm' })}</span>
+    </a>`;
 }
 
-function refreshSelect(id) {
-  return html`
-    <div class="field">
-      <label class="field__label" for="${id}">Atualização automática</label>
-      <div class="select-wrap">
-        <select class="input" id="${id}" name="${id}">
-          <option value="0">Desligada (só manual)</option>
-          <option value="12">A cada 12 horas</option>
-          <option value="24" selected>Diária</option>
-          <option value="168">Semanal</option>
-        </select>
-        ${icon('chevronDown', { size: 'sm' })}
-      </div>
-      <p class="field__hint">Verificada ao abrir a app. O iOS não permite atualizações em segundo plano.</p>
-    </div>`;
-}
-
-function addSourceForm() {
-  return html`
-    <form class="form" novalidate data-source-form>
-      ${segmented('type', [
-        { value: 'url', label: 'URL', icon: 'link' },
-        { value: 'file', label: 'Ficheiro', icon: 'file' },
-        { value: 'xtream', label: 'Xtream', icon: 'server' },
-      ], 'url', { label: 'Tipo de lista', block: true })}
-
-      ${field({ id: 'src-name', label: 'Nome da lista', placeholder: 'Ex.: Casa' })}
-
-      <div class="form" data-panel="url">
-        ${field({ id: 'src-url', label: 'Endereço M3U / M3U8', type: 'url', inputmode: 'url', placeholder: 'https://servidor.com/lista.m3u' })}
-        ${refreshSelect('src-url-refresh')}
-      </div>
-
-      <div class="form" data-panel="file" hidden>
-        <label class="file-drop">
-          <input type="file" id="src-file" accept=".m3u,.m3u8,.txt,audio/x-mpegurl,audio/mpegurl,application/x-mpegurl,application/vnd.apple.mpegurl">
-          ${icon('file', { size: 'lg' })}
-          <span data-file-label>Escolher ficheiro M3U</span>
-          <span class="field__hint">Na app Ficheiros, iCloud Drive ou transferências.</span>
-        </label>
-        <p class="field__msg" data-msg-for="src-file"></p>
-        <p class="field__hint">Funciona sempre, mesmo com fornecedores que bloqueiam o acesso a partir do browser. Para atualizar, importe de novo o ficheiro.</p>
-      </div>
-
-      <div class="form" data-panel="xtream" hidden>
-        ${field({ id: 'src-server', label: 'Servidor', type: 'url', inputmode: 'url', placeholder: 'http://servidor.com:8080' })}
-        ${field({ id: 'src-user', label: 'Utilizador', autocomplete: 'username' })}
-        ${field({ id: 'src-pass', label: 'Password', type: 'password', autocomplete: 'current-password',
-          action: html`<button class="icon-btn field__action" type="button" data-toggle-pass aria-label="Mostrar password" aria-pressed="false">${icon('eye', { size: 'sm' })}</button>` })}
-        ${refreshSelect('src-xt-refresh')}
-        <div class="notice">
-          ${icon('shield', { size: 'sm' })}
-          <div class="notice__body">A password será guardada cifrada neste dispositivo e nunca é incluída em backups sem autorização. Uma app web não tem acesso ao Keychain do iOS.</div>
-        </div>
-      </div>
-
-      <div class="notice notice--warning">
-        ${icon('info', { size: 'sm' })}
-        <div class="notice__body"><div class="notice__title">Importação na Fase 3</div>A validação dos campos já funciona. A gravação e a importação de canais são ativadas com o motor de importação.</div>
-      </div>
-      <button class="btn btn--primary btn--lg btn--block" type="submit" disabled>Guardar lista</button>
-    </form>`;
-}
-
-function setMsg(form, id, text, type = 'error') {
-  const el = form.querySelector(`[data-msg-for="${id}"]`);
-  const input = form.querySelector(`#${id}`);
-  if (el) {
-    el.className = `field__msg field__msg--${type}`;
-    el.textContent = text ?? '';
-  }
-  if (input) input.setAttribute('aria-invalid', text && type === 'error' ? 'true' : 'false');
-}
-
-function mountForm(body) {
-  const form = body.querySelector('[data-source-form]');
-  let type = 'url';
-
-  const showPanel = (next) => {
-    type = next;
-    setSegmented(form, 'type', type);
-    for (const p of form.querySelectorAll('[data-panel]')) p.hidden = p.dataset.panel !== type;
-  };
-
-  const validateUrlField = (id, kind) => {
-    const input = form.querySelector(`#${id}`);
-    if (!input.value.trim()) { setMsg(form, id, ''); return; }
-    const r = validateSourceUrl(input.value, { kind });
-    if (!r.ok) setMsg(form, id, r.error);
-    else if (r.warning) setMsg(form, id, r.warning, 'warning');
-    else setMsg(form, id, kind === 'xtream' ? `Servidor: ${r.url}` : 'Endereço válido.', 'ok');
-    const name = form.querySelector('#src-name');
-    if (r.ok && !name.value) name.placeholder = new URL(r.url).hostname;
-  };
-
-  const offs = [
-    on(form, 'click', '[data-seg="type"]', (e, b) => showPanel(b.dataset.value)),
-    on(form, 'blur', '#src-url', () => validateUrlField('src-url', 'playlist'), true),
-    on(form, 'blur', '#src-server', () => validateUrlField('src-server', 'xtream'), true),
-    on(form, 'blur', '#src-user', (e, input) => setMsg(form, 'src-user', input.value ? null : validateRequired('', 'O utilizador')), true),
-    on(form, 'input', 'input', (e, input) => { if (input.getAttribute('aria-invalid') === 'true') setMsg(form, input.id, ''); }),
-    on(form, 'click', '[data-toggle-pass]', (e, btn) => {
-      const input = form.querySelector('#src-pass');
-      const show = input.type === 'password';
-      input.type = show ? 'text' : 'password';
-      btn.setAttribute('aria-pressed', show ? 'true' : 'false');
-      btn.setAttribute('aria-label', show ? 'Ocultar password' : 'Mostrar password');
-      btn.querySelector('svg').outerHTML = icon(show ? 'eyeOff' : 'eye', { size: 'sm' }).value;
-    }),
-    on(form, 'change', '#src-file', (e, input) => {
-      const file = input.files?.[0];
-      const label = form.querySelector('[data-file-label]');
-      if (!file) { label.textContent = 'Escolher ficheiro M3U'; setMsg(form, 'src-file', ''); return; }
-      label.textContent = file.name;
-      label.className = 'file-drop__name';
-      const mb = file.size / 1_048_576;
-      if (file.size === 0) setMsg(form, 'src-file', 'O ficheiro está vazio.');
-      else if (mb > MAX_FILE_MB) setMsg(form, 'src-file', `Ficheiro demasiado grande (${mb.toFixed(0)} MB; máximo ${MAX_FILE_MB} MB).`);
-      else if (!/\.(m3u8?|txt)$/i.test(file.name)) setMsg(form, 'src-file', 'Extensão invulgar: confirme que é uma lista M3U.', 'warning');
-      else setMsg(form, 'src-file', `${mb < 1 ? `${Math.max(1, Math.round(file.size / 1024))} KB` : `${mb.toFixed(1)} MB`} · pronto para importar na Fase 3.`, 'ok');
-      const name = form.querySelector('#src-name');
-      if (!name.value) name.placeholder = file.name.replace(/\.(m3u8?|txt)$/i, '');
-    }),
-    on(form, 'submit', 'form', (e) => e.preventDefault()),
-  ];
-  return () => offs.forEach((off) => off());
-}
-
-function openAddSheet() {
-  openSheet({ title: 'Adicionar lista', content: addSourceForm(), onMount: mountForm });
-}
-
-async function renderScreen(ctx) {
+/* ------------------------------------------------------------------ */
+/* Lista de fontes                                                     */
+/* ------------------------------------------------------------------ */
+async function renderList(ctx) {
   const { outlet } = ctx;
-  render(outlet, html`
-    ${screenHeader({
-      title: 'Listas IPTV',
-      back: { fallback: '/settings', label: 'Voltar às definições' },
-      actions: html`<button class="icon-btn icon-btn--accent" type="button" data-action="add-source" aria-label="Adicionar lista">${icon('plus')}</button>`,
-    })}
-    ${emptyState({
-      iconName: 'layers',
-      title: 'Nenhuma lista configurada',
-      text: 'Adicione uma lista M3U por endereço ou ficheiro, ou uma conta Xtream Codes do seu fornecedor.',
-      actions: html`<button class="btn btn--gradient btn--lg btn--block" type="button" data-action="add-source">${icon('plus', { size: 'sm' })}<span>Adicionar lista</span></button>`,
-    })}
-    <div class="notice">
-      ${icon('info', { size: 'sm' })}
-      <div class="notice__body">Use apenas listas e serviços que está autorizado a utilizar. A app não inclui canais nem conteúdos.</div>
-    </div>`);
+  const addBtn = html`<button class="icon-btn icon-btn--accent" type="button" data-action="add-source" aria-label="Adicionar lista">${icon('plus')}</button>`;
 
+  const paint = async () => {
+    const sources = await listSources();
+    if (!ctx.isActive()) return;
+    render(outlet, html`
+      ${screenHeader({ title: 'Listas IPTV', back: { fallback: '/settings', label: 'Voltar às definições' }, actions: addBtn })}
+      ${sources.length ? html`
+        <div class="stack stack--sm">
+          ${sources.map(sourceCard)}
+          <button class="btn btn--secondary btn--block" type="button" data-action="add-source">${icon('plus', { size: 'sm' })}<span>Adicionar outra lista</span></button>
+        </div>` : emptyState({
+        iconName: 'layers',
+        title: 'Nenhuma lista configurada',
+        text: 'Adicione uma lista M3U por endereço ou ficheiro, ou uma conta Xtream Codes do seu fornecedor.',
+        actions: html`<button class="btn btn--gradient btn--lg btn--block" type="button" data-action="add-source">${icon('plus', { size: 'sm' })}<span>Adicionar lista</span></button>`,
+      })}
+      <div class="notice notice--spaced">
+        ${icon('info', { size: 'sm' })}
+        <div class="notice__body">Use apenas listas e serviços que está autorizado a utilizar. A app não inclui canais nem conteúdos.</div>
+      </div>`);
+    offHeader?.();
+    offHeader = mountHeader(outlet);
+  };
+
+  let offHeader = null;
+  await paint();
   const offs = [
     bindCommonActions(outlet, ctx),
-    mountHeader(outlet),
-    on(outlet, 'click', '[data-action="add-source"]', openAddSheet),
+    on(outlet, 'click', '[data-action="add-source"]', () => openSourceForm()),
+    syncEvents.on('changed', () => { if (ctx.isActive()) paint(); }),
   ];
   if (ctx.query.add === '1') {
     history.replaceState(null, '', '#/settings/sources');
-    openAddSheet();
+    openSourceForm({ initialType: ctx.query.type === 'file' ? 'file' : undefined });
   }
-  return () => offs.forEach((off) => off());
+  return () => { offHeader?.(); offs.forEach((off) => off()); };
 }
 
-export const sourcesScreen = { render: renderScreen };
+/* ------------------------------------------------------------------ */
+/* Correção de categorias (apenas listas M3U)                          */
+/* ------------------------------------------------------------------ */
+function openCategoriesSheet(source) {
+  const groups = [...(source.groups ?? [])].sort((a, b) => b.count - a.count);
+  openSheet({
+    title: 'Corrigir categorias',
+    content: html`
+      <p class="field__hint">A classificação automática pode errar. Escolha o tipo correto de cada categoria da lista; a alteração aplica-se a todos os seus itens e mantém-se nas atualizações.</p>
+      <ul class="category-list">
+        ${groups.map((g, i) => html`
+          <li class="category-row">
+            <span class="category-row__body">
+              <label class="category-row__name truncate" for="cat-${i}">${g.name}</label>
+              <span class="category-row__meta">${formatCount(g.count, 'item', 'itens')} · detetado: ${KIND_LABEL[g.kind] ?? g.kind}</span>
+            </span>
+            <span class="select-wrap">
+              <select class="input input--compact" id="cat-${i}" data-group-index="${i}">
+                <option value="" ${!g.override ? html`selected` : ''}>Automático</option>
+                <option value="live" ${g.override === 'live' ? html`selected` : ''}>TV</option>
+                <option value="movie" ${g.override === 'movie' ? html`selected` : ''}>Filmes</option>
+                <option value="episode" ${g.override === 'episode' ? html`selected` : ''}>Séries</option>
+              </select>
+              ${icon('chevronDown', { size: 'sm' })}
+            </span>
+          </li>`)}
+      </ul>
+      <div class="form-actions form-actions--sticky">
+        <button class="btn btn--primary btn--lg btn--block" type="button" data-apply>Aplicar correções</button>
+      </div>`,
+    onMount(body, sheet) {
+      return on(body, 'click', '[data-apply]', async (e, btn) => {
+        const overrides = {};
+        for (const sel of body.querySelectorAll('[data-group-index]')) {
+          if (sel.value) overrides[groups[Number(sel.dataset.groupIndex)].name] = sel.value;
+        }
+        btn.disabled = true;
+        btn.textContent = 'A aplicar…';
+        try {
+          const s = await reclassifySource(source.id, overrides);
+          sheet.close();
+          toast(`Categorias atualizadas: ${countsLine(s)}`, { type: 'success' });
+        } catch (err) {
+          btn.disabled = false;
+          btn.textContent = 'Aplicar correções';
+          toast(err.message || 'Não foi possível aplicar as correções.', { type: 'error' });
+        }
+      });
+    },
+  });
+}
+
+/* ------------------------------------------------------------------ */
+/* Detalhe de uma fonte                                                */
+/* ------------------------------------------------------------------ */
+function detailMarkup(s) {
+  const importing = s.status === 'importing' || isImporting(s.id);
+  const err = s.status === 'error' ? s.lastError : null;
+  const expires = s.account?.expiresAt ? new Date(s.account.expiresAt).toLocaleDateString('pt-PT') : null;
+
+  return html`
+    ${screenHeader({ title: s.name, back: { fallback: '/settings/sources', label: 'Voltar às listas' } })}
+    <div class="stack">
+      <section class="source-summary">
+        <div class="source-summary__row">${statusBadge(s)}<span class="text-tertiary">${SOURCE_TYPES[s.type]}</span></div>
+        <div class="stats">
+          <div class="stat"><div class="stat__value">${new Intl.NumberFormat('pt-PT').format(s.counts?.live ?? 0)}</div><div class="stat__label">Canais</div></div>
+          <div class="stat"><div class="stat__value">${new Intl.NumberFormat('pt-PT').format(s.counts?.movie ?? 0)}</div><div class="stat__label">Filmes</div></div>
+          <div class="stat"><div class="stat__value">${new Intl.NumberFormat('pt-PT').format(s.counts?.series ?? 0)}</div><div class="stat__label">Séries</div></div>
+        </div>
+        <dl class="kv">
+          ${s.host ? html`<dt>Servidor</dt><dd class="truncate">${s.host}</dd>` : ''}
+          ${s.fileName ? html`<dt>Ficheiro</dt><dd class="truncate">${s.fileName}${s.fileSize ? html` · ${formatBytes(s.fileSize)}` : ''}</dd>` : ''}
+          <dt>Última atualização</dt><dd>${s.lastUpdated ? `${formatRelative(s.lastUpdated)} (${new Date(s.lastUpdated).toLocaleString('pt-PT')})` : 'nunca'}</dd>
+          ${s.type !== 'm3u-file' ? html`<dt>Atualização automática</dt><dd>${s.refreshHours ? `a cada ${s.refreshHours} h (ao abrir a app)` : 'desligada'}</dd>` : ''}
+          ${expires ? html`<dt>Subscrição</dt><dd>expira a ${expires}${s.account.maxConnections ? ` · ${formatCount(s.account.maxConnections, 'ligação', 'ligações')}` : ''}</dd>` : ''}
+        </dl>
+      </section>
+
+      ${err ? html`
+        <div class="notice notice--error" role="alert">
+          ${icon('alert', { size: 'sm' })}
+          <div class="notice__body"><div class="notice__title">${err.message}</div>${err.hint ?? ''}</div>
+        </div>` : ''}
+      ${s.insecure ? html`
+        <div class="notice notice--warning">${icon('alert', { size: 'sm' })}
+          <div class="notice__body"><div class="notice__title">Servidor sem HTTPS</div>A ligação não é cifrada e o iPhone pode bloquear pedidos a partir da app. Se o fornecedor tiver endereço HTTPS, prefira-o.</div>
+        </div>` : ''}
+      ${(s.warnings ?? []).map((w) => html`<div class="notice notice--warning">${icon('info', { size: 'sm' })}<div class="notice__body">${w}</div></div>`)}
+
+      <section class="group">
+        <div class="group__list">
+          ${s.type === 'm3u-file' ? html`
+            <label class="cell" for="replace-file">
+              <span class="cell__icon">${icon('file', { size: 'sm' })}</span>
+              <span class="cell__body"><span class="cell__title">Importar ficheiro novamente</span><span class="cell__subtitle">Substitui o conteúdo pela nova versão do ficheiro</span></span>
+              <input class="sr-only" type="file" id="replace-file" accept=".m3u,.m3u8,.txt,audio/x-mpegurl,application/x-mpegurl,application/vnd.apple.mpegurl">
+            </label>` : html`
+            <button class="cell" type="button" data-action="refresh" ${importing ? html`disabled` : ''}>
+              <span class="cell__icon">${icon('download', { size: 'sm' })}</span>
+              <span class="cell__body"><span class="cell__title">${importing ? 'A importar…' : 'Atualizar agora'}</span></span>
+            </button>`}
+          <button class="cell" type="button" data-action="edit">
+            <span class="cell__icon">${icon('settings', { size: 'sm' })}</span>
+            <span class="cell__body"><span class="cell__title">Editar</span><span class="cell__subtitle">Nome, endereço, credenciais e atualização</span></span>
+            <span class="cell__chevron">${icon('chevronRight', { size: 'sm' })}</span>
+          </button>
+          ${s.type !== 'xtream' && s.groups?.length ? html`
+            <button class="cell" type="button" data-action="categories">
+              <span class="cell__icon">${icon('layers', { size: 'sm' })}</span>
+              <span class="cell__body"><span class="cell__title">Corrigir categorias</span><span class="cell__subtitle">${formatCount(s.groups.length, 'categoria', 'categorias')}${Object.keys(s.overrides ?? {}).length ? ` · ${Object.keys(s.overrides).length} corrigidas` : ''}</span></span>
+              <span class="cell__chevron">${icon('chevronRight', { size: 'sm' })}</span>
+            </button>` : ''}
+          <label class="cell">
+            <span class="cell__icon cell__icon--neutral">${icon('check', { size: 'sm' })}</span>
+            <span class="cell__body"><span class="cell__title">Lista ativa</span><span class="cell__subtitle">Desative para ocultar os conteúdos sem os apagar</span></span>
+            ${switchControl({ id: 'source-enabled', checked: s.enabled, label: 'Lista ativa' })}
+          </label>
+        </div>
+      </section>
+
+      <section class="group">
+        <div class="group__list">
+          <button class="cell cell--danger" type="button" data-action="delete">
+            <span class="cell__icon cell__icon--danger">${icon('trash', { size: 'sm' })}</span>
+            <span class="cell__body"><span class="cell__title">Eliminar lista</span></span>
+          </button>
+        </div>
+      </section>
+    </div>`;
+}
+
+async function renderDetail(ctx) {
+  const { outlet } = ctx;
+  const id = ctx.params.id;
+  let offHeader = null;
+
+  const paint = async () => {
+    const s = await getSource(id);
+    if (!ctx.isActive()) return null;
+    if (!s) {
+      render(outlet, html`${screenHeader({ title: 'Lista', back: { fallback: '/settings/sources' } })}${emptyState({ iconName: 'alert', title: 'Lista não encontrada', text: 'Pode ter sido eliminada.' })}`);
+      return null;
+    }
+    render(outlet, detailMarkup(s));
+    offHeader?.();
+    offHeader = mountHeader(outlet);
+    return s;
+  };
+
+  await paint();
+  const offs = [
+    bindCommonActions(outlet, ctx),
+    syncEvents.on('changed', (e) => { if (ctx.isActive() && (!e?.sourceId || e.sourceId === id || e.id === id)) paint(); }),
+    syncEvents.on('start', (e) => { if (ctx.isActive() && e.sourceId === id) paint(); }),
+    on(outlet, 'click', '[data-action="refresh"]', () => openImportSheet(id)),
+    on(outlet, 'change', '#replace-file', (e, input) => {
+      const file = input.files?.[0];
+      if (file) openImportSheet(id, { file });
+    }),
+    on(outlet, 'click', '[data-action="edit"]', async () => {
+      const s = await getSource(id);
+      openSourceForm({
+        source: s,
+        onSaved: (sid, { credentialsChanged } = {}) => {
+          if (credentialsChanged && s.type !== 'm3u-file') openImportSheet(sid);
+        },
+      });
+    }),
+    on(outlet, 'click', '[data-action="categories"]', async () => openCategoriesSheet(await getSource(id))),
+    on(outlet, 'change', '#source-enabled', async (e, input) => {
+      await updateSource(id, { enabled: input.checked });
+      toast(input.checked ? 'Lista ativada' : 'Lista desativada: conteúdos ocultos');
+    }),
+    on(outlet, 'click', '[data-action="delete"]', async () => {
+      const s = await getSource(id);
+      const ok = await confirmDialog({
+        title: `Eliminar «${s.name}»?`,
+        message: `Serão removidos deste dispositivo a lista e ${countsLine(s.counts).toLowerCase()}. Esta ação não pode ser anulada.`,
+        confirmLabel: 'Eliminar lista',
+        destructive: true,
+      });
+      if (!ok) return;
+      await deleteSource(id);
+      toast('Lista eliminada', { type: 'success' });
+      ctx.router.replace('/settings/sources');
+    }),
+  ];
+  return () => { offHeader?.(); offs.forEach((off) => off()); };
+}
+
+export const sourcesScreen = { render: renderList };
+export const sourceDetailScreen = { render: renderDetail };

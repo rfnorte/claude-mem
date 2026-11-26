@@ -36,7 +36,8 @@ export function validateSourceUrl(input, { kind = 'playlist' } = {}) {
     url.hash = '';
   }
 
-  const normalized = kind === 'xtream' ? url.origin : url.href;
+  // Xtream: origem + eventual subcaminho (alguns fornecedores não servem a API na raiz).
+  const normalized = kind === 'xtream' ? `${url.origin}${url.pathname}`.replace(/\/+$/, '') : url.href;
   const warning = url.protocol === 'http:'
     ? 'Servidor sem HTTPS: a ligação não é cifrada e o iPhone pode bloquear o carregamento a partir da app.'
     : undefined;

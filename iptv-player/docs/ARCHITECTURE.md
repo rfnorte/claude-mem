@@ -77,7 +77,23 @@ iptv-player/
 └── docs/                      # esta documentação
 ```
 
-### Estado real após a Fase 2
+### Estado real após a Fase 3
+
+```
+js/
+├── iptv/      net.js · m3u-parser.js · classifier.js · collector.js · xtream-api.js · source-sync.js
+├── workers/   import.worker.js        # download + parsing + gravação em lotes
+├── data/      db.js (IndexedDB) · crypto.js (AES-GCM) · sources.js · catalog.js · prefs.js · favorites.js · demo-data.js
+└── ui/        source-form.js · import-sheet.js · screens/sources.js (lista + detalhe)
+tests/  unit/{core,iptv}.test.js · e2e/{smoke,import}.mjs · mocks.mjs (servidores simulados) · fixtures/sample.m3u
+```
+
+**Decisões tomadas na implementação**
+- O catálogo carrega os itens das listas ativas para memória uma vez (pesquisa instantânea) e invalida a cache quando uma lista muda. Validado com 50 000 canais; para listas muito maiores (VOD com centenas de milhares de títulos) pode ser necessário passar a consultas por índice — reavaliar na Fase 9 com as listas reais.
+- Séries Xtream: episódios pedidos ao servidor apenas quando se abre a série (`get_series_info`) e guardados localmente.
+- Em caso de erro numa atualização, os itens antigos não são apagados (a limpeza de itens obsoletos só ocorre no fim de uma importação bem-sucedida).
+
+### Estado após a Fase 2
 
 ```
 js/

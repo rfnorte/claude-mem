@@ -1,24 +1,115 @@
 /**
  * Catálogo — fachada única de acesso aos conteúdos para todos os ecrãs.
  *
- * Os ecrãs nunca sabem de onde vêm os dados. Fase 2: modo demonstração (dados
- * fictícios) ou vazio. Fase 3: as mesmas funções passam a ler do IndexedDB
- * alimentado pelas listas do utilizador. Todas as funções são assíncronas por
- * esse motivo.
+ * Os ecrãs nunca sabem de onde vêm os dados: modo demonstração (dados
+ * fictícios) ou as listas do utilizador guardadas em IndexedDB. Os dados reais
+ * são carregados uma vez para memória (pesquisa instantânea) e a cache é
+ * invalidada quando uma lista muda.
  */
 import { prefs } from './prefs.js';
 import { favorites } from './favorites.js';
 import { normalizeText } from '../core/format.js';
+import { getAllByIndex, putMany } from './db.js';
+import { listSources, getCredentials } from './sources.js';
+import { syncEvents } from '../iptv/source-sync.js';
+import { createXtreamClient } from '../iptv/xtream-api.js';
 
-const EMPTY = Object.freeze({ categories: [], channels: [], movies: [], series: [], history: [], popular: [] });
+const EMPTY = Object.freeze({ categories: [], channels: [], movies: [], series: [], history: [], popular: [], demo: false, sourceCount: 0 });
 let demoModule = null;
 let demoData = null;
+let realPromise = null;
+
+function invalidate() { realPromise = null; }
+syncEvents.on('changed', invalidate);
+prefs.on('change', ({ key }) => { if (key === 'demo' || key === '*') invalidate(); });
+
+/* ---------- Mapeamento dos itens guardados para o modelo dos ecrãs ---------- */
+const toChannel = (i) => ({
+  id: i.id, kind: 'live', name: i.name, logo: i.logo, categoryId: i.categoryId, categoryName: i.group,
+  number: i.chno ?? i.order + 1, sourceId: i.sourceId, tvgId: i.tvgId, order: i.order,
+});
+const toMovie = (i) => ({
+  id: i.id, kind: 'movie', name: i.name, poster: i.logo, year: i.year ?? null, genres: [i.group],
+  rating: i.rating ?? null, addedAt: i.addedAt ?? null, durationMin: null, description: null,
+  categoryId: i.categoryId, sourceId: i.sourceId, order: i.order,
+});
+const toSeries = (i) => ({
+  id: i.id, kind: 'series', name: i.name, poster: i.poster, year: i.year ?? null, genres: [i.group],
+  rating: i.rating ?? null, addedAt: i.addedAt ?? null, description: i.description ?? null,
+  seasonCount: i.seasonCount ?? null, episodeCount: i.episodeCount ?? null, seasons: null,
+  categoryId: i.categoryId, sourceId: i.sourceId, seriesKey: i.seriesKey, xtSeriesId: i.seriesId ?? null, order: i.order,
+});
+
+async function loadReal() {
+  const sources = (await listSources()).filter((s) => s.enabled);
+  if (!sources.length) return { ...EMPTY };
+  const byKind = async (kind) => (await Promise.all(sources.map((s) =>
+    getAllByIndex('items', 'source_kind', IDBKeyRange.only([s.id, kind]))))).flat();
+  const [live, movies, series] = await Promise.all([byKind('live'), byKind('movie'), byKind('series')]);
+  const channels = live.map(toChannel);
+
+  const cats = new Map();
+  for (const c of channels) {
+    const cat = cats.get(c.categoryId) ?? { id: c.categoryId, name: c.categoryName, kind: 'live' };
+    cats.set(c.categoryId, cat);
+  }
+  return {
+    categories: [...cats.values()],
+    channels,
+    movies: movies.map(toMovie),
+    series: series.map(toSeries),
+    history: [],   // Fase 4/7
+    popular: [],   // depende do histórico de utilização
+    demo: false,
+    sourceCount: sources.length,
+    sources,
+  };
+}
 
 async function source() {
-  if (!prefs.get('demo')) return EMPTY;
-  demoModule ??= await import('./demo-data.js');
-  demoData ??= demoModule.createDemoCatalog();
-  return demoData;
+  if (prefs.get('demo')) {
+    demoModule ??= await import('./demo-data.js');
+    demoData ??= { ...demoModule.createDemoCatalog(), demo: true, sourceCount: 0 };
+    return demoData;
+  }
+  realPromise ??= loadReal().catch((err) => { realPromise = null; throw err; });
+  return realPromise;
+}
+
+/** Episódios de uma série real (M3U: da BD; Xtream: pedidos ao servidor na 1.ª vez). */
+async function loadEpisodes(d, s) {
+  const stored = (await getAllByIndex('items', 'source_series', IDBKeyRange.only([s.sourceId, s.seriesKey])))
+    .filter((i) => i.kind === 'episode');
+  if (stored.length || !s.xtSeriesId) return stored;
+
+  const src = d.sources.find((x) => x.id === s.sourceId);
+  if (!src) return [];
+  const client = createXtreamClient(await getCredentials(src));
+  const eps = await client.seriesInfo(s.xtSeriesId);
+  const items = eps.map((e, n) => ({
+    id: `xt:${s.sourceId}:episode:${e.episodeId}`, sourceId: s.sourceId, kind: 'episode',
+    seriesKey: s.seriesKey, seriesId: s.id, season: e.season, episode: e.episode, title: e.name,
+    name: `${s.name} T${e.season}E${e.episode}`, episodeId: e.episodeId, extension: e.extension,
+    durationMin: e.durationMin, description: e.description, order: n,
+  }));
+  if (items.length) await putMany('items', items);
+  return items;
+}
+
+function groupSeasons(episodes) {
+  const map = new Map();
+  for (const e of [...episodes].sort((a, b) => a.season - b.season || a.episode - b.episode || a.order - b.order)) {
+    const season = map.get(e.season) ?? { number: e.season, episodes: [] };
+    season.episodes.push({ id: e.id, season: e.season, episode: e.episode, name: e.title || e.name, durationMin: e.durationMin ?? null });
+    map.set(e.season, season);
+  }
+  return [...map.values()];
+}
+
+export function seasonLabel(s) {
+  const n = s.seasons?.length || s.seasonCount;
+  if (n) return `${n} ${n === 1 ? 'temporada' : 'temporadas'}`;
+  return s.genres?.[0] ?? '';
 }
 
 function withEpg(channel) {
@@ -37,7 +128,8 @@ function matches(item, q) {
 function sortItems(list, sort) {
   const copy = [...list];
   if (sort === 'az') copy.sort((a, b) => collator.compare(a.name, b.name));
-  else if (sort === 'recent') copy.sort((a, b) => (b.addedAt ?? 0) - (a.addedAt ?? 0));
+  else if (sort === 'recent') copy.sort((a, b) => (b.addedAt ?? 0) - (a.addedAt ?? 0) || (b.order ?? 0) - (a.order ?? 0));
+  else if (sort === 'list') copy.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   else if (sort === 'year') copy.sort((a, b) => (b.year ?? 0) - (a.year ?? 0) || collator.compare(a.name, b.name));
   return copy;
 }
@@ -60,10 +152,9 @@ function findEpisode(series, season, episode) {
 export const catalog = {
   async status() {
     const d = await source();
-    const demo = d !== EMPTY;
     return {
-      demo,
-      sourceCount: 0, // listas reais: Fase 3
+      demo: d.demo,
+      sourceCount: d.sourceCount,
       hasContent: d.channels.length + d.movies.length + d.series.length > 0,
       counts: { live: d.channels.length, movie: d.movies.length, series: d.series.length },
     };
@@ -132,7 +223,10 @@ export const catalog = {
   },
 
   async recentMovies(limit = 12) {
-    return sortItems((await source()).movies, 'recent').slice(0, limit);
+    const d = await source();
+    // Sem data de adição (M3U), "recentes" = últimos da lista.
+    const hasDates = d.movies.some((m) => m.addedAt);
+    return (hasDates ? sortItems(d.movies, 'recent') : [...d.movies].reverse()).slice(0, limit);
   },
 
   /* ---------------- Séries ---------------- */
@@ -151,6 +245,13 @@ export const catalog = {
     const d = await source();
     const s = d.series.find((x) => x.id === id);
     if (!s) return null;
+    if (!d.demo) {
+      try {
+        return { ...s, seasons: groupSeasons(await loadEpisodes(d, s)), lastWatched: null };
+      } catch (err) {
+        return { ...s, seasons: [], lastWatched: null, episodesError: err.message || 'Não foi possível obter os episódios.' };
+      }
+    }
     const last = d.history
       .filter((h) => h.kind === 'episode' && h.seriesId === id)
       .sort((a, b) => b.updatedAt - a.updatedAt)[0];

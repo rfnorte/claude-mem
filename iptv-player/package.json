@@ -1,12 +1,12 @@
 {
   "name": "iptv-player",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "description": "Leitor IPTV pessoal (PWA) para iPhone. Sem passo de build: os ficheiros são servidos tal como estão.",
   "type": "module",
   "scripts": {
     "test": "node --test tests/unit/*.test.js",
-    "test:e2e": "node tests/e2e/smoke.mjs",
+    "test:e2e": "node tests/e2e/smoke.mjs && node tests/e2e/import.mjs",
     "serve": "node tests/serve.mjs"
   },
   "engines": {

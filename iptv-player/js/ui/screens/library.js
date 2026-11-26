@@ -4,7 +4,7 @@
  */
 import { html, render, on } from '../../core/dom.js';
 import { formatCount } from '../../core/format.js';
-import { catalog } from '../../data/catalog.js';
+import { catalog, seasonLabel } from '../../data/catalog.js';
 import { favorites } from '../../data/favorites.js';
 import { prefs } from '../../data/prefs.js';
 import { screenHeader, mountHeader } from '../components/header.js';
@@ -156,5 +156,5 @@ export const seriesScreen = createLibraryScreen({
   plural: 'séries',
   genres: () => catalog.seriesGenres(),
   list: (o) => catalog.seriesList(o),
-  meta: (s) => `${s.seasons.length} ${s.seasons.length === 1 ? 'temporada' : 'temporadas'}`,
+  meta: seasonLabel,
 });

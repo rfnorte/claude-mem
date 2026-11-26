@@ -1,7 +1,7 @@
 /** Início — dashboard com conteúdos das listas configuradas. */
 import { html, render, on } from '../../core/dom.js';
 import { greeting, formatLongDate, formatTime } from '../../core/format.js';
-import { catalog } from '../../data/catalog.js';
+import { catalog, seasonLabel } from '../../data/catalog.js';
 import { favorites } from '../../data/favorites.js';
 import { prefs } from '../../data/prefs.js';
 import { screenHeader, mountHeader } from '../components/header.js';
@@ -66,7 +66,14 @@ export async function renderScreen(ctx) {
     ctx.router.refresh();
   }));
 
-  if (!status.hasContent) {
+  if (!status.hasContent && status.sourceCount > 0) {
+    render(outlet, html`${header()}${emptyState({
+      iconName: 'layers',
+      title: 'As suas listas ainda não têm conteúdos',
+      text: 'A importação pode ter falhado ou estar em curso. Consulte o estado em Listas IPTV.',
+      actions: html`<a class="btn btn--primary btn--block" href="#/settings/sources">Ver listas</a>`,
+    })}`);
+  } else if (!status.hasContent) {
     render(outlet, html`${header()}${onboarding()}`);
   } else {
     const [cw, favs, popular, recentMovies, featured, recentLive, cats] = await Promise.all([
@@ -95,7 +102,7 @@ export async function renderScreen(ctx) {
     }
     if (featured.length) {
       sections.push(section('Séries em destaque', rail(featured.map((s) =>
-        posterCard(s, { href: `#/series/${encodeURIComponent(s.id)}`, isFav: favorites.has('series', s.id), meta: `${s.seasons.length} ${s.seasons.length === 1 ? 'temporada' : 'temporadas'}` }))), { href: '#/series' }));
+        posterCard(s, { href: `#/series/${encodeURIComponent(s.id)}`, isFav: favorites.has('series', s.id), meta: seasonLabel(s) }))), { href: '#/series' }));
     }
     if (recentLive.length) {
       sections.push(section('Últimos canais vistos', rail(recentLive.map(logoTile), { variant: 'logos' })));

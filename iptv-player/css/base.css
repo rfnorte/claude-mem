@@ -26,6 +26,9 @@ body {
   overflow-x: hidden;
 }
 
+/* O atributo hidden vence sempre classes com display próprio */
+[hidden] { display: none !important; }
+
 h1, h2, h3, h4, p, ul, ol, figure { margin: 0; }
 ul, ol { padding: 0; list-style: none; }
 img, svg, video { display: block; max-width: 100%; }

@@ -10,21 +10,26 @@ Leitor IPTV pessoal, instalável no iPhone pelo Safari ("Adicionar ao ecrã prin
 |---|---|
 | 1. Planeamento e arquitetura | ✅ Concluída |
 | 2. Design System + shell (5 ecrãs, componentes, modo demonstração) | ✅ Concluída |
-| 3. Gestão IPTV (parser M3U, Xtream, IndexedDB) | ⏳ Seguinte |
-| 4–10 | Por iniciar |
+| 3. Gestão IPTV (parser M3U, Xtream, IndexedDB) | ✅ Concluída |
+| 4. Reprodução | ⏳ Seguinte |
+| 5–10 | Por iniciar |
 
-### O que já funciona (v0.2.0)
+### O que já funciona (v0.3.0)
 - Navegação completa: Início, TV, Filmes, Séries, Definições, Pesquisa global, detalhe de filme/série, gestão de listas.
 - **Modo demonstração** com conteúdos fictícios gerados localmente (sem URLs nem streams) para avaliar a interface.
 - TV: categorias, pesquisa instantânea, ordenação, vista lista/grelha, lista virtualizada (milhares de canais sem lentidão), ficha do canal com "agora/a seguir".
 - Filmes e séries: géneros, ordenação, continuar a ver, temporadas e episódios, último episódio visto.
 - Favoritos (em memória nesta fase — persistência na Fase 7).
-- Formulário de lista (URL / ficheiro / Xtream) com validação real; **a gravação é ativada na Fase 3**.
-- Eliminação de dados locais com confirmação.
+- **Listas reais:** M3U por endereço, M3U por ficheiro e contas Xtream Codes. Importação num Web Worker (50 000 entradas em ~6 s sem bloquear a interface), com progresso e resumo.
+- **Teste de ligação** antes de guardar: distingue lista válida, página web, stream de vídeo, servidor sem CORS, servidor HTTP e credenciais erradas/conta expirada.
+- Classificação automática em TV / Filmes / Séries, agrupamento de episódios por temporada e **correção manual por categoria**.
+- Gestão de listas: editar, ativar/desativar, atualizar, atualização automática ao abrir a app, eliminar. IDs estáveis: favoritos sobrevivem a atualizações.
+- Credenciais cifradas (AES-GCM, chave não exportável). Ver limitações em `docs/SECURITY.md`.
+- Eliminação de todos os dados locais (IndexedDB, preferências, caches) com confirmação.
 
 ### O que ainda não funciona (intencionalmente)
 - Reprodução de vídeo (Fase 4) — o botão "Reproduzir" está desativado e indica a fase.
-- Importação de listas reais (Fase 3), EPG real (Fase 6), backup (Fase 7), instalação offline completa (Fase 8).
+- EPG real (Fase 6), favoritos persistentes e backup (Fase 7), instalação offline completa (Fase 8).
 
 ## Pré-visualizar no computador
 
@@ -53,6 +58,7 @@ npm run test:e2e    # fluxos completos em Chromium, vertical e horizontal (reque
 | [docs/SECURITY.md](docs/SECURITY.md) | Segurança, credenciais, CSP, privacidade |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | Plano por fases, complexidade, riscos, alojamento |
 | [docs/DESIGN-SYSTEM.md](docs/DESIGN-SYSTEM.md) | Identidade visual, tokens, componentes |
+| [docs/PUBLISHING.md](docs/PUBLISHING.md) | Publicação gratuita no GitHub Pages, passo a passo |
 
 ## Stack
 

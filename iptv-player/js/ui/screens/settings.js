@@ -3,7 +3,10 @@ import { html, render, on } from '../../core/dom.js';
 import { APP_VERSION, APP_STAGE } from '../../config.js';
 import { prefs } from '../../data/prefs.js';
 import { favorites } from '../../data/favorites.js';
-import { catalog } from '../../data/catalog.js';
+import { listSources } from '../../data/sources.js';
+import { deleteDatabase } from '../../data/db.js';
+import { resetKeyCache } from '../../data/crypto.js';
+import { formatCount } from '../../core/format.js';
 import { screenHeader, mountHeader } from '../components/header.js';
 import { segmented, setSegmented, switchControl } from '../components/controls.js';
 import { icon } from '../components/icons.js';
@@ -72,7 +75,7 @@ function openStorageInfoSheet() {
 
 async function renderScreen(ctx) {
   const { outlet } = ctx;
-  const status = await catalog.status();
+  const sources = await listSources().catch(() => []);
   if (!ctx.isActive()) return;
 
   render(outlet, html`
@@ -80,7 +83,7 @@ async function renderScreen(ctx) {
     <div class="stack">
       ${group('Fontes', cell({
         iconName: 'layers', title: 'Listas IPTV', href: '#/settings/sources',
-        subtitle: status.sourceCount ? `${status.sourceCount} configuradas` : 'Nenhuma lista configurada',
+        subtitle: sources.length ? formatCount(sources.length, 'lista configurada', 'listas configuradas') : 'Nenhuma lista configurada',
       }))}
 
       ${group('Visualização', cell({
@@ -128,9 +131,15 @@ async function renderScreen(ctx) {
         destructive: true,
       });
       if (!ok) return;
+      try {
+        await deleteDatabase();
+        resetKeyCache();
+        if ('caches' in window) for (const k of await caches.keys()) await caches.delete(k);
+      } catch (err) {
+        toast(`Alguns dados não foram eliminados: ${err.message}`, { type: 'error' });
+      }
       prefs.clearAll();
       favorites.clear();
-      // Fase 3+: também IndexedDB e caches do Service Worker.
       toast('Todos os dados locais foram eliminados', { type: 'success' });
       ctx.router.go('/home');
     }),

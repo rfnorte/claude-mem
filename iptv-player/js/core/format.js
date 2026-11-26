@@ -46,3 +46,23 @@ export function normalizeText(s) {
     .replace(/\s+/g, ' ')
     .trim();
 }
+
+const relFmt = new Intl.RelativeTimeFormat(LOCALE, { numeric: 'auto' });
+
+/** "há 5 minutos", "ontem", "há 3 dias". */
+export function formatRelative(ts, now = Date.now()) {
+  if (!ts) return 'nunca';
+  const diff = (ts - now) / 1000;
+  const abs = Math.abs(diff);
+  if (abs < 60) return 'agora mesmo';
+  if (abs < 3600) return relFmt.format(Math.round(diff / 60), 'minute');
+  if (abs < 86_400) return relFmt.format(Math.round(diff / 3600), 'hour');
+  if (abs < 30 * 86_400) return relFmt.format(Math.round(diff / 86_400), 'day');
+  return new Intl.DateTimeFormat(LOCALE, { day: 'numeric', month: 'short', year: 'numeric' }).format(ts);
+}
+
+export function formatBytes(bytes) {
+  if (!Number.isFinite(bytes) || bytes <= 0) return '';
+  if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+  return `${(bytes / 1_048_576).toFixed(1)} MB`;
+}

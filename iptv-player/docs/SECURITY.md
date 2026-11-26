@@ -8,7 +8,8 @@
 | Credenciais publicadas no GitHub | Nenhuma credencial no código. Repositório contém só a aplicação. `.gitignore` bloqueia ficheiros `*.m3u`, `*.env`, backups. | Depende de o utilizador não fazer commit de ficheiros pessoais. |
 | Credenciais em backups exportados | Backups **excluem passwords por omissão**; opção explícita para as incluir, com aviso. | — |
 | Fuga de credenciais para terceiros | Sem trackers, sem analytics, sem CDN em runtime, sem proxies públicos. Pedidos só para servidores configurados pelo utilizador. | — |
-| Leitura da password no dispositivo | Cifrada com AES-GCM; chave `CryptoKey` **não exportável** em IndexedDB. | **Não é um cofre.** Ver §2. |
+| Leitura da password no dispositivo | Password e utilizador Xtream e o URL da lista M3U cifrados com AES-GCM; chave `CryptoKey` **não exportável** em IndexedDB. | **Não é um cofre.** Ver §2. |
+| URLs de cada canal/filme em listas M3U | Guardados **sem cifra** em IndexedDB (cifrar dezenas de milhares de entradas tornaria a importação lenta). Se o fornecedor incluir credenciais nesses URLs, ficam legíveis por quem aceda à base de dados do dispositivo. Em contas Xtream isto não acontece: os URLs são construídos no momento da reprodução. | Limitação conhecida e aceite (v1). |
 | Credenciais em trânsito | O protocolo Xtream envia username/password no URL. Se o servidor for HTTP, viajam em claro na rede. | Limitação do fornecedor, não da app. A app avisa quando o servidor é HTTP. |
 
 ## 2. Porque é que o armazenamento local de uma PWA não é um cofre

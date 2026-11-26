@@ -100,6 +100,7 @@ test('validateSourceUrl (xtream) normaliza para a origem', () => {
   const r = validateSourceUrl('http://srv.tv:8080/player_api.php?username=a&password=b', { kind: 'xtream' });
   assert.equal(r.ok, true);
   assert.equal(r.url, 'http://srv.tv:8080');
+  assert.equal(validateSourceUrl('https://srv.tv/painel/player_api.php', { kind: 'xtream' }).url, 'https://srv.tv/painel');
 });
 
 /* ---------- Formatação ---------- */
@@ -180,5 +181,12 @@ test('CSS dos componentes não usa cores hexadecimais fora dos tokens', async ()
     if (file.endsWith('tokens.css')) continue;
     const src = await readFile(file, 'utf8');
     assert.ok(!/#[0-9a-f]{3,8}\b/i.test(src), `cor literal em ${file}`);
+  }
+});
+
+test('código-fonte sem caracteres invisíveis (BOM, separadores de linha Unicode)', async () => {
+  for (const file of await listFiles(join(ROOT, 'js'), '.js')) {
+    const src = await readFile(file, 'utf8');
+    assert.ok(!/[\u200b-\u200f\u2028\u2029\ufeff]/.test(src), `carácter invisível em ${file}`);
   }
 });

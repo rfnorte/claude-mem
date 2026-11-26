@@ -22,9 +22,17 @@ const TYPES = {
   '.md': 'text/markdown; charset=utf-8',
 };
 
-export function startServer(port = 5173) {
+/**
+ * @param {number} port
+ * @param {{mocks?: boolean, cors?: boolean}} [opts] mocks: rotas /__mock/* para testes
+ */
+export function startServer(port = 5173, { mocks = false, cors = true } = {}) {
   const server = createServer(async (req, res) => {
     try {
+      if (mocks) {
+        const { handleMock } = await import('./mocks.mjs');
+        if (await handleMock(req, res, { cors })) return;
+      }
       const urlPath = decodeURIComponent(new URL(req.url, 'http://x').pathname);
       let file = normalize(join(ROOT, urlPath));
       if (!file.startsWith(ROOT + sep) && file !== ROOT) { res.writeHead(403).end(); return; }
