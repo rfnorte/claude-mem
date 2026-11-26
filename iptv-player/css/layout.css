@@ -1,0 +1,142 @@
+/* ==========================================================================
+   Layout — app shell, vista, cabeçalho, barra de navegação inferior
+   ========================================================================== */
+
+.app {
+  --pad-l: calc(var(--gutter) + var(--safe-left));
+  --pad-r: calc(var(--gutter) + var(--safe-right));
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* ---- Vista (conteúdo do ecrã atual) ---- */
+.view {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: 0 var(--pad-r) calc(var(--tabbar-height) + var(--safe-bottom) + var(--space-10)) var(--pad-l);
+  outline: none;
+}
+
+.view--enter { animation: view-enter var(--duration-base) var(--ease-out) both; }
+
+@keyframes view-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Secções empilhadas dentro de um ecrã */
+.stack { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--section-gap); }
+.stack--sm { gap: var(--space-4); }
+
+/* Conteúdo que deve sangrar até às margens (rails horizontais) */
+.bleed {
+  margin-left: calc(-1 * var(--pad-l));
+  margin-right: calc(-1 * var(--pad-r));
+  padding-left: var(--pad-l);
+  padding-right: var(--pad-r);
+}
+
+/* ---- Cabeçalho de ecrã ---- */
+.screen-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  margin: 0 calc(-1 * var(--pad-r)) 0 calc(-1 * var(--pad-l));
+  padding: var(--safe-top) var(--pad-r) 0 var(--pad-l);
+  transition: background var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard);
+  border-bottom: 1px solid transparent;
+}
+
+.screen-header.is-stuck {
+  background: var(--color-glass);
+  -webkit-backdrop-filter: var(--blur-glass);
+  backdrop-filter: var(--blur-glass);
+  border-bottom-color: var(--color-border);
+}
+
+.screen-header__bar {
+  height: var(--header-height);
+  display: grid;
+  grid-template-columns: minmax(var(--touch-min), 1fr) auto minmax(var(--touch-min), 1fr);
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.screen-header__lead { display: flex; align-items: center; justify-self: start; }
+.screen-header__actions { display: flex; align-items: center; gap: var(--space-1); justify-self: end; }
+
+.screen-header__compact {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity var(--duration-fast) var(--ease-standard), transform var(--duration-fast) var(--ease-standard);
+  max-width: 60vw;
+}
+.screen-header.is-stuck .screen-header__compact,
+.screen-header--compact .screen-header__compact { opacity: 1; transform: none; }
+
+.large-title {
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-tight);
+  padding: var(--space-1) 0 var(--space-4);
+}
+
+.large-title__eyebrow {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  letter-spacing: 0;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-1);
+}
+.large-title__eyebrow::first-letter { text-transform: uppercase; }
+
+/* ---- Barra de navegação inferior ---- */
+.tabbar {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: var(--z-tabbar);
+  padding: 0 var(--safe-right) var(--safe-bottom) var(--safe-left);
+  background: var(--color-glass);
+  -webkit-backdrop-filter: var(--blur-glass);
+  backdrop-filter: var(--blur-glass);
+  border-top: 1px solid var(--color-border);
+}
+
+.tabbar__list {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  max-width: 640px;
+  margin: 0 auto;
+  height: var(--tabbar-height);
+}
+
+.tabbar__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: var(--touch-min);
+  color: var(--color-text-tertiary);
+  font-size: var(--text-2xs);
+  font-weight: var(--weight-medium);
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.tabbar__item .icon { transition: transform var(--duration-fast) var(--ease-spring); }
+.tabbar__item:active .icon { transform: scale(0.9); }
+.tabbar__item[aria-current="page"] { color: var(--color-accent); }
+
+/* Telemóvel em horizontal: altura útil reduzida → cabeçalhos mais compactos */
+@media (orientation: landscape) and (max-height: 500px) {
+  .large-title { font-size: var(--text-2xl); padding-bottom: var(--space-2); }
+  .app { --section-gap: var(--space-6); }
+}
+
+@media (min-width: 768px) {
+  .app { --gutter: var(--space-8); }
+}

@@ -77,6 +77,23 @@ iptv-player/
 └── docs/                      # esta documentação
 ```
 
+### Estado real após a Fase 2
+
+```
+js/
+├── app.js                     # bootstrap: tab bar, rotas, handlers globais
+├── config.js                  # versão (sem segredos)
+├── core/  dom.js · router.js · store.js · format.js · validate.js
+├── data/  catalog.js (fachada) · prefs.js · favorites.js · demo-data.js
+└── ui/
+    ├── shared.js              # favoritos, voltar, ficha de canal
+    ├── components/            # icons, cards, controls, header, overlay (sheet/diálogo), toast, virtual-list
+    └── screens/               # home, tv, library (filmes+séries), detail, search, settings, sources
+tests/  unit/*.test.js · e2e/smoke.mjs · serve.mjs
+```
+
+**Contrato estável:** os ecrãs só falam com `data/catalog.js`. Na Fase 3 a fachada passa a ler do IndexedDB sem alterar nenhum ecrã. Regras de código verificadas automaticamente pelos testes: sem atributos `style` em templates (CSP), sem `alert/confirm/prompt`, sem `eval`, sem cores literais fora de `tokens.css`.
+
 ## 4. Módulos e responsabilidades
 
 ### 4.1 Core

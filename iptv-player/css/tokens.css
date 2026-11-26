@@ -77,6 +77,15 @@
   --color-live:            var(--p-red-400);      /* badge "AO VIVO" */
   --color-text-on-status:  var(--p-ink-950);      /* texto escuro sobre fills de estado */
 
+  /* Skeletons */
+  --color-skeleton:        var(--p-ink-850);
+  --color-skeleton-shine:  rgb(255 255 255 / 0.05);
+
+  /* Arte gerada (capas/logótipos sem imagem): matiz definida por item via --art-h */
+  --art-saturation:        58%;
+  --art-light-top:         52%;
+  --art-light-bottom:      14%;
+
   /* Linhas */
   --color-border:          rgb(255 255 255 / 0.06);
   --color-border-strong:   rgb(255 255 255 / 0.12);
@@ -101,6 +110,7 @@
   --text-2xl: 1.5rem;     /* 24 — títulos de ecrã */
   --text-3xl: 2rem;       /* 32 — large title */
   --text-4xl: 2.5rem;     /* 40 — hero */
+  --text-input: max(1rem, 16px); /* campos: <16px provoca zoom automático no iOS */
 
   --weight-regular:  400;
   --weight-medium:   500;
